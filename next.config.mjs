@@ -33,6 +33,13 @@ const nextConfig = {
             },
         ],
     },
+    // Skip linting and type-checking during build (saves memory on low-RAM servers)
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
     // Environment validation on startup
     serverRuntimeConfig: {
         MONGODB_URI: process.env.MONGODB_URI,

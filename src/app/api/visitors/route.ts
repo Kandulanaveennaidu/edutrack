@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import Visitor from "@/lib/models/Visitor";
 import Notification from "@/lib/models/Notification";
 import { requireAuth } from "@/lib/permissions";
-import { visitorSchema } from "@/lib/validators";
+import { visitorSchema, validationError } from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -99,10 +99,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = visitorSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const {

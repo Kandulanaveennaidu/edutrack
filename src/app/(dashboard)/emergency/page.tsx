@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError, confirmAlert } from "@/lib/alerts";
 import {
   AlertTriangle,
   Bell,
@@ -34,6 +34,7 @@ import {
   HeartPulse,
   Megaphone,
 } from "lucide-react";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface EmergencyAlert {
   alert_id: string;
@@ -83,7 +84,7 @@ const SEVERITY_CONFIG: Record<
 
 export default function EmergencyPage() {
   const { data: session } = useSession();
-  const { toast } = useToast();
+  const { canAdd, canEdit } = usePermissions("emergency");
   const [alerts, setAlerts] = useState<EmergencyAlert[]>([]);
   const [stats, setStats] = useState({ total: 0, active: 0, critical: 0 });
   const [loading, setLoading] = useState(true);
@@ -109,15 +110,11 @@ export default function EmergencyPage() {
         setStats(data.stats || { total: 0, active: 0, critical: 0 });
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to load alerts",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to load alerts");
     } finally {
       setLoading(false);
     }
-  }, [filterStatus, toast]);
+  }, [filterStatus]);
 
   useEffect(() => {
     fetchAlerts();
@@ -125,21 +122,18 @@ export default function EmergencyPage() {
 
   const handleSend = async () => {
     if (!form.title || !form.message) {
-      toast({
-        title: "Error",
-        description: "Title and message are required",
-        variant: "destructive",
-      });
+      showError("Error", "Title and message are required");
       return;
     }
 
-    if (
-      form.severity === "critical" &&
-      !confirm(
-        "⚠️ You are sending a CRITICAL alert. This will notify everyone immediately. Are you sure?",
-      )
-    ) {
-      return;
+    if (form.severity === "critical") {
+      const confirmed = await confirmAlert(
+        "Send Critical Alert?",
+        "This will notify everyone immediately.",
+        "Yes, send alert",
+        "warning",
+      );
+      if (!confirmed) return;
     }
 
     setSubmitting(true);
@@ -151,10 +145,7 @@ export default function EmergencyPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({
-          title: "Alert Sent",
-          description: "Emergency alert broadcast successfully",
-        });
+        showSuccess("Alert Sent", "Emergency alert broadcast successfully");
         setDialogOpen(false);
         setForm({
           type: "general",
@@ -164,18 +155,10 @@ export default function EmergencyPage() {
         });
         fetchAlerts();
       } else {
-        toast({
-          title: "Error",
-          description: data.error,
-          variant: "destructive",
-        });
+        showError("Error", data.error);
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send alert",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to send alert");
     } finally {
       setSubmitting(false);
     }
@@ -189,15 +172,11 @@ export default function EmergencyPage() {
         body: JSON.stringify({ alert_id: alertId, status: "resolved" }),
       });
       if (res.ok) {
-        toast({ title: "Success", description: "Alert resolved" });
+        showSuccess("Success", "Alert resolved");
         fetchAlerts();
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to resolve alert",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to resolve alert");
     }
   };
 
@@ -210,7 +189,7 @@ export default function EmergencyPage() {
     return <AlertTriangle className="h-5 w-5" />;
   };
 
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin = session?.user?.role === "admin" || canAdd;
 
   if (loading) {
     return (
@@ -225,7 +204,9 @@ export default function EmergencyPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Emergency Alerts</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            Emergency Alerts
+          </h1>
           <p className="text-gray-500 mt-1">
             Broadcast & manage emergency alerts
           </p>
@@ -467,7 +448,7 @@ export default function EmergencyPage() {
                       </p>
                     </div>
                   </div>
-                  {isAdmin && alert.status === "active" && (
+                  {canEdit && alert.status === "active" && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -486,7 +467,11 @@ export default function EmergencyPage() {
                   <span>
                     Sent by: <strong>{alert.sent_by}</strong>
                   </span>
-                  <span>{new Date(alert.sent_at).toLocaleString()}</span>
+                  <span>
+                    {alert.sent_at
+                      ? new Date(alert.sent_at).toLocaleString()
+                      : "—"}
+                  </span>
                 </div>
               </CardContent>
             </Card>

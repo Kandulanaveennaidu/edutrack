@@ -20,8 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface SchoolInfo {
   school_id: string;
@@ -35,7 +36,7 @@ interface SchoolInfo {
 
 export default function SettingsPage() {
   const { data: session } = useSession();
-  const { toast } = useToast();
+  const { canEdit } = usePermissions("settings");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [school, setSchool] = useState<SchoolInfo | null>(null);
@@ -81,20 +82,15 @@ export default function SettingsPage() {
       });
 
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Settings Saved",
-          description: "Your settings have been updated successfully.",
-        });
+        showSuccess(
+          "Settings Saved",
+          "Your settings have been updated successfully.",
+        );
       } else {
         throw new Error("Failed to save");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save settings. Please try again.",
-      });
+      showError("Error", "Failed to save settings. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -108,13 +104,13 @@ export default function SettingsPage() {
     );
   }
 
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin = session?.user?.role === "admin" || canEdit;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
           <p className="text-slate-500">
             Manage your school settings and preferences
           </p>

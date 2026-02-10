@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { useToast } from "@/components/ui/use-toast";
+import { showError } from "@/lib/alerts";
 
 interface AttendanceRecord {
   attendance_id: string;
@@ -45,7 +45,6 @@ interface AttendanceRecord {
 }
 
 export default function AttendanceHistoryPage() {
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [className, setClassName] = useState("");
@@ -95,11 +94,7 @@ export default function AttendanceHistoryPage() {
         );
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch attendance history",
-      });
+      showError("Error", "Failed to fetch attendance history");
     } finally {
       setLoading(false);
     }
@@ -152,7 +147,7 @@ export default function AttendanceHistoryPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Attendance History
           </h1>
           <p className="text-slate-500">View past attendance records</p>

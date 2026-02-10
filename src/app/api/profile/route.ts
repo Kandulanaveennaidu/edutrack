@@ -3,7 +3,11 @@ import { requireAuth } from "@/lib/permissions";
 import { connectDB } from "@/lib/db";
 import { logError } from "@/lib/logger";
 import { audit, buildChanges } from "@/lib/audit";
-import { profileUpdateSchema, changePasswordSchema } from "@/lib/validators";
+import {
+  profileUpdateSchema,
+  changePasswordSchema,
+  validationError,
+} from "@/lib/validators";
 import User from "@/lib/models/User";
 import School from "@/lib/models/School";
 import bcrypt from "bcryptjs";
@@ -73,10 +77,7 @@ export async function PUT(request: Request) {
     if (body.currentPassword || body.newPassword) {
       const parsed = changePasswordSchema.safeParse(body);
       if (!parsed.success) {
-        return NextResponse.json(
-          { error: parsed.error.issues[0].message },
-          { status: 400 },
-        );
+        return validationError(parsed.error);
       }
 
       await connectDB();
@@ -117,10 +118,7 @@ export async function PUT(request: Request) {
     // Profile update
     const parsed = profileUpdateSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     await connectDB();

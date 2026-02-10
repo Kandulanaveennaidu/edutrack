@@ -27,6 +27,10 @@ export interface IUser extends Document {
   admissionDate: Date;
   // Parent-specific
   children: mongoose.Types.ObjectId[];
+  // Module access (admin-assigned; empty = all plan modules)
+  allowedModules: string[];
+  // Custom role reference (optional — overrides default role permissions)
+  customRole: mongoose.Types.ObjectId | null;
   // Security — Account lockout
   failedLoginAttempts: number;
   lockedUntil: Date | null;
@@ -71,6 +75,10 @@ const UserSchema = new Schema<IUser>(
     admissionDate: { type: Date },
     // Parent fields
     children: [{ type: Schema.Types.ObjectId, ref: "Student" }],
+    // Module access (admin-assigned; empty = all plan modules)
+    allowedModules: [{ type: String }],
+    // Custom role reference
+    customRole: { type: Schema.Types.ObjectId, ref: "Role", default: null },
     // Security — Account lockout
     failedLoginAttempts: { type: Number, default: 0 },
     lockedUntil: { type: Date, default: null },

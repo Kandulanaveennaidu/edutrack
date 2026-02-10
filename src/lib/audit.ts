@@ -13,7 +13,7 @@ interface AuditParams {
   entity: string;
   entityId?: string;
   schoolId: string;
-  userId: string;
+  userId?: string;
   userName?: string;
   userRole?: string;
   changes?: Record<string, { old: unknown; new: unknown }>;
@@ -33,7 +33,7 @@ export async function audit(params: AuditParams): Promise<void> {
       action: params.action,
       entity: params.entity,
       entityId: params.entityId || "",
-      userId: params.userId,
+      userId: params.userId || "",
       userName: params.userName || "",
       userRole: params.userRole || "",
       changes: params.changes,
@@ -51,8 +51,10 @@ export async function audit(params: AuditParams): Promise<void> {
  * Build a changes diff between old and new objects.
  */
 export function buildChanges(
-  oldObj: Record<string, unknown>,
-  newObj: Record<string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  oldObj: Record<string, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newObj: Record<string, any>,
   fields: string[],
 ): Record<string, { old: unknown; new: unknown }> | undefined {
   const changes: Record<string, { old: unknown; new: unknown }> = {};
@@ -64,4 +66,14 @@ export function buildChanges(
     }
   }
   return Object.keys(changes).length > 0 ? changes : undefined;
+}
+
+// Alias that also accepts `school` as a synonym for `schoolId`
+export async function createAuditLog(
+  params: Omit<AuditParams, "schoolId"> & {
+    school?: string;
+    schoolId?: string;
+  },
+): Promise<void> {
+  return audit({ ...params, schoolId: params.schoolId || params.school || "" });
 }

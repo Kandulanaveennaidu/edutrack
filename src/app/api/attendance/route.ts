@@ -5,7 +5,7 @@ import Attendance from "@/lib/models/Attendance";
 import Student from "@/lib/models/Student";
 import Notification from "@/lib/models/Notification";
 import { requireAuth } from "@/lib/permissions";
-import { markAttendanceSchema } from "@/lib/validators";
+import { markAttendanceSchema, validationError } from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -85,10 +85,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = markAttendanceSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { date, class_name, records } = parsed.data;
@@ -110,7 +107,7 @@ export async function POST(request: NextRequest) {
             class_name,
             student: new mongoose.Types.ObjectId(record.student_id),
             status: record.status as "present" | "absent" | "late" | "leave",
-            marked_by: session!.user.teacher_id,
+            marked_by: session!.user.teacher_id || session!.user.id,
             marked_at: new Date().toISOString(),
             notes: record.notes || "",
           },

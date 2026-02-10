@@ -21,7 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
+import { usePermissions } from "@/hooks/use-permissions";
 import {
   CalendarDays,
   Plus,
@@ -95,8 +96,8 @@ const MONTH_NAMES = [
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function HolidayCalendarPage() {
-  const { data: session } = useSession();
-  const { toast } = useToast();
+  useSession();
+  const { canAdd, canEdit, canDelete } = usePermissions("holidays");
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -122,15 +123,11 @@ export default function HolidayCalendarPage() {
         setHolidays(data.data || []);
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to load holidays",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to load holidays");
     } finally {
       setLoading(false);
     }
-  }, [monthStr, toast]);
+  }, [monthStr]);
 
   useEffect(() => {
     fetchHolidays();
@@ -138,11 +135,7 @@ export default function HolidayCalendarPage() {
 
   const handleSave = async () => {
     if (!form.date || !form.name || !form.type) {
-      toast({
-        title: "Error",
-        description: "Date, name, and type are required",
-        variant: "destructive",
-      });
+      showError("Error", "Date, name, and type are required");
       return;
     }
     setSubmitting(true);
@@ -159,10 +152,10 @@ export default function HolidayCalendarPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({
-          title: "Success",
-          description: editingHoliday ? "Holiday updated" : "Holiday added",
-        });
+        showSuccess(
+          "Success",
+          editingHoliday ? "Holiday updated" : "Holiday added",
+        );
         setDialogOpen(false);
         setEditingHoliday(null);
         setForm({
@@ -173,37 +166,26 @@ export default function HolidayCalendarPage() {
         });
         fetchHolidays();
       } else {
-        toast({
-          title: "Error",
-          description: data.error,
-          variant: "destructive",
-        });
+        showError("Error", data.error);
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to save holiday",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to save holiday");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this holiday?")) return;
+    const confirmed = await confirmDelete("this holiday");
+    if (!confirmed) return;
     try {
       const res = await fetch(`/api/holidays?id=${id}`, { method: "DELETE" });
       if (res.ok) {
-        toast({ title: "Success", description: "Holiday deleted" });
+        showSuccess("Success", "Holiday deleted");
         fetchHolidays();
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to delete",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to delete");
     }
   };
 
@@ -267,8 +249,6 @@ export default function HolidayCalendarPage() {
     );
   };
 
-  const isAdmin = session?.user?.role === "admin";
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -282,12 +262,14 @@ export default function HolidayCalendarPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Holiday Calendar</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            Holiday Calendar
+          </h1>
           <p className="text-gray-500 mt-1">
             View & manage school holidays and events
           </p>
         </div>
-        {isAdmin && (
+        {canAdd && (
           <Dialog
             open={dialogOpen}
             onOpenChange={(open) => {
@@ -452,7 +434,7 @@ export default function HolidayCalendarPage() {
                         key={h.holiday_id}
                         className={`text-[10px] px-1 py-0.5 rounded truncate mb-0.5 cursor-pointer ${getTypeColor(h.type)}`}
                         title={`${h.name} - ${h.description || h.type}`}
-                        onClick={() => isAdmin && openEdit(h)}
+                        onClick={() => canEdit && openEdit(h)}
                       >
                         {h.name}
                       </div>
@@ -511,22 +493,26 @@ export default function HolidayCalendarPage() {
                     </p>
                   )}
                 </div>
-                {isAdmin && (
+                {(canEdit || canDelete) && (
                   <div className="flex gap-1 ml-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEdit(h)}
-                    >
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(h.holiday_id)}
-                    >
-                      <Trash2 className="h-3 w-3 text-red-500" />
-                    </Button>
+                    {canEdit && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEdit(h)}
+                      >
+                        <Edit className="h-3 w-3" />
+                      </Button>
+                    )}
+                    {canDelete && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(h.holiday_id)}
+                      >
+                        <Trash2 className="h-3 w-3 text-red-500" />
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

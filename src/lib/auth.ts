@@ -4,6 +4,16 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { connectDB } from "./db";
 import User from "./models/User";
+import School from "./models/School";
+import Role from "./models/Role";
+
+export interface MenuPermissionData {
+  menu: string;
+  view: boolean;
+  add: boolean;
+  edit: boolean;
+  delete: boolean;
+}
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
@@ -90,6 +100,22 @@ export const authOptions: NextAuthOptions = {
           // Get school info
           const schoolId = user.school ? user.school.toString() : "";
 
+          // Load school for plan info
+          const school = await School.findById(user.school);
+          let subscriptionStatus = school?.subscriptionStatus || "trial";
+
+          // Check trial expiry
+          if (
+            subscriptionStatus === "trial" &&
+            school?.trialEndsAt &&
+            new Date(school.trialEndsAt) < new Date()
+          ) {
+            subscriptionStatus = "expired";
+            await School.findByIdAndUpdate(user.school, {
+              subscriptionStatus: "expired",
+            });
+          }
+
           return {
             id: user._id.toString(),
             school_id: schoolId,
@@ -97,7 +123,15 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             email: user.email,
             role: user.role,
+            plan: school?.plan || "starter",
+            subscriptionStatus,
+            allowedModules: user.allowedModules || [],
+            customRole: user.customRole ? user.customRole.toString() : "",
+            menuPermissions: [],
           };
+
+          // Note: menuPermissions will be loaded in the jwt callback
+          // to keep the authorize function fast
         } catch (error) {
           console.error("Auth error:", error);
           throw error;
@@ -106,13 +140,86 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.school_id = user.school_id;
         token.teacher_id = user.teacher_id;
         token.role = user.role;
         token.name = user.name;
+        token.plan = user.plan;
+        token.subscriptionStatus = user.subscriptionStatus;
+        token.allowedModules = user.allowedModules;
+        token.customRole = user.customRole || "";
+        token.menuPermissions = [];
+
+        // Load menu permissions from custom role
+        if (user.customRole) {
+          try {
+            await connectDB();
+            const role = await Role.findById(user.customRole).lean();
+            if (role && role.isActive) {
+              token.menuPermissions = (role.permissions || []).map((p) => ({
+                menu: p.menu,
+                view: p.view,
+                add: p.add,
+                edit: p.edit,
+                delete: p.delete,
+              }));
+            }
+          } catch (e) {
+            console.error("Error loading role permissions:", e);
+          }
+        }
+      }
+      // Re-fetch plan on session update (e.g. after subscription change)
+      if (trigger === "update" && token.school_id) {
+        try {
+          await connectDB();
+          const school = await School.findById(token.school_id);
+          if (school) {
+            token.plan = school.plan;
+            let subStatus = school.subscriptionStatus;
+            if (
+              subStatus === "trial" &&
+              school.trialEndsAt &&
+              new Date(school.trialEndsAt) < new Date()
+            ) {
+              subStatus = "expired";
+              await School.findByIdAndUpdate(school._id, {
+                subscriptionStatus: "expired",
+              });
+            }
+            token.subscriptionStatus = subStatus;
+          }
+          const userDoc = await User.findById(token.id);
+          if (userDoc) {
+            token.allowedModules = userDoc.allowedModules || [];
+            token.customRole = userDoc.customRole
+              ? userDoc.customRole.toString()
+              : "";
+
+            // Reload menu permissions from custom role
+            if (userDoc.customRole) {
+              const role = await Role.findById(userDoc.customRole).lean();
+              if (role && role.isActive) {
+                token.menuPermissions = (role.permissions || []).map((p) => ({
+                  menu: p.menu,
+                  view: p.view,
+                  add: p.add,
+                  edit: p.edit,
+                  delete: p.delete,
+                }));
+              } else {
+                token.menuPermissions = [];
+              }
+            } else {
+              token.menuPermissions = [];
+            }
+          }
+        } catch (e) {
+          console.error("Session update error:", e);
+        }
       }
       return token;
     },
@@ -135,6 +242,13 @@ export const authOptions: NextAuthOptions = {
         session.user.teacher_id = token.teacher_id as string;
         session.user.role = token.role as string;
         session.user.name = token.name as string;
+        session.user.plan = (token.plan as string) || "starter";
+        session.user.subscriptionStatus =
+          (token.subscriptionStatus as string) || "trial";
+        session.user.allowedModules = (token.allowedModules as string[]) || [];
+        session.user.customRole = (token.customRole as string) || "";
+        session.user.menuPermissions =
+          (token.menuPermissions as MenuPermissionData[]) || [];
       }
       return session;
     },
@@ -174,6 +288,11 @@ declare module "next-auth" {
       name: string;
       email: string;
       role: string;
+      plan: string;
+      subscriptionStatus: string;
+      allowedModules: string[];
+      customRole: string;
+      menuPermissions: MenuPermissionData[];
     };
   }
 
@@ -184,6 +303,11 @@ declare module "next-auth" {
     name: string;
     email: string;
     role: string;
+    plan: string;
+    subscriptionStatus: string;
+    allowedModules: string[];
+    customRole: string;
+    menuPermissions: MenuPermissionData[];
   }
 }
 
@@ -194,5 +318,10 @@ declare module "next-auth/jwt" {
     teacher_id: string;
     role: string;
     name: string;
+    plan: string;
+    subscriptionStatus: string;
+    allowedModules: string[];
+    customRole: string;
+    menuPermissions: MenuPermissionData[];
   }
 }

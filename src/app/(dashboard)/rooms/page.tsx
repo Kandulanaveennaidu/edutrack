@@ -29,7 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import {
   Building2,
   Calendar,
@@ -40,6 +40,7 @@ import {
   MapPin,
   Monitor,
 } from "lucide-react";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface Room {
   room_id: string;
@@ -68,7 +69,8 @@ interface Booking {
 
 export default function RoomBookingPage() {
   const { data: session } = useSession();
-  const { toast } = useToast();
+
+  const { canAdd, canDelete } = usePermissions("rooms");
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,15 +118,11 @@ export default function RoomBookingPage() {
         setBookings(bd.data || []);
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to load room data",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to load room data");
     } finally {
       setLoading(false);
     }
-  }, [selectedDate, toast]);
+  }, [selectedDate]);
 
   useEffect(() => {
     fetchData();
@@ -132,11 +130,7 @@ export default function RoomBookingPage() {
 
   const handleBookRoom = async () => {
     if (!bookingForm.room_name || !bookingForm.date) {
-      toast({
-        title: "Error",
-        description: "Please fill required fields",
-        variant: "destructive",
-      });
+      showError("Error", "Please fill required fields");
       return;
     }
     setSubmitting(true);
@@ -148,7 +142,7 @@ export default function RoomBookingPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({ title: "Success", description: "Room booked successfully!" });
+        showSuccess("Success", "Room booked successfully!");
         setBookingDialogOpen(false);
         setBookingForm({
           room_name: "",
@@ -161,18 +155,10 @@ export default function RoomBookingPage() {
         });
         fetchData();
       } else {
-        toast({
-          title: "Error",
-          description: data.error || "Booking failed",
-          variant: "destructive",
-        });
+        showError("Error", data.error || "Booking failed");
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to book room",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to book room");
     } finally {
       setSubmitting(false);
     }
@@ -180,11 +166,7 @@ export default function RoomBookingPage() {
 
   const handleAddRoom = async () => {
     if (!roomForm.room_name || !roomForm.room_type) {
-      toast({
-        title: "Error",
-        description: "Room name and type are required",
-        variant: "destructive",
-      });
+      showError("Error", "Room name and type are required");
       return;
     }
     setSubmitting(true);
@@ -196,7 +178,7 @@ export default function RoomBookingPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({ title: "Success", description: "Room added!" });
+        showSuccess("Success", "Room added!");
         setAddRoomDialogOpen(false);
         setRoomForm({
           room_name: "",
@@ -207,18 +189,10 @@ export default function RoomBookingPage() {
         });
         fetchData();
       } else {
-        toast({
-          title: "Error",
-          description: data.error || "Failed to add room",
-          variant: "destructive",
-        });
+        showError("Error", data.error || "Failed to add room");
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add room",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to add room");
     } finally {
       setSubmitting(false);
     }
@@ -232,15 +206,11 @@ export default function RoomBookingPage() {
         body: JSON.stringify({ booking_id: bookingId, action: "cancel" }),
       });
       if (res.ok) {
-        toast({ title: "Success", description: "Booking cancelled" });
+        showSuccess("Success", "Booking cancelled");
         fetchData();
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to cancel booking",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to cancel booking");
     }
   };
 
@@ -250,7 +220,7 @@ export default function RoomBookingPage() {
     );
   };
 
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin = session?.user?.role === "admin" || canAdd;
 
   const roomTypeIcons: Record<string, string> = {
     lab: "🔬",
@@ -280,7 +250,7 @@ export default function RoomBookingPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Room & Facility Booking
           </h1>
           <p className="text-gray-500 mt-1">
@@ -762,7 +732,7 @@ export default function RoomBookingPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {booking.status === "confirmed" && (
+                      {booking.status === "confirmed" && canDelete && (
                         <Button
                           variant="ghost"
                           size="sm"

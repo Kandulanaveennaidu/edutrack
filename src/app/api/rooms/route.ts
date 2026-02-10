@@ -3,7 +3,11 @@ import { connectDB } from "@/lib/db";
 import Room from "@/lib/models/Room";
 import RoomBooking from "@/lib/models/RoomBooking";
 import { requireAuth, requireRole } from "@/lib/permissions";
-import { addRoomSchema, bookRoomSchema } from "@/lib/validators";
+import {
+  addRoomSchema,
+  bookRoomSchema,
+  validationError,
+} from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -106,10 +110,7 @@ export async function POST(request: NextRequest) {
 
       const parsed = addRoomSchema.safeParse(body);
       if (!parsed.success) {
-        return NextResponse.json(
-          { error: parsed.error.issues[0].message },
-          { status: 400 },
-        );
+        return validationError(parsed.error);
       }
 
       const { room_name, room_type, capacity, floor, facilities } = parsed.data;
@@ -143,10 +144,7 @@ export async function POST(request: NextRequest) {
     // Default: book a room
     const parsed = bookRoomSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const {
@@ -235,7 +233,20 @@ export async function PUT(request: NextRequest) {
 
     await connectDB();
 
-    const newStatus = action === "cancel" ? "cancelled" : action || "cancelled";
+    const allowedActions = ["cancel", "confirm", "complete"];
+    const newStatus = allowedActions.includes(action)
+      ? action === "cancel"
+        ? "cancelled"
+        : action === "confirm"
+          ? "confirmed"
+          : "completed"
+      : null;
+    if (!newStatus) {
+      return NextResponse.json(
+        { error: `Invalid action. Allowed: ${allowedActions.join(", ")}` },
+        { status: 400 },
+      );
+    }
     const result = await RoomBooking.findOneAndUpdate(
       { _id: booking_id, school: session!.user.school_id },
       { status: newStatus },

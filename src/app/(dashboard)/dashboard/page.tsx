@@ -11,6 +11,14 @@ import {
   CalendarCheck,
   UserPlus,
   AlertTriangle,
+  CreditCard,
+  BusFront,
+  Library,
+  BedDouble,
+  PenTool,
+  BookOpen,
+  DollarSign,
+  Briefcase,
 } from "lucide-react";
 import {
   Card,
@@ -30,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
+import { usePermissions } from "@/hooks/use-permissions";
 import {
   BarChart,
   Bar,
@@ -68,6 +77,8 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
+  const attendancePerms = usePermissions("attendance");
+  const studentPerms = usePermissions("students");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -166,24 +177,28 @@ export default function DashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-500">
+          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-muted-foreground">
             Overview of attendance for {session?.user?.school_id}
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href="/attendance/mark">
-            <Button>
-              <CalendarCheck className="mr-2 h-4 w-4" />
-              Mark Attendance
-            </Button>
-          </Link>
-          <Link href="/students">
-            <Button variant="outline">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Student
-            </Button>
-          </Link>
+          {attendancePerms.canAdd && (
+            <Link href="/attendance/mark">
+              <Button>
+                <CalendarCheck className="mr-2 h-4 w-4" />
+                Mark Attendance
+              </Button>
+            </Link>
+          )}
+          {studentPerms.canAdd && (
+            <Link href="/students">
+              <Button variant="outline">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Add Student
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -194,7 +209,7 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-500">
+                  <p className="text-sm font-medium text-muted-foreground">
                     {stat.title}
                   </p>
                   <p className={`text-3xl font-bold ${stat.textColor}`}>
@@ -292,8 +307,89 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* Quick Access Modules */}
+      {session?.user?.role === "admin" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Access</CardTitle>
+            <CardDescription>Navigate to key modules</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              {[
+                {
+                  name: "Fees",
+                  href: "/fees",
+                  icon: CreditCard,
+                  color:
+                    "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+                },
+                {
+                  name: "Exams",
+                  href: "/exams",
+                  icon: PenTool,
+                  color:
+                    "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+                },
+                {
+                  name: "Salary",
+                  href: "/salary",
+                  icon: DollarSign,
+                  color:
+                    "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+                },
+                {
+                  name: "Transport",
+                  href: "/transport",
+                  icon: BusFront,
+                  color:
+                    "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
+                },
+                {
+                  name: "Library",
+                  href: "/library",
+                  icon: Library,
+                  color:
+                    "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300",
+                },
+                {
+                  name: "Hostel",
+                  href: "/hostel",
+                  icon: BedDouble,
+                  color:
+                    "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300",
+                },
+                {
+                  name: "Academics",
+                  href: "/departments",
+                  icon: BookOpen,
+                  color:
+                    "bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300",
+                },
+                {
+                  name: "Workload",
+                  href: "/faculty-workload",
+                  icon: Briefcase,
+                  color:
+                    "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300",
+                },
+              ].map((mod) => (
+                <Link key={mod.name} href={mod.href}>
+                  <div
+                    className={`flex flex-col items-center gap-2 rounded-lg p-4 transition-all hover:scale-105 ${mod.color}`}
+                  >
+                    <mod.icon className="h-6 w-6" />
+                    <span className="text-sm font-medium">{mod.name}</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Low Attendance Alert */}
-      <Card className="border-amber-200 bg-amber-50">
+      <Card className="border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
         <CardHeader>
           <div className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-600" />

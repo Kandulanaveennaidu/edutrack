@@ -15,12 +15,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { toast } = useToast();
   const token = searchParams.get("token");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,20 +30,31 @@ function ResetPasswordForm() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Passwords do not match",
-      });
+      showError(
+        "Passwords Don't Match",
+        "Please make sure both passwords are identical.",
+      );
       return;
     }
 
     if (password.length < 8) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Password must be at least 8 characters",
-      });
+      showError(
+        "Password Too Short",
+        "Password must be at least 8 characters long.",
+      );
+      return;
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      showError(
+        "Weak Password",
+        "Password must contain at least one uppercase letter.",
+      );
+      return;
+    }
+
+    if (!/[0-9]/.test(password)) {
+      showError("Weak Password", "Password must contain at least one number.");
       return;
     }
 
@@ -60,25 +70,13 @@ function ResetPasswordForm() {
       const data = await res.json();
 
       if (res.ok) {
-        toast({
-          variant: "success",
-          title: "Password Reset",
-          description: data.message,
-        });
+        showSuccess("Password Reset", data.message);
         setTimeout(() => router.push("/login"), 2000);
       } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Something went wrong",
-        });
+        showError("Error", data.error || "Something went wrong");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An unexpected error occurred.",
-      });
+      showError("Error", "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
@@ -157,11 +155,20 @@ export default function ResetPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md">
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
+        </div>
         <div className="mb-8 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
             <GraduationCap className="h-10 w-10 text-white" />
           </div>
-          <h1 className="mt-4 text-3xl font-bold text-slate-900">EduTrack</h1>
+          <h1 className="mt-4 text-3xl font-bold text-foreground">EduTrack</h1>
         </div>
 
         <Suspense fallback={<div className="text-center">Loading...</div>}>

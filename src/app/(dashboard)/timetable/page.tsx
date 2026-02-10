@@ -21,8 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { Clock, Plus, Trash2, BookOpen } from "lucide-react";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface Period {
   timetable_id: string;
@@ -73,8 +74,9 @@ const SUBJECT_COLORS: Record<string, string> = {
 };
 
 export default function TimetablePage() {
-  const { data: session } = useSession();
-  const { toast } = useToast();
+  useSession();
+
+  const { canAdd, canEdit, canDelete } = usePermissions("timetable");
   const [timetable, setTimetable] = useState<Period[]>([]);
   const [classes, setClasses] = useState<string[]>([]);
   const [selectedClass, setSelectedClass] = useState("");
@@ -111,15 +113,11 @@ export default function TimetablePage() {
         }
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to load timetable",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to load timetable");
     } finally {
       setLoading(false);
     }
-  }, [selectedClass, toast]);
+  }, [selectedClass]);
 
   useEffect(() => {
     fetchTimetable();
@@ -127,11 +125,7 @@ export default function TimetablePage() {
 
   const handleSave = async () => {
     if (!form.class_name || !form.day || !form.subject) {
-      toast({
-        title: "Error",
-        description: "Class, day, and subject required",
-        variant: "destructive",
-      });
+      showError("Error", "Class, day, and subject required");
       return;
     }
     setSubmitting(true);
@@ -148,48 +142,37 @@ export default function TimetablePage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast({
-          title: "Success",
-          description: editingPeriod ? "Period updated" : "Period added",
-        });
+        showSuccess(
+          "Success",
+          editingPeriod ? "Period updated" : "Period added",
+        );
         setDialogOpen(false);
         setEditingPeriod(null);
         resetForm();
         fetchTimetable();
       } else {
-        toast({
-          title: "Error",
-          description: data.error,
-          variant: "destructive",
-        });
+        showError("Error", data.error);
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to save period",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to save period");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this period?")) return;
+    const confirmed = await confirmDelete("period");
+    if (!confirmed) return;
     try {
       const res = await fetch(`/api/timetable?id=${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        toast({ title: "Success", description: "Period deleted" });
+        showSuccess("Success", "Period deleted");
         fetchTimetable();
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to delete period",
-        variant: "destructive",
-      });
+      showError("Error", "Failed to delete period");
     }
   };
 
@@ -235,8 +218,6 @@ export default function TimetablePage() {
     );
   };
 
-  const isAdmin = session?.user?.role === "admin";
-
   if (loading && !timetable.length) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -250,7 +231,7 @@ export default function TimetablePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Timetable Management
           </h1>
           <p className="text-gray-500 mt-1">View & manage class schedules</p>
@@ -268,7 +249,7 @@ export default function TimetablePage() {
               ))}
             </SelectContent>
           </Select>
-          {isAdmin && (
+          {canAdd && (
             <Dialog
               open={dialogOpen}
               onOpenChange={(open) => {
@@ -507,8 +488,8 @@ export default function TimetablePage() {
                         <td key={day} className="border p-1 min-w-[100px]">
                           {period ? (
                             <div
-                              className={`rounded-lg p-2 border text-center cursor-pointer transition-all hover:shadow-sm ${getSubjectColor(period.subject)}`}
-                              onClick={() => isAdmin && openEdit(period)}
+                              className={`relative group rounded-lg p-2 border text-center cursor-pointer transition-all hover:shadow-sm ${getSubjectColor(period.subject)}`}
+                              onClick={() => canEdit && openEdit(period)}
                             >
                               <p className="font-semibold text-xs">
                                 {period.subject}
@@ -523,23 +504,23 @@ export default function TimetablePage() {
                                   {period.room}
                                 </p>
                               )}
-                              {isAdmin && (
+                              {canDelete && (
                                 <button
-                                  className="mt-1 opacity-0 hover:opacity-100 transition-opacity"
+                                  className="absolute top-0.5 right-0.5 text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleDelete(period.timetable_id);
                                   }}
                                 >
-                                  <Trash2 className="h-3 w-3 text-red-500" />
+                                  <Trash2 className="h-3 w-3" />
                                 </button>
                               )}
                             </div>
                           ) : (
                             <div
-                              className={`rounded-lg p-2 text-center text-xs text-gray-300 ${isAdmin ? "cursor-pointer hover:bg-gray-100 hover:text-gray-500" : ""}`}
+                              className={`rounded-lg p-2 text-center text-xs text-gray-300 ${canAdd ? "cursor-pointer hover:bg-gray-100 hover:text-gray-500" : ""}`}
                               onClick={() => {
-                                if (isAdmin) {
+                                if (canAdd) {
                                   setForm({
                                     ...form,
                                     class_name: selectedClass,
@@ -552,7 +533,7 @@ export default function TimetablePage() {
                                 }
                               }}
                             >
-                              {isAdmin ? "+ Add" : "--"}
+                              {canAdd ? "+ Add" : "--"}
                             </div>
                           )}
                         </td>

@@ -3,7 +3,16 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { Menu, Bell, LogOut, User } from "lucide-react";
+import {
+  Menu,
+  Bell,
+  LogOut,
+  User,
+  Sun,
+  Moon,
+  Monitor,
+  Home,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "@/components/theme-provider";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -21,6 +31,7 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const { data: session, status } = useSession();
   const [unreadCount, setUnreadCount] = useState(0);
+  const { setTheme, resolvedTheme } = useTheme();
 
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -42,7 +53,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   }, [status, fetchUnreadCount]);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background px-4 lg:px-6">
       {/* Left side */}
       <div className="flex items-center space-x-4">
         <Button
@@ -54,10 +65,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Menu className="h-5 w-5" />
         </Button>
         <div className="hidden lg:block">
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-foreground">
             Welcome back, {session?.user?.name?.split(" ")[0] || "User"}
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               year: "numeric",
@@ -70,6 +81,37 @@ export function Header({ onMenuClick }: HeaderProps) {
 
       {/* Right side */}
       <div className="flex items-center space-x-2">
+        {/* Home Link */}
+        <Link href="/">
+          <Button variant="ghost" size="icon" title="Back to Home">
+            <Home className="h-5 w-5" />
+          </Button>
+        </Link>
+
+        {/* Theme Toggle */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              {resolvedTheme === "dark" ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setTheme("light")}>
+              <Sun className="mr-2 h-4 w-4" /> Light
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")}>
+              <Moon className="mr-2 h-4 w-4" /> Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")}>
+              <Monitor className="mr-2 h-4 w-4" /> System
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {/* Notifications */}
         <Link href="/notifications">
           <Button variant="ghost" size="icon" className="relative">

@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/db";
 import Setting from "@/lib/models/Setting";
 import School from "@/lib/models/School";
 import { requireAuth, requireRole } from "@/lib/permissions";
-import { settingsSchema } from "@/lib/validators";
+import { settingsSchema, validationError } from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -57,10 +57,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const parsed = settingsSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { settings } = parsed.data;

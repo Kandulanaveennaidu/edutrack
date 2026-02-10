@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Student from "@/lib/models/Student";
-import { requireAuth, requireRole } from "@/lib/permissions";
-import { studentSchema } from "@/lib/validators";
+import { requireAuth } from "@/lib/permissions";
+import { studentSchema, validationError } from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
-import { formatDateForStorage } from "@/lib/utils";
+import { formatDateForStorage, escapeRegex } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,10 +30,11 @@ export async function GET(request: NextRequest) {
     };
     if (class_name) query.class_name = class_name;
     if (search) {
+      const escaped = escapeRegex(search);
       query.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { roll_number: { $regex: search, $options: "i" } },
-        { parent_name: { $regex: search, $options: "i" } },
+        { name: { $regex: escaped, $options: "i" } },
+        { roll_number: { $regex: escaped, $options: "i" } },
+        { parent_name: { $regex: escaped, $options: "i" } },
       ];
     }
 
@@ -80,10 +81,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = studentSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const {

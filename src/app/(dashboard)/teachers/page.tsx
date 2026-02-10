@@ -32,8 +32,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface Teacher {
   teacher_id: string;
@@ -60,8 +61,7 @@ const emptyForm = {
 };
 
 export default function TeachersPage() {
-  const { data: session } = useSession();
-  const { toast } = useToast();
+  useSession();
   const [loading, setLoading] = useState(true);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [search, setSearch] = useState("");
@@ -127,11 +127,7 @@ export default function TeachersPage() {
           }),
         });
         if (!res.ok) throw new Error("Failed");
-        toast({
-          variant: "success",
-          title: "Updated",
-          description: "Teacher updated successfully",
-        });
+        showSuccess("Updated", "Teacher updated successfully");
       } else {
         const res = await fetch("/api/teachers", {
           method: "POST",
@@ -142,46 +138,33 @@ export default function TeachersPage() {
           const err = await res.json();
           throw new Error(err.error || "Failed");
         }
-        toast({
-          variant: "success",
-          title: "Added",
-          description: "Teacher added successfully",
-        });
+        showSuccess("Added", "Teacher added successfully");
       }
       setShowDialog(false);
       fetchTeachers();
     } catch (err) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description:
-          err instanceof Error ? err.message : "Failed to save teacher",
-      });
+      showError(
+        "Error",
+        err instanceof Error ? err.message : "Failed to save teacher",
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (teacherId: string) => {
-    if (!confirm("Are you sure you want to remove this teacher?")) return;
+    const confirmed = await confirmDelete("this teacher");
+    if (!confirmed) return;
     setDeleting(teacherId);
     try {
       const res = await fetch(`/api/teachers?teacher_id=${teacherId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Failed");
-      toast({
-        variant: "success",
-        title: "Removed",
-        description: "Teacher removed successfully",
-      });
+      showSuccess("Removed", "Teacher removed successfully");
       fetchTeachers();
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to remove teacher",
-      });
+      showError("Error", "Failed to remove teacher");
     } finally {
       setDeleting(null);
     }
@@ -198,29 +181,24 @@ export default function TeachersPage() {
           status: newStatus,
         }),
       });
-      toast({
-        variant: "success",
-        title: "Updated",
-        description: `Teacher ${newStatus === "active" ? "activated" : "deactivated"}`,
-      });
+      showSuccess(
+        "Updated",
+        `Teacher ${newStatus === "active" ? "activated" : "deactivated"}`,
+      );
       fetchTeachers();
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update status",
-      });
+      showError("Error", "Failed to update status");
     }
   };
 
   const filtered = teachers.filter(
     (t) =>
-      t.name.toLowerCase().includes(search.toLowerCase()) ||
-      t.email.toLowerCase().includes(search.toLowerCase()) ||
-      t.subject.toLowerCase().includes(search.toLowerCase()),
+      (t.name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (t.email || "").toLowerCase().includes(search.toLowerCase()) ||
+      (t.subject || "").toLowerCase().includes(search.toLowerCase()),
   );
 
-  const isAdmin = session?.user?.role === "admin";
+  const { canAdd, canEdit, canDelete } = usePermissions("teachers");
 
   if (loading) {
     return (
@@ -234,12 +212,12 @@ export default function TeachersPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Teachers</h1>
+          <h1 className="text-2xl font-bold text-foreground">Teachers</h1>
           <p className="text-slate-500">
             {teachers.length} teacher(s) registered
           </p>
         </div>
-        {isAdmin && (
+        {canAdd && (
           <Button onClick={openAddDialog}>
             <Plus className="mr-2 h-4 w-4" />
             Add Teacher
@@ -330,7 +308,7 @@ export default function TeachersPage() {
                     <TableHead>Subject</TableHead>
                     <TableHead>Classes</TableHead>
                     <TableHead>Status</TableHead>
-                    {isAdmin && <TableHead>Actions</TableHead>}
+                    {(canEdit || canDelete) && <TableHead>Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -366,33 +344,37 @@ export default function TeachersPage() {
                               : "secondary"
                           }
                           className="cursor-pointer"
-                          onClick={() => isAdmin && handleToggleStatus(teacher)}
+                          onClick={() => canEdit && handleToggleStatus(teacher)}
                         >
                           {teacher.status || "active"}
                         </Badge>
                       </TableCell>
-                      {isAdmin && (
+                      {(canEdit || canDelete) && (
                         <TableCell>
                           <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditDialog(teacher)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(teacher.teacher_id)}
-                              disabled={deleting === teacher.teacher_id}
-                            >
-                              {deleting === teacher.teacher_id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              )}
-                            </Button>
+                            {canEdit && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openEditDialog(teacher)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {canDelete && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDelete(teacher.teacher_id)}
+                                disabled={deleting === teacher.teacher_id}
+                              >
+                                {deleting === teacher.teacher_id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4 text-red-500" />
+                                )}
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       )}

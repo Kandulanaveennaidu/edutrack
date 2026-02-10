@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError, showInfo } from "@/lib/alerts";
 
 interface QRData {
   token: string;
@@ -41,7 +41,7 @@ interface QRData {
 
 export default function QRAttendancePage() {
   const { data: session } = useSession();
-  const { toast } = useToast();
+
   const [loading, setLoading] = useState(false);
   const [qrData, setQrData] = useState<QRData | null>(null);
   const [selectedClass, setSelectedClass] = useState("");
@@ -101,11 +101,7 @@ export default function QRAttendancePage() {
 
   const generateQR = useCallback(async () => {
     if (!selectedClass) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please select a class",
-      });
+      showError("Error", "Please select a class");
       return;
     }
     setLoading(true);
@@ -122,24 +118,16 @@ export default function QRAttendancePage() {
       if (res.ok) {
         const result = await res.json();
         setQrData(result.data);
-        toast({
-          variant: "success",
-          title: "QR Generated",
-          description: `Valid for ${duration} minutes`,
-        });
+        showSuccess("QR Generated", `Valid for ${duration} minutes`);
       } else {
         throw new Error("Failed");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to generate QR code",
-      });
+      showError("Error", "Failed to generate QR code");
     } finally {
       setLoading(false);
     }
-  }, [selectedClass, duration, toast]);
+  }, [selectedClass, duration]);
 
   const handleScan = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,14 +163,14 @@ export default function QRAttendancePage() {
   const copyToken = () => {
     if (qrData?.token) {
       navigator.clipboard.writeText(qrData.token);
-      toast({ title: "Copied", description: "Token copied to clipboard" });
+      showInfo("Copied", "Token copied to clipboard");
     }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1 className="text-2xl font-bold text-foreground">
           QR Code Attendance
         </h1>
         <p className="text-slate-500">

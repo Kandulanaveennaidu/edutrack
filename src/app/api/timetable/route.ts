@@ -2,9 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Timetable from "@/lib/models/Timetable";
 import { requireAuth } from "@/lib/permissions";
-import { timetableSchema } from "@/lib/validators";
+import {
+  timetableSchema,
+  updateTimetableSchema,
+  validationError,
+} from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
+import { escapeRegex } from "@/lib/utils";
 
 const DAY_ORDER = [
   "Monday",
@@ -31,7 +36,8 @@ export async function GET(request: NextRequest) {
     const query: Record<string, unknown> = { school: session!.user.school_id };
     if (className) query.class_name = className;
     if (day) query.day = day;
-    if (teacher) query.teacher_name = { $regex: teacher, $options: "i" };
+    if (teacher)
+      query.teacher_name = { $regex: escapeRegex(teacher), $options: "i" };
 
     const entries = await Timetable.find(query)
       .sort({ day: 1, period: 1 })
@@ -83,10 +89,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = timetableSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const {
@@ -119,7 +122,10 @@ export async function POST(request: NextRequest) {
     if (teacher_name) {
       const teacherConflict = await Timetable.findOne({
         school: session!.user.school_id,
-        teacher_name: { $regex: `^${teacher_name}$`, $options: "i" },
+        teacher_name: {
+          $regex: `^${escapeRegex(teacher_name)}$`,
+          $options: "i",
+        },
         day,
         period: Number(period),
       });
@@ -175,15 +181,13 @@ export async function PUT(request: NextRequest) {
     if (error) return error;
 
     const body = await request.json();
-    const { timetable_id, subject, teacher_name, start_time, end_time, room } =
-      body;
-
-    if (!timetable_id) {
-      return NextResponse.json(
-        { error: "timetable_id is required" },
-        { status: 400 },
-      );
+    const parsed = updateTimetableSchema.safeParse(body);
+    if (!parsed.success) {
+      return validationError(parsed.error);
     }
+
+    const { timetable_id, subject, teacher_name, start_time, end_time, room } =
+      parsed.data;
 
     await connectDB();
 

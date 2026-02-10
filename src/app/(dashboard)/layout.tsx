@@ -17,6 +17,12 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     redirect("/login");
   }
 
+  // Redirect users with expired subscriptions to the plans page
+  const subStatus = session.user?.subscriptionStatus;
+  if (subStatus === "expired" || subStatus === "cancelled") {
+    redirect("/plans");
+  }
+
   return <DashboardShell>{children}</DashboardShell>;
 }
 

@@ -1,17 +1,14 @@
 import { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
+import { requireAuth } from "@/lib/permissions";
 import { logError } from "@/lib/logger";
 import Notification from "@/lib/models/Notification";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
+  const { error, session } = await requireAuth("notifications:read");
+  if (error) return error;
 
   const encoder = new TextEncoder();
   let intervalId: ReturnType<typeof setInterval> | null = null;

@@ -30,8 +30,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface Notification {
   notification_id: string;
@@ -54,8 +55,8 @@ const typeIcons: Record<string, React.ReactNode> = {
 };
 
 export default function NotificationsPage() {
-  const { data: session } = useSession();
-  const { toast } = useToast();
+  useSession();
+  const { canAdd } = usePermissions("notifications");
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -98,18 +99,10 @@ export default function NotificationsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "mark_all_read" }),
       });
-      toast({
-        variant: "success",
-        title: "Done",
-        description: "All notifications marked as read",
-      });
+      showSuccess("Done", "All notifications marked as read");
       fetchNotifications();
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to mark notifications as read",
-      });
+      showError("Error", "Failed to mark notifications as read");
     }
   };
 
@@ -124,11 +117,7 @@ export default function NotificationsPage() {
       });
 
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Sent",
-          description: "Notification sent successfully",
-        });
+        showSuccess("Sent", "Notification sent successfully");
         setShowDialog(false);
         setFormData({
           title: "",
@@ -141,11 +130,7 @@ export default function NotificationsPage() {
         throw new Error("Failed");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to send notification",
-      });
+      showError("Error", "Failed to send notification");
     } finally {
       setSending(false);
     }
@@ -178,13 +163,11 @@ export default function NotificationsPage() {
     );
   }
 
-  const isAdmin = session?.user?.role === "admin";
-
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Notifications</h1>
+          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
           <p className="text-slate-500">
             {unreadCount > 0
               ? `${unreadCount} unread notification(s)`
@@ -198,7 +181,7 @@ export default function NotificationsPage() {
               Mark All Read
             </Button>
           )}
-          {isAdmin && (
+          {canAdd && (
             <Button onClick={() => setShowDialog(true)}>
               <Send className="mr-2 h-4 w-4" />
               Send Notification
@@ -235,7 +218,7 @@ export default function NotificationsPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-slate-900">
+                      <p className="font-medium text-foreground">
                         {notif.title}
                       </p>
                       {notif.status === "unread" && (

@@ -3,21 +3,50 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import { requireAuth, requireRole } from "@/lib/permissions";
-import { teacherSchema, updateTeacherSchema } from "@/lib/validators";
+import {
+  teacherSchema,
+  updateTeacherSchema,
+  validationError,
+} from "@/lib/validators";
 import { audit, buildChanges } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const { error, session } = await requireAuth("teachers:read");
     if (error) return error;
 
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(searchParams.get("limit") || "50")),
+    );
+    const search = searchParams.get("search");
+
     await connectDB();
 
-    const teachers = await User.find({
+    const filter: Record<string, unknown> = {
       school: session!.user.school_id,
       role: "teacher",
-    }).lean();
+    };
+    if (search) {
+      const { escapeRegex } = await import("@/lib/utils");
+      const safe = escapeRegex(search);
+      filter.$or = [
+        { name: { $regex: safe, $options: "i" } },
+        { email: { $regex: safe, $options: "i" } },
+      ];
+    }
+
+    const [teachers, total] = await Promise.all([
+      User.find(filter)
+        .sort({ name: 1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      User.countDocuments(filter),
+    ]);
 
     const data = teachers.map((t) => ({
       teacher_id: t._id.toString(),
@@ -35,7 +64,13 @@ export async function GET() {
       status: t.isActive ? "active" : "inactive",
     }));
 
-    return NextResponse.json({ data });
+    return NextResponse.json({
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     logError("GET", "/api/teachers", error);
     return NextResponse.json(
@@ -53,10 +88,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = teacherSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { name, email, password, phone, subject, classes, salary_per_day } =
@@ -124,10 +156,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const parsed = updateTeacherSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const {
@@ -238,11 +267,15 @@ export async function DELETE(request: NextRequest) {
 
     await connectDB();
 
-    const result = await User.findOneAndDelete({
-      _id: teacherId,
-      school: session!.user.school_id,
-      role: "teacher",
-    });
+    const result = await User.findOneAndUpdate(
+      {
+        _id: teacherId,
+        school: session!.user.school_id,
+        role: "teacher",
+      },
+      { $set: { isActive: false } },
+      { new: true },
+    );
 
     if (!result) {
       return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
@@ -256,10 +289,10 @@ export async function DELETE(request: NextRequest) {
       userId: session!.user.id || "",
       userName: session!.user.name,
       userRole: session!.user.role,
-      metadata: { deletedTeacher: result.name },
+      metadata: { deactivatedTeacher: result.name },
     });
 
-    return NextResponse.json({ message: "Teacher removed" });
+    return NextResponse.json({ message: "Teacher deactivated" });
   } catch (error) {
     logError("DELETE", "/api/teachers", error);
     return NextResponse.json(

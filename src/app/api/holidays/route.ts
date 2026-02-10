@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Holiday from "@/lib/models/Holiday";
 import { requireAuth, requireRole } from "@/lib/permissions";
-import { holidaySchema } from "@/lib/validators";
+import {
+  holidaySchema,
+  updateHolidaySchema,
+  validationError,
+} from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -66,10 +70,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = holidaySchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { date, name, type, description } = parsed.data;
@@ -125,14 +126,12 @@ export async function PUT(request: NextRequest) {
     if (error) return error;
 
     const body = await request.json();
-    const { holiday_id, name, description, holiday_type } = body;
-
-    if (!holiday_id) {
-      return NextResponse.json(
-        { error: "holiday_id is required" },
-        { status: 400 },
-      );
+    const parsed = updateHolidaySchema.safeParse(body);
+    if (!parsed.success) {
+      return validationError(parsed.error);
     }
+
+    const { holiday_id, name, description, holiday_type } = parsed.data;
 
     await connectDB();
 

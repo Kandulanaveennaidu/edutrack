@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePermissions } from "@/hooks/use-permissions";
 import {
   Search,
   Plus,
@@ -45,7 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { StudentForm } from "@/components/students/student-form";
 import Link from "next/link";
 
@@ -64,7 +65,7 @@ interface Student {
 }
 
 export default function StudentsPage() {
-  const { toast } = useToast();
+  const { canAdd, canEdit, canDelete } = usePermissions("students");
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState("");
@@ -106,11 +107,7 @@ export default function StudentsPage() {
         setTotalPages(result.pagination?.totalPages || 1);
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch students",
-      });
+      showError("Error", "Failed to fetch students");
     } finally {
       setLoading(false);
     }
@@ -147,21 +144,13 @@ export default function StudentsPage() {
         },
       );
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Success",
-          description: "Student deleted successfully",
-        });
+        showSuccess("Success", "Student deleted successfully");
         fetchStudents();
       } else {
         throw new Error("Failed to delete");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete student",
-      });
+      showError("Error", "Failed to delete student");
     } finally {
       setSaving(false);
       setDeleteDialogOpen(false);
@@ -184,13 +173,12 @@ export default function StudentsPage() {
       });
 
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Success",
-          description: editingStudent
+        showSuccess(
+          "Success",
+          editingStudent
             ? "Student updated successfully"
             : "Student added successfully",
-        });
+        );
         setDialogOpen(false);
         fetchStudents();
       } else {
@@ -198,12 +186,10 @@ export default function StudentsPage() {
         throw new Error(result.error || "Failed to save");
       }
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to save student",
-      });
+      showError(
+        "Error",
+        error instanceof Error ? error.message : "Failed to save student",
+      );
     } finally {
       setSaving(false);
     }
@@ -238,24 +224,28 @@ export default function StudentsPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Students</h1>
+          <h1 className="text-2xl font-bold text-foreground">Students</h1>
           <p className="text-slate-500">Manage student records</p>
         </div>
         <div className="flex gap-2">
-          <Link href="/students/import">
-            <Button variant="outline">
-              <Upload className="mr-2 h-4 w-4" />
-              Import
-            </Button>
-          </Link>
+          {canAdd && (
+            <Link href="/students/import">
+              <Button variant="outline">
+                <Upload className="mr-2 h-4 w-4" />
+                Import
+              </Button>
+            </Link>
+          )}
           <Button variant="outline" onClick={exportToPDF}>
             <Download className="mr-2 h-4 w-4" />
             Export PDF
           </Button>
-          <Button onClick={handleAddStudent}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Student
-          </Button>
+          {canAdd && (
+            <Button onClick={handleAddStudent}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Student
+            </Button>
+          )}
         </div>
       </div>
 
@@ -326,7 +316,9 @@ export default function StudentsPage() {
                     <TableHead>Class</TableHead>
                     <TableHead>Parent Phone</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    {(canEdit || canDelete) && (
+                      <TableHead className="text-right">Actions</TableHead>
+                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -349,24 +341,30 @@ export default function StudentsPage() {
                           {student.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEditStudent(student)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteClick(student)}
-                          >
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
+                      {(canEdit || canDelete) && (
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            {canEdit && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleEditStudent(student)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                            )}
+                            {canDelete && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteClick(student)}
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
+                              </Button>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>

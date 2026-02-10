@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
@@ -34,7 +34,7 @@ interface ParsedStudent {
 
 export default function ImportStudentsPage() {
   const router = useRouter();
-  const { toast } = useToast();
+
   const [loading, setLoading] = useState(false);
   const [importing, setImporting] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedStudent[]>([]);
@@ -142,11 +142,7 @@ export default function ImportStudentsPage() {
           setParsedData(data);
           setErrors(parseErrors);
         } else {
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Please upload a CSV or Excel file",
-          });
+          showError("Error", "Please upload a CSV or Excel file");
         }
 
         setLoading(false);
@@ -159,11 +155,7 @@ export default function ImportStudentsPage() {
       }
     } catch {
       setLoading(false);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to parse file",
-      });
+      showError("Error", "Failed to parse file");
     }
   };
 
@@ -193,11 +185,17 @@ export default function ImportStudentsPage() {
     }
 
     setImporting(false);
-    toast({
-      variant: successCount > 0 ? "success" : "destructive",
-      title: "Import Complete",
-      description: `Successfully imported ${successCount} students. ${failCount} failed.`,
-    });
+    if (successCount > 0) {
+      showSuccess(
+        "Import Complete",
+        `Successfully imported ${successCount} students. ${failCount} failed.`,
+      );
+    } else {
+      showError(
+        "Import Complete",
+        `Successfully imported ${successCount} students. ${failCount} failed.`,
+      );
+    }
 
     if (successCount > 0) {
       router.push("/students");
@@ -224,7 +222,9 @@ export default function ImportStudentsPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Import Students</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            Import Students
+          </h1>
           <p className="text-slate-500">
             Bulk import students from CSV or Excel
           </p>

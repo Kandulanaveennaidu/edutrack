@@ -1,0 +1,19 @@
+[Unit]
+Description=EduTrack School Management System
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/edutrack
+EnvironmentFile=/home/ubuntu/edutrack/.env.local
+ExecStart=/usr/bin/node /home/ubuntu/edutrack/node_modules/.bin/next start -p 3000
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=edutrack
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

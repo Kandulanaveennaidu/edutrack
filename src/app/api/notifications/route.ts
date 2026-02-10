@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Notification from "@/lib/models/Notification";
 import { requireAuth, requireRole } from "@/lib/permissions";
-import { notificationSchema } from "@/lib/validators";
+import { notificationSchema, validationError } from "@/lib/validators";
 import { logError } from "@/lib/logger";
+import { audit } from "@/lib/audit";
 
 export async function GET() {
   try {
@@ -51,7 +52,15 @@ export async function GET() {
     });
   } catch (error) {
     logError("GET", "/api/notifications", error);
-    return NextResponse.json({ success: true, data: [], unread_count: 0 });
+    return NextResponse.json(
+      {
+        success: false,
+        data: [],
+        unread_count: 0,
+        error: "Failed to fetch notifications",
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -63,23 +72,31 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = notificationSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { type, title, message, target_role } = parsed.data;
 
     await connectDB();
 
-    await Notification.create({
+    const notification = await Notification.create({
       school: session!.user.school_id,
       type: type || "announcement",
       title,
       message,
       target_role: target_role || "all",
       status: "unread",
+    });
+
+    await audit({
+      action: "create",
+      entity: "notification",
+      entityId: notification._id.toString(),
+      schoolId: session!.user.school_id,
+      userId: session!.user.id || "",
+      userName: session!.user.name,
+      userRole: session!.user.role,
+      metadata: { title, target_role: target_role || "all" },
     });
 
     return NextResponse.json({
@@ -97,7 +114,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { error, session } = await requireAuth("notifications:read");
+    const { error, session } = await requireAuth("notifications:write");
     if (error) return error;
 
     const body = await request.json();
@@ -109,7 +126,7 @@ export async function PUT(request: NextRequest) {
     if (action === "mark_all_read") {
       await Notification.updateMany(
         { school: session!.user.school_id, status: "unread" },
-        { $addToSet: { readBy: userId }, $set: { status: "read" } },
+        { $addToSet: { readBy: userId } },
       );
       return NextResponse.json({
         success: true,
@@ -124,9 +141,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    await Notification.findByIdAndUpdate(notification_id, {
-      $addToSet: { readBy: userId },
-    });
+    await Notification.findOneAndUpdate(
+      { _id: notification_id, school: session!.user.school_id },
+      { $addToSet: { readBy: userId } },
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {

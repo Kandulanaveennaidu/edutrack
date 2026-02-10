@@ -3,7 +3,11 @@ import { connectDB } from "@/lib/db";
 import QRToken from "@/lib/models/QRToken";
 import Attendance from "@/lib/models/Attendance";
 import { requireAuth } from "@/lib/permissions";
-import { qrGenerateSchema, qrScanSchema } from "@/lib/validators";
+import {
+  qrGenerateSchema,
+  qrScanSchema,
+  validationError,
+} from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 import crypto from "crypto";
@@ -67,10 +71,7 @@ export async function POST(request: NextRequest) {
     if (action === "generate") {
       const parsed = qrGenerateSchema.safeParse(body);
       if (!parsed.success) {
-        return NextResponse.json(
-          { error: parsed.error.issues[0].message },
-          { status: 400 },
-        );
+        return validationError(parsed.error);
       }
 
       const { class_name, duration_minutes } = parsed.data;
@@ -118,10 +119,7 @@ export async function POST(request: NextRequest) {
     } else if (action === "scan") {
       const parsed = qrScanSchema.safeParse(body);
       if (!parsed.success) {
-        return NextResponse.json(
-          { error: parsed.error.issues[0].message },
-          { status: 400 },
-        );
+        return validationError(parsed.error);
       }
 
       const { token, student_id } = parsed.data;

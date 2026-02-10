@@ -36,8 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface LeaveRequest {
   leave_id: string;
@@ -55,7 +56,7 @@ interface LeaveRequest {
 
 export default function LeavesPage() {
   const { data: session } = useSession();
-  const { toast } = useToast();
+  const { canEdit } = usePermissions("leaves");
   const [loading, setLoading] = useState(true);
   const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
   const [filter, setFilter] = useState("all");
@@ -97,11 +98,7 @@ export default function LeavesPage() {
       });
 
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Success",
-          description: "Leave request submitted successfully",
-        });
+        showSuccess("Success", "Leave request submitted successfully");
         setShowDialog(false);
         setFormData({
           student_id: "",
@@ -115,11 +112,7 @@ export default function LeavesPage() {
         throw new Error(result.error);
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to submit leave request",
-      });
+      showError("Error", "Failed to submit leave request");
     }
   };
 
@@ -136,21 +129,13 @@ export default function LeavesPage() {
       });
 
       if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Success",
-          description: `Leave request ${status}`,
-        });
+        showSuccess("Success", `Leave request ${status}`);
         fetchLeaves();
       } else {
         throw new Error("Failed");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: `Failed to ${status} leave request`,
-      });
+      showError("Error", `Failed to ${status} leave request`);
     } finally {
       setProcessing(null);
     }
@@ -177,13 +162,13 @@ export default function LeavesPage() {
     );
   }
 
-  const isAdmin = session?.user?.role === "admin";
+  const isAdmin = session?.user?.role === "admin" || canEdit;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Leave Management
           </h1>
           <p className="text-slate-500">Manage student leave requests</p>

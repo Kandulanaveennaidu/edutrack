@@ -4,7 +4,7 @@ export type AttendanceStatus = "present" | "absent" | "late" | "leave";
 export type UserRole = "admin" | "teacher" | "student" | "parent";
 export type RequestStatus = "pending" | "approved" | "rejected";
 export type EntityStatus = "active" | "inactive";
-export type PlanType = "free" | "basic" | "premium";
+export type PlanType = "starter" | "basic" | "pro" | "enterprise";
 
 export interface School {
   school_id: string;

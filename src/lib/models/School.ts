@@ -5,7 +5,10 @@ export interface ISchool extends Document {
   address: string;
   phone: string;
   email: string;
-  plan: "free" | "basic" | "premium";
+  plan: "starter" | "basic" | "pro" | "enterprise";
+  subscriptionStatus: "active" | "trial" | "expired" | "cancelled";
+  trialEndsAt: Date | null;
+  currentPeriodEnd: Date | null;
   status: "active" | "inactive";
   createdAt: Date;
   updatedAt: Date;
@@ -17,7 +20,18 @@ const SchoolSchema = new Schema<ISchool>(
     address: { type: String, default: "" },
     phone: { type: String, default: "" },
     email: { type: String, default: "" },
-    plan: { type: String, enum: ["free", "basic", "premium"], default: "free" },
+    plan: {
+      type: String,
+      enum: ["starter", "basic", "pro", "enterprise"],
+      default: "starter",
+    },
+    subscriptionStatus: {
+      type: String,
+      enum: ["active", "trial", "expired", "cancelled"],
+      default: "trial",
+    },
+    trialEndsAt: { type: Date, default: null },
+    currentPeriodEnd: { type: Date, default: null },
     status: { type: String, enum: ["active", "inactive"], default: "active" },
   },
   { timestamps: true },

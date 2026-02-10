@@ -14,10 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 
 export default function ForgotPasswordPage() {
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -37,24 +36,12 @@ export default function ForgotPasswordPage() {
 
       if (res.ok) {
         setSent(true);
-        toast({
-          variant: "success",
-          title: "Email Sent",
-          description: data.message,
-        });
+        showSuccess("Email Sent", data.message);
       } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: data.error || "Something went wrong",
-        });
+        showError("Error", data.error || "Something went wrong");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "An unexpected error occurred.",
-      });
+      showError("Error", "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
@@ -63,11 +50,20 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-md">
+        <div className="mb-4">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
+        </div>
         <div className="mb-8 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-600">
             <GraduationCap className="h-10 w-10 text-white" />
           </div>
-          <h1 className="mt-4 text-3xl font-bold text-slate-900">EduTrack</h1>
+          <h1 className="mt-4 text-3xl font-bold text-foreground">EduTrack</h1>
         </div>
 
         <Card className="shadow-lg">

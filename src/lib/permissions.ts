@@ -37,7 +37,44 @@ export type Permission =
   | "qr:read"
   | "qr:write"
   | "profile:read"
-  | "profile:write";
+  | "profile:write"
+  | "fees:read"
+  | "fees:write"
+  | "fees:manage"
+  | "exams:read"
+  | "exams:write"
+  | "exams:manage"
+  | "departments:read"
+  | "departments:write"
+  | "departments:delete"
+  | "semesters:read"
+  | "semesters:write"
+  | "subjects:read"
+  | "subjects:write"
+  | "salary:read"
+  | "salary:write"
+  | "salary:manage"
+  | "transport:read"
+  | "transport:write"
+  | "transport:manage"
+  | "library:read"
+  | "library:write"
+  | "library:manage"
+  | "hostel:read"
+  | "hostel:write"
+  | "hostel:manage"
+  | "promotion:read"
+  | "promotion:write"
+  | "backup:read"
+  | "backup:write"
+  | "academic:read"
+  | "academic:write"
+  | "upload:write"
+  | "workload:read"
+  | "workload:write"
+  | "users:read"
+  | "users:write"
+  | "users:delete";
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
@@ -74,6 +111,43 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "qr:write",
     "profile:read",
     "profile:write",
+    "fees:read",
+    "fees:write",
+    "fees:manage",
+    "exams:read",
+    "exams:write",
+    "exams:manage",
+    "departments:read",
+    "departments:write",
+    "departments:delete",
+    "semesters:read",
+    "semesters:write",
+    "subjects:read",
+    "subjects:write",
+    "salary:read",
+    "salary:write",
+    "salary:manage",
+    "transport:read",
+    "transport:write",
+    "transport:manage",
+    "library:read",
+    "library:write",
+    "library:manage",
+    "hostel:read",
+    "hostel:write",
+    "hostel:manage",
+    "promotion:read",
+    "promotion:write",
+    "backup:read",
+    "backup:write",
+    "academic:read",
+    "academic:write",
+    "upload:write",
+    "workload:read",
+    "workload:write",
+    "users:read",
+    "users:write",
+    "users:delete",
   ],
   teacher: [
     "students:read",
@@ -95,24 +169,47 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "qr:write",
     "profile:read",
     "profile:write",
+    "fees:read",
+    "exams:read",
+    "exams:write",
+    "departments:read",
+    "semesters:read",
+    "subjects:read",
+    "salary:read",
+    "library:read",
+    "library:write",
+    "academic:read",
+    "upload:write",
+    "workload:read",
   ],
   student: [
     "attendance:read",
     "leaves:read",
     "notifications:read",
+    "notifications:write",
     "holidays:read",
     "timetable:read",
     "profile:read",
     "profile:write",
+    "fees:read",
+    "exams:read",
+    "departments:read",
+    "subjects:read",
+    "library:read",
+    "academic:read",
   ],
   parent: [
     "attendance:read",
     "students:read",
     "leaves:read",
     "notifications:read",
+    "notifications:write",
     "holidays:read",
     "profile:read",
     "profile:write",
+    "fees:read",
+    "exams:read",
+    "transport:read",
   ],
 };
 

@@ -3,8 +3,12 @@ import { connectDB } from "@/lib/db";
 import LeaveRequest from "@/lib/models/LeaveRequest";
 import Notification from "@/lib/models/Notification";
 import Student from "@/lib/models/Student";
-import { requireAuth, requireRole } from "@/lib/permissions";
-import { leaveRequestSchema, leaveActionSchema } from "@/lib/validators";
+import { requireAuth } from "@/lib/permissions";
+import {
+  leaveRequestSchema,
+  leaveActionSchema,
+  validationError,
+} from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -69,17 +73,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = leaveRequestSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { student_id, from_date, to_date, reason } = parsed.data;
 
     await connectDB();
 
-    const student = await Student.findById(student_id).lean();
+    const student = await Student.findOne({
+      _id: student_id,
+      school: session!.user.school_id,
+    }).lean();
 
     const leave = await LeaveRequest.create({
       school: session!.user.school_id,
@@ -134,10 +138,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const parsed = leaveActionSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     const { leave_id, status } = parsed.data;

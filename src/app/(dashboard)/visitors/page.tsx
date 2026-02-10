@@ -37,8 +37,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface Visitor {
   visitor_id: string;
@@ -79,7 +80,7 @@ const emptyForm = {
 };
 
 export default function VisitorsPage() {
-  const { toast } = useToast();
+  const { canAdd, canEdit } = usePermissions("visitors");
   const [loading, setLoading] = useState(true);
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [stats, setStats] = useState<Stats>({
@@ -126,11 +127,10 @@ export default function VisitorsPage() {
       });
       if (res.ok) {
         const result = await res.json();
-        toast({
-          variant: "success",
-          title: formData.pre_register ? "Pre-Registered" : "Checked In",
-          description: `Badge: ${result.data.badge_number}`,
-        });
+        showSuccess(
+          formData.pre_register ? "Pre-Registered" : "Checked In",
+          `Badge: ${result.data.badge_number}`,
+        );
         setShowDialog(false);
         setFormData(emptyForm);
         fetchVisitors();
@@ -138,11 +138,7 @@ export default function VisitorsPage() {
         throw new Error("Failed");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to register visitor",
-      });
+      showError("Error", "Failed to register visitor");
     } finally {
       setSubmitting(false);
     }
@@ -159,28 +155,23 @@ export default function VisitorsPage() {
         body: JSON.stringify({ visitor_id: visitorId, action }),
       });
       if (res.ok) {
-        toast({
-          variant: "success",
-          title: "Updated",
-          description: `Visitor ${action.replace("_", " ")} successfully`,
-        });
+        showSuccess(
+          "Updated",
+          `Visitor ${action.replace("_", " ")} successfully`,
+        );
         fetchVisitors();
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update visitor",
-      });
+      showError("Error", "Failed to update visitor");
     }
   };
 
   const filtered = visitors.filter(
     (v) =>
-      v.visitor_name.toLowerCase().includes(search.toLowerCase()) ||
-      v.purpose.toLowerCase().includes(search.toLowerCase()) ||
-      v.host_name.toLowerCase().includes(search.toLowerCase()) ||
-      v.badge_number.toLowerCase().includes(search.toLowerCase()),
+      (v.visitor_name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (v.purpose || "").toLowerCase().includes(search.toLowerCase()) ||
+      (v.host_name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (v.badge_number || "").toLowerCase().includes(search.toLowerCase()),
   );
 
   const statusColors: Record<string, string> = {
@@ -202,17 +193,19 @@ export default function VisitorsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-foreground">
             Visitor Management
           </h1>
           <p className="text-slate-500">
             Track and manage all visitors to your school
           </p>
         </div>
-        <Button onClick={() => setShowDialog(true)}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Register Visitor
-        </Button>
+        {canAdd && (
+          <Button onClick={() => setShowDialog(true)}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Register Visitor
+          </Button>
+        )}
       </div>
 
       {/* Stats */}
@@ -361,7 +354,7 @@ export default function VisitorsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          {v.status === "pre_registered" && (
+                          {v.status === "pre_registered" && canEdit && (
                             <Button
                               size="sm"
                               variant="outline"
@@ -373,7 +366,7 @@ export default function VisitorsPage() {
                               In
                             </Button>
                           )}
-                          {v.status === "checked_in" && (
+                          {v.status === "checked_in" && canEdit && (
                             <Button
                               size="sm"
                               variant="outline"

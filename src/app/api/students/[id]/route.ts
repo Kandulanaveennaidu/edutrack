@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuthSession } from "@/lib/auth";
+import { requireAuth } from "@/lib/permissions";
 import { connectDB } from "@/lib/db";
 import Student from "@/lib/models/Student";
+import { updateStudentSchema, validationError } from "@/lib/validators";
+import { logError } from "@/lib/logger";
+import { createAuditLog, buildChanges } from "@/lib/audit";
 import mongoose from "mongoose";
 
 export async function GET(
@@ -9,10 +12,8 @@ export async function GET(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getAuthSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { error, session } = await requireAuth("students:read");
+    if (error) return error;
 
     const { id } = await context.params;
 
@@ -24,19 +25,13 @@ export async function GET(
     }
 
     await connectDB();
+    const schoolId = session!.user.school_id;
 
-    const student = await Student.findById(id).lean();
+    // Always scope by school - no admin bypass for multi-tenant isolation
+    const student = await Student.findOne({ _id: id, school: schoolId }).lean();
 
     if (!student) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
-    }
-
-    // Security check - ensure student belongs to the same school
-    if (
-      student.school.toString() !== session.user.school_id &&
-      session.user.role !== "admin"
-    ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json({
@@ -56,8 +51,8 @@ export async function GET(
         status: student.status,
       },
     });
-  } catch (error) {
-    console.error("Error fetching student:", error);
+  } catch (err) {
+    logError("GET", "/api/students/[id]", err);
     return NextResponse.json(
       { error: "Failed to fetch student" },
       { status: 500 },
@@ -70,10 +65,8 @@ export async function PUT(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getAuthSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { error, session } = await requireAuth("students:write");
+    if (error) return error;
 
     const { id } = await context.params;
 
@@ -85,21 +78,19 @@ export async function PUT(
     }
 
     const body = await request.json();
+    const parsed = updateStudentSchema.safeParse(body);
+    if (!parsed.success) {
+      return validationError(parsed.error);
+    }
 
     await connectDB();
+    const schoolId = session!.user.school_id;
 
-    const student = await Student.findById(id);
+    // Always scope by school for multi-tenant isolation
+    const student = await Student.findOne({ _id: id, school: schoolId });
 
     if (!student) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
-    }
-
-    // Security check
-    if (
-      student.school.toString() !== session.user.school_id &&
-      session.user.role !== "admin"
-    ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Check for duplicate roll number if changed
@@ -120,20 +111,41 @@ export async function PUT(
       }
     }
 
-    // Update fields
-    if (body.class_name) student.class_name = body.class_name;
-    if (body.roll_number) student.roll_number = body.roll_number;
-    if (body.name) student.name = body.name;
-    if (body.parent_name !== undefined) student.parent_name = body.parent_name;
-    if (body.parent_phone !== undefined)
-      student.parent_phone = body.parent_phone;
-    if (body.parent_email !== undefined)
-      student.parent_email = body.parent_email;
-    if (body.email !== undefined) student.email = body.email;
-    if (body.address !== undefined) student.address = body.address;
-    if (body.status) student.status = body.status;
+    // Capture old values for audit
+    const oldValues = student.toObject();
+
+    // Update fields from validated data
+    const data = parsed.data;
+    if (data.class_name) student.class_name = data.class_name;
+    if (data.roll_number) student.roll_number = data.roll_number;
+    if (data.name) student.name = data.name;
+    if (data.parent_name !== undefined) student.parent_name = data.parent_name;
+    if (data.parent_phone !== undefined)
+      student.parent_phone = data.parent_phone;
+    if (data.email !== undefined) student.email = data.email;
+    if (data.address !== undefined) student.address = data.address;
 
     await student.save();
+
+    // Audit log
+    createAuditLog({
+      school: schoolId,
+      action: "update",
+      entity: "student",
+      entityId: id,
+      userId: session!.user.id,
+      userName: session!.user.name,
+      userRole: session!.user.role,
+      changes: buildChanges(oldValues, student.toObject(), [
+        "class_name",
+        "roll_number",
+        "name",
+        "parent_name",
+        "parent_phone",
+        "email",
+        "address",
+      ]),
+    });
 
     return NextResponse.json({
       success: true,
@@ -153,8 +165,8 @@ export async function PUT(
         status: student.status,
       },
     });
-  } catch (error) {
-    console.error("Error updating student:", error);
+  } catch (err) {
+    logError("PUT", "/api/students/[id]", err);
     return NextResponse.json(
       { error: "Failed to update student" },
       { status: 500 },
@@ -167,10 +179,8 @@ export async function DELETE(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getAuthSession();
-    if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const { error, session } = await requireAuth("students:delete");
+    if (error) return error;
 
     const { id } = await context.params;
 
@@ -182,31 +192,36 @@ export async function DELETE(
     }
 
     await connectDB();
+    const schoolId = session!.user.school_id;
 
-    const student = await Student.findById(id);
+    // Always scope by school for multi-tenant isolation
+    const student = await Student.findOne({ _id: id, school: schoolId });
 
     if (!student) {
       return NextResponse.json({ error: "Student not found" }, { status: 404 });
-    }
-
-    // Security check
-    if (
-      student.school.toString() !== session.user.school_id &&
-      session.user.role !== "admin"
-    ) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Soft delete - update status to inactive
     student.status = "inactive";
     await student.save();
 
+    // Audit log
+    createAuditLog({
+      school: schoolId,
+      action: "delete",
+      entity: "student",
+      entityId: id,
+      userId: session!.user.id,
+      userName: session!.user.name,
+      userRole: session!.user.role,
+    });
+
     return NextResponse.json({
       success: true,
       message: "Student deleted successfully",
     });
-  } catch (error) {
-    console.error("Error deleting student:", error);
+  } catch (err) {
+    logError("DELETE", "/api/students/[id]", err);
     return NextResponse.json(
       { error: "Failed to delete student" },
       { status: 500 },

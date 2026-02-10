@@ -8,6 +8,7 @@ import { registerSchema } from "@/lib/validators";
 import School from "@/lib/models/School";
 import User from "@/lib/models/User";
 import Token from "@/lib/models/Token";
+import Subscription from "@/lib/models/Subscription";
 import { sendEmail } from "@/lib/email/mailer";
 import { welcomeEmail, verificationEmail } from "@/lib/email/templates";
 
@@ -17,8 +18,12 @@ export async function POST(request: Request) {
     const parsed = registerSchema.safeParse(body);
 
     if (!parsed.success) {
+      const messages = parsed.error.issues.map((i) => i.message);
       return NextResponse.json(
-        { error: parsed.error.issues[0].message },
+        {
+          error: messages[0],
+          details: messages,
+        },
         { status: 400 },
       );
     }
@@ -39,14 +44,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create school
+    // Create school with free 7-day trial
+    const trialEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const school = await School.create({
       school_name,
       address,
       phone,
       email: email || admin_email,
-      plan: "free",
+      plan: "starter",
+      subscriptionStatus: "trial",
+      trialEndsAt: trialEnd,
+      currentPeriodEnd: trialEnd,
       status: "active",
+    });
+
+    // Create trial subscription record
+    await Subscription.create({
+      school: school._id,
+      plan: "starter",
+      status: "trial",
+      billingCycle: "monthly",
+      amount: 0,
+      currentPeriodStart: new Date(),
+      currentPeriodEnd: trialEnd,
+      trialEndsAt: trialEnd,
     });
 
     // Hash password

@@ -24,7 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 
 interface Profile {
@@ -45,7 +45,6 @@ interface Profile {
 export default function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: _session } = useSession();
-  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -92,20 +91,12 @@ export default function ProfilePage() {
       if (res.ok) {
         const result = await res.json();
         setProfile({ ...profile, ...result.data });
-        toast({
-          variant: "success",
-          title: "Saved",
-          description: "Profile updated successfully",
-        });
+        showSuccess("Saved", "Profile updated successfully");
       } else {
         throw new Error("Failed");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update profile",
-      });
+      showError("Error", "Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -132,7 +123,7 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Profile</h1>
+        <h1 className="text-2xl font-bold text-foreground">Profile</h1>
         <p className="text-slate-500">Manage your account information</p>
       </div>
 

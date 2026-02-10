@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { logError } from "@/lib/logger";
 import { audit } from "@/lib/audit";
-import { resetPasswordSchema } from "@/lib/validators";
+import { resetPasswordSchema, validationError } from "@/lib/validators";
 import Token from "@/lib/models/Token";
 import User from "@/lib/models/User";
 
@@ -12,10 +12,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = resetPasswordSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
     await connectDB();

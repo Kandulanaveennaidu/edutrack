@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/db";
 import EmergencyAlert from "@/lib/models/EmergencyAlert";
 import Notification from "@/lib/models/Notification";
 import { requireAuth, requireRole } from "@/lib/permissions";
-import { emergencyAlertSchema } from "@/lib/validators";
+import { emergencyAlertSchema, validationError } from "@/lib/validators";
 import { audit } from "@/lib/audit";
 import { logError } from "@/lib/logger";
 
@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
 
     const alerts = await EmergencyAlert.find(query)
       .sort({ createdAt: -1 })
+      .limit(100)
       .lean();
 
     const data = alerts.map((a) => ({
@@ -43,19 +44,36 @@ export async function GET(request: NextRequest) {
       created_at: a.createdAt?.toISOString() || "",
     }));
 
-    const allAlerts = await EmergencyAlert.find({
-      school: session!.user.school_id,
-    }).lean();
-    const stats = {
-      total: allAlerts.length,
-      active: allAlerts.filter((a) => a.status === "active").length,
-      resolved: allAlerts.filter((a) => a.status === "resolved").length,
-      critical: allAlerts.filter(
-        (a) => a.severity === "critical" && a.status === "active",
-      ).length,
-    };
+    const stats = await EmergencyAlert.aggregate([
+      { $match: { school: session!.user.school_id } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: 1 },
+          active: { $sum: { $cond: [{ $eq: ["$status", "active"] }, 1, 0] } },
+          resolved: {
+            $sum: { $cond: [{ $eq: ["$status", "resolved"] }, 1, 0] },
+          },
+          critical: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $eq: ["$severity", "critical"] },
+                    { $eq: ["$status", "active"] },
+                  ],
+                },
+                1,
+                0,
+              ],
+            },
+          },
+        },
+      },
+    ]);
+    const s = stats[0] || { total: 0, active: 0, resolved: 0, critical: 0 };
 
-    return NextResponse.json({ data, stats });
+    return NextResponse.json({ data, stats: s });
   } catch (error) {
     logError("GET", "/api/emergency", error);
     return NextResponse.json(
@@ -73,19 +91,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = emergencyAlertSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: parsed.error.issues[0].message },
-        { status: 400 },
-      );
+      return validationError(parsed.error);
     }
 
-    const { type, title, message, severity } = parsed.data;
-    const { instructions, affected_areas } = body;
+    const { type, title, message, severity, instructions, affected_areas } =
+      parsed.data;
 
     await connectDB();
 
     const alert = await EmergencyAlert.create({
       school: session!.user.school_id,
+      type: type || "general",
       title,
       message,
       severity,

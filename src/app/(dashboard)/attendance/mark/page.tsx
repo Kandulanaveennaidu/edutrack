@@ -28,11 +28,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useToast } from "@/components/ui/use-toast";
+import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { AttendanceGrid } from "@/components/attendance/attendance-grid";
 import { AttendanceStats } from "@/components/attendance/attendance-stats";
 import type { AttendanceStatus } from "@/types";
+import { usePermissions } from "@/hooks/use-permissions";
 
 interface StudentWithAttendance {
   student_id: string;
@@ -45,8 +46,10 @@ interface StudentWithAttendance {
 
 export default function MarkAttendancePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: session } = useSession();
-  const { toast } = useToast();
+
+  const { canAdd } = usePermissions("attendance");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -112,18 +115,14 @@ export default function MarkAttendancePage() {
         }
       } catch (error) {
         console.error("Error fetching students:", error);
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to fetch students",
-        });
+        showError("Error", "Failed to fetch students");
       } finally {
         setLoading(false);
       }
     };
 
     fetchStudents();
-  }, [className, date, toast]);
+  }, [className, date]);
 
   const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
     setAttendanceMap((prev) => ({
@@ -150,11 +149,7 @@ export default function MarkAttendancePage() {
 
   const handleSave = async () => {
     if (!className) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Please select a class first",
-      });
+      showError("Error", "Please select a class first");
       return;
     }
 
@@ -165,11 +160,7 @@ export default function MarkAttendancePage() {
     }));
 
     if (records.length === 0) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "No attendance marked",
-      });
+      showError("Error", "No attendance marked");
       return;
     }
 
@@ -187,20 +178,15 @@ export default function MarkAttendancePage() {
 
       if (response.ok) {
         const result = await response.json();
-        toast({
-          variant: "success",
-          title: "Success",
-          description: `Attendance saved! Present: ${result.stats.present}, Absent: ${result.stats.absent}`,
-        });
+        showSuccess(
+          "Success",
+          `Attendance saved! Present: ${result.stats.present}, Absent: ${result.stats.absent}`,
+        );
       } else {
         throw new Error("Failed to save");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to save attendance",
-      });
+      showError("Error", "Failed to save attendance");
     } finally {
       setSaving(false);
     }
@@ -222,8 +208,8 @@ export default function MarkAttendancePage() {
   // Filter students by search
   const filteredStudents = students.filter(
     (s) =>
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.roll_number.toLowerCase().includes(search.toLowerCase()),
+      (s.name || "").toLowerCase().includes(search.toLowerCase()) ||
+      (s.roll_number || "").toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -231,7 +217,9 @@ export default function MarkAttendancePage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Mark Attendance</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            Mark Attendance
+          </h1>
           <p className="text-slate-500">
             Record daily attendance for your class
           </p>
@@ -288,29 +276,31 @@ export default function MarkAttendancePage() {
             </div>
 
             {/* Quick Actions */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Quick Actions</label>
-              <div className="flex gap-2">
-                <Button
-                  variant="success"
-                  size="sm"
-                  onClick={() => handleMarkAll("present")}
-                  disabled={!className}
-                >
-                  <CheckCheck className="mr-1 h-4 w-4" />
-                  All Present
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleMarkAll("absent")}
-                  disabled={!className}
-                >
-                  <XCircle className="mr-1 h-4 w-4" />
-                  All Absent
-                </Button>
+            {canAdd && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Quick Actions</label>
+                <div className="flex gap-2">
+                  <Button
+                    variant="success"
+                    size="sm"
+                    onClick={() => handleMarkAll("present")}
+                    disabled={!className}
+                  >
+                    <CheckCheck className="mr-1 h-4 w-4" />
+                    All Present
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleMarkAll("absent")}
+                    disabled={!className}
+                  >
+                    <XCircle className="mr-1 h-4 w-4" />
+                    All Absent
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -330,7 +320,10 @@ export default function MarkAttendancePage() {
                   : "Select a class to view students"}
               </CardDescription>
             </div>
-            <Button onClick={handleSave} disabled={saving || !className}>
+            <Button
+              onClick={handleSave}
+              disabled={saving || !className || !canAdd}
+            >
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

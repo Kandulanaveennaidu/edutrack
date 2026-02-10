@@ -1,5 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 import { rateLimit } from "@/lib/rate-limit";
+import { applyCorsHeaders, handlePreflight, isPreflight } from "@/lib/cors";
+import {
+  PATH_MODULE_MAP,
+  getAccessibleModules,
+  type PlanId,
+} from "@/lib/plans";
 
 // Security headers applied to ALL responses
 const securityHeaders = {
@@ -10,17 +17,25 @@ const securityHeaders = {
   "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
   "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
   "Content-Security-Policy":
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';",
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; connect-src 'self' https:; frame-ancestors 'none';",
 };
 
 // Rate limit configs by path pattern
 const RATE_LIMITS: { pattern: RegExp; limit: number; windowMs: number }[] = [
-  // Auth endpoints: strict — 5 requests per minute
-  { pattern: /^\/api\/auth\//, limit: 5, windowMs: 60_000 },
-  // Registration: very strict — 3 per 5 minutes
-  { pattern: /^\/api\/auth\/register/, limit: 3, windowMs: 300_000 },
-  // General API: 100 requests per minute
-  { pattern: /^\/api\//, limit: 100, windowMs: 60_000 },
+  // NextAuth internal endpoints — generous (session checks, CSRF, etc.)
+  {
+    pattern: /^\/api\/auth\/(session|csrf|providers|callback)/,
+    limit: 60,
+    windowMs: 60_000,
+  },
+  // Registration: strict — 10 per 5 minutes
+  { pattern: /^\/api\/auth\/register/, limit: 10, windowMs: 300_000 },
+  // Login / password reset: moderate — 20 per minute
+  { pattern: /^\/api\/auth\//, limit: 20, windowMs: 60_000 },
+  // User management: moderate
+  { pattern: /^\/api\/users/, limit: 60, windowMs: 60_000 },
+  // General API: 120 requests per minute
+  { pattern: /^\/api\//, limit: 120, windowMs: 60_000 },
 ];
 
 function getClientIP(request: NextRequest): string {
@@ -32,8 +47,61 @@ function getClientIP(request: NextRequest): string {
   );
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Handle CORS preflight requests
+  if (isPreflight(request)) {
+    const preflightResponse = handlePreflight(request);
+    for (const [key, value] of Object.entries(securityHeaders)) {
+      preflightResponse.headers.set(key, value);
+    }
+    return preflightResponse;
+  }
+
+  // ── Plan-based route guard for dashboard pages ──
+  // Check if authenticated user is trying to access a module not in their plan
+  const isDashboardPage =
+    !pathname.startsWith("/api") &&
+    !pathname.startsWith("/login") &&
+    !pathname.startsWith("/register") &&
+    !pathname.startsWith("/plans") &&
+    !pathname.startsWith("/forgot-password") &&
+    !pathname.startsWith("/reset-password") &&
+    pathname !== "/";
+
+  if (isDashboardPage) {
+    try {
+      const token = await getToken({ req: request });
+      if (token) {
+        // Redirect expired/cancelled subscriptions to plans page
+        const subStatus = token.subscriptionStatus as string;
+        if (subStatus === "expired" || subStatus === "cancelled") {
+          if (pathname !== "/plans") {
+            return NextResponse.redirect(new URL("/plans", request.url));
+          }
+        }
+
+        // Check module access for the current path
+        const plan = (token.plan as PlanId) || "starter";
+        const allowedModules = (token.allowedModules as string[]) || [];
+        const accessibleModules = getAccessibleModules(plan, allowedModules);
+
+        // Find which module this path requires
+        const pathKey = Object.keys(PATH_MODULE_MAP).find((p) =>
+          pathname.startsWith(p),
+        );
+        if (pathKey) {
+          const requiredModule = PATH_MODULE_MAP[pathKey];
+          if (!accessibleModules.includes(requiredModule)) {
+            return NextResponse.redirect(new URL("/dashboard", request.url));
+          }
+        }
+      }
+    } catch {
+      // Token parsing failed — let the page handle auth redirect
+    }
+  }
 
   // Only apply rate limiting to API routes
   if (pathname.startsWith("/api")) {
@@ -83,6 +151,12 @@ export function middleware(request: NextRequest) {
           response.headers.set(key, value);
         }
 
+        // Add CORS headers
+        applyCorsHeaders(request, response);
+
+        // Add API version header
+        response.headers.set("X-API-Version", "v1");
+
         return response;
       }
     }
@@ -93,6 +167,7 @@ export function middleware(request: NextRequest) {
   for (const [key, value] of Object.entries(securityHeaders)) {
     response.headers.set(key, value);
   }
+  applyCorsHeaders(request, response);
   return response;
 }
 

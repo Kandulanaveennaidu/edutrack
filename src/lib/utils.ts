@@ -26,6 +26,14 @@ export function generateId(prefix: string, num: number): string {
   return `${prefix}${String(num).padStart(3, "0")}`;
 }
 
+/**
+ * Escape special regex characters in user input to prevent ReDoS attacks.
+ * Use this whenever passing user input to MongoDB $regex queries.
+ */
+export function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function getStatusColor(status: string): string {
   const colors: Record<string, string> = {
     present: "bg-green-100 text-green-800",

@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { useToast } from "@/components/ui/use-toast";
+import { showError } from "@/lib/alerts";
 import {
   PieChart,
   Pie,
@@ -90,7 +90,6 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
 export default function ReportsPage() {
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [month, setMonth] = useState(String(new Date().getMonth() + 1));
   const [year, setYear] = useState(String(currentYear));
@@ -126,11 +125,7 @@ export default function ReportsPage() {
         throw new Error("Failed to generate report");
       }
     } catch {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to generate report",
-      });
+      showError("Error", "Failed to generate report");
     } finally {
       setLoading(false);
     }
@@ -223,7 +218,7 @@ export default function ReportsPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Reports</h1>
+          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
           <p className="text-slate-500">Generate monthly attendance reports</p>
         </div>
         {reportData && (

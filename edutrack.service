@@ -6,7 +6,8 @@ After=network.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/campusiq
-EnvironmentFile=/home/ubuntu/campusiq/.env.local
+# Next.js automatically loads .env.local from WorkingDirectory
+# Do NOT use EnvironmentFile - it breaks on values with spaces
 ExecStart=/usr/bin/node /home/ubuntu/campusiq/server.js
 Restart=on-failure
 RestartSec=10

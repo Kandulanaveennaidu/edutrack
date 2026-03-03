@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Prevent Next.js from bundling these packages — they need native Node.js
+    // modules (dns, net, tls) that break when webpack-bundled.
+    // This fixes mongodb+srv:// SRV DNS resolution in production.
+    serverExternalPackages: ['mongoose', 'mongodb'],
+
     // API versioning: /api/v1/* rewrites to /api/*
     async rewrites() {
         return [

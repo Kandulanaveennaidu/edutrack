@@ -214,7 +214,7 @@ export default function FacultyWorkloadPage() {
           {
             label: "Total Faculty",
             value: summary.total_faculty,
-            color: "text-blue-600",
+            color: "text-orange-500 dark:text-orange-400",
           },
           {
             label: "Under-loaded",
@@ -230,7 +230,7 @@ export default function FacultyWorkloadPage() {
           {
             label: "Avg Hours/Week",
             value: summary.avg_hours,
-            color: "text-purple-600",
+            color: "text-amber-600",
           },
         ].map((s) => (
           <Card key={s.label}>

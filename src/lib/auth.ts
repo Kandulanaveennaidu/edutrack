@@ -19,6 +19,22 @@ export interface MenuPermissionData {
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
 
+/**
+ * Standard error codes used by the auth system.
+ * These are passed as ?error=CODE in the URL so the login page
+ * can display human-readable messages.
+ */
+export const AUTH_ERROR_CODES = {
+  INVALID_CREDENTIALS: "InvalidCredentials",
+  ACCOUNT_LOCKED: "AccountLocked",
+  EMAIL_NOT_VERIFIED: "EmailNotVerified",
+  CREDENTIALS_REQUIRED: "CredentialsRequired",
+  DATABASE_ERROR: "DatabaseError",
+  SESSION_EXPIRED: "SessionExpired",
+  ACCOUNT_DISABLED: "AccountDisabled",
+  CONFIGURATION_ERROR: "Configuration",
+} as const;
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -29,22 +45,34 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password are required");
+          throw new Error(AUTH_ERROR_CODES.CREDENTIALS_REQUIRED);
         }
 
         const { email, password } = credentials;
 
+        let db;
         try {
-          await connectDB();
+          db = await connectDB();
+        } catch (dbErr) {
+          console.error("[Auth] Database connection failed:", dbErr);
+          throw new Error(AUTH_ERROR_CODES.DATABASE_ERROR);
+        }
 
+        try {
           // Find user by email, include password + lockout fields
           const user = await User.findOne({
             email: email.toLowerCase(),
-            isActive: true,
-          }).select("+password +failedLoginAttempts +lockedUntil");
+          }).select(
+            "+password +failedLoginAttempts +lockedUntil +isActive +emailVerified",
+          );
 
           if (!user) {
-            throw new Error("Invalid email or password");
+            throw new Error(AUTH_ERROR_CODES.INVALID_CREDENTIALS);
+          }
+
+          // Check if account is disabled
+          if (!user.isActive) {
+            throw new Error(AUTH_ERROR_CODES.ACCOUNT_DISABLED);
           }
 
           // Check account lockout
@@ -53,7 +81,7 @@ export const authOptions: NextAuthOptions = {
               (new Date(user.lockedUntil).getTime() - Date.now()) / 60000,
             );
             throw new Error(
-              `Account locked. Try again in ${minutesLeft} minute(s)`,
+              `${AUTH_ERROR_CODES.ACCOUNT_LOCKED}:${minutesLeft}`,
             );
           }
 
@@ -75,21 +103,18 @@ export const authOptions: NextAuthOptions = {
             await User.updateOne({ _id: user._id }, { $set: updateFields });
 
             if (attempts >= MAX_LOGIN_ATTEMPTS) {
-              throw new Error(
-                `Account locked after ${MAX_LOGIN_ATTEMPTS} failed attempts. Try again in 15 minutes`,
-              );
+              throw new Error(`${AUTH_ERROR_CODES.ACCOUNT_LOCKED}:15`);
             }
 
+            const remaining = MAX_LOGIN_ATTEMPTS - attempts;
             throw new Error(
-              `Invalid email or password. ${MAX_LOGIN_ATTEMPTS - attempts} attempt(s) remaining`,
+              `${AUTH_ERROR_CODES.INVALID_CREDENTIALS}:${remaining}`,
             );
           }
 
           // Check email verification
           if (!user.emailVerified) {
-            throw new Error(
-              "Please verify your email before logging in. Check your inbox for the verification link.",
-            );
+            throw new Error(AUTH_ERROR_CODES.EMAIL_NOT_VERIFIED);
           }
 
           // Successful login: reset lockout counters
@@ -120,7 +145,12 @@ export const authOptions: NextAuthOptions = {
           const schoolId = user.school ? user.school.toString() : "";
 
           // Load school for plan info
-          const school = await School.findById(user.school);
+          let school = null;
+          try {
+            school = await School.findById(user.school);
+          } catch {
+            // School lookup failed — continue with defaults
+          }
           let subscriptionStatus = school?.subscriptionStatus || "trial";
 
           // Check trial expiry
@@ -132,7 +162,7 @@ export const authOptions: NextAuthOptions = {
             subscriptionStatus = "expired";
             await School.findByIdAndUpdate(user.school, {
               subscriptionStatus: "expired",
-            });
+            }).catch(() => {});
           }
 
           return {
@@ -148,12 +178,14 @@ export const authOptions: NextAuthOptions = {
             customRole: user.customRole ? user.customRole.toString() : "",
             menuPermissions: [],
           };
-
-          // Note: menuPermissions will be loaded in the jwt callback
-          // to keep the authorize function fast
-        } catch (error) {
-          // Auth error logged via structured logger
-          throw error;
+        } catch (error: unknown) {
+          // Ensure we always throw a proper Error with a message
+          if (error instanceof Error && error.message) {
+            throw error;
+          }
+          // Fallback: wrap unknown errors with a safe message
+          console.error("[Auth] Unexpected authorize error:", error);
+          throw new Error(AUTH_ERROR_CODES.INVALID_CREDENTIALS);
         }
       },
     }),
@@ -178,15 +210,23 @@ export const authOptions: NextAuthOptions = {
             await connectDB();
             const role = await Role.findById(user.customRole).lean();
             if (role && role.isActive) {
-              token.menuPermissions = (role.permissions || []).map((p) => ({
-                menu: p.menu,
-                view: p.view,
-                add: p.add,
-                edit: p.edit,
-                delete: p.delete,
-              }));
+              token.menuPermissions = (role.permissions || []).map(
+                (p: {
+                  menu: string;
+                  view: boolean;
+                  add: boolean;
+                  edit: boolean;
+                  delete: boolean;
+                }) => ({
+                  menu: p.menu,
+                  view: p.view,
+                  add: p.add,
+                  edit: p.edit,
+                  delete: p.delete,
+                }),
+              );
             }
-          } catch (e) {
+          } catch {
             // Role permissions load failed — continue with empty permissions
           }
         }
@@ -207,7 +247,7 @@ export const authOptions: NextAuthOptions = {
               subStatus = "expired";
               await School.findByIdAndUpdate(school._id, {
                 subscriptionStatus: "expired",
-              });
+              }).catch(() => {});
             }
             token.subscriptionStatus = subStatus;
           }
@@ -222,13 +262,21 @@ export const authOptions: NextAuthOptions = {
             if (userDoc.customRole) {
               const role = await Role.findById(userDoc.customRole).lean();
               if (role && role.isActive) {
-                token.menuPermissions = (role.permissions || []).map((p) => ({
-                  menu: p.menu,
-                  view: p.view,
-                  add: p.add,
-                  edit: p.edit,
-                  delete: p.delete,
-                }));
+                token.menuPermissions = (role.permissions || []).map(
+                  (p: {
+                    menu: string;
+                    view: boolean;
+                    add: boolean;
+                    edit: boolean;
+                    delete: boolean;
+                  }) => ({
+                    menu: p.menu,
+                    view: p.view,
+                    add: p.add,
+                    edit: p.edit,
+                    delete: p.delete,
+                  }),
+                );
               } else {
                 token.menuPermissions = [];
               }
@@ -236,7 +284,7 @@ export const authOptions: NextAuthOptions = {
               token.menuPermissions = [];
             }
           }
-        } catch (e) {
+        } catch {
           // Session update failed — continue with cached values
         }
       }
@@ -271,6 +319,22 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Use NEXTAUTH_URL as canonical base to prevent 0.0.0.0 redirects
+      const canonical = process.env.NEXTAUTH_URL || baseUrl;
+      // Strip any trailing slash from canonical
+      const base = canonical.replace(/\/$/, "");
+
+      // Relative path → prepend canonical base
+      if (url.startsWith("/")) return `${base}${url}`;
+      // Already using the correct base
+      if (url.startsWith(base)) return url;
+      // Legacy: if url starts with the internal baseUrl (e.g. 0.0.0.0), rewrite to canonical
+      if (url.startsWith(baseUrl)) {
+        return url.replace(baseUrl, base);
+      }
+      return base;
+    },
   },
   pages: {
     signIn: "/login",
@@ -281,6 +345,21 @@ export const authOptions: NextAuthOptions = {
     maxAge: 24 * 60 * 60, // 24 hours
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // Enable debug logging in development to catch auth issues
+  debug: process.env.NODE_ENV === "development",
+  logger: {
+    error(code, metadata) {
+      console.error("[NextAuth Error]", code, metadata);
+    },
+    warn(code) {
+      console.warn("[NextAuth Warning]", code);
+    },
+    debug(code, metadata) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[NextAuth Debug]", code, metadata);
+      }
+    },
+  },
 };
 
 /**

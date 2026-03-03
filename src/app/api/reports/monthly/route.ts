@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
         { name: "Present", value: presentTotal, color: "#22c55e" },
         { name: "Absent", value: absentTotal, color: "#ef4444" },
         { name: "Late", value: lateTotal, color: "#f59e0b" },
-        { name: "Leave", value: leaveTotal, color: "#3b82f6" },
+        { name: "Leave", value: leaveTotal, color: "#8b5cf6" },
       ],
       lowAttendance: studentStats.filter((s) => s.percentage < 75),
     };

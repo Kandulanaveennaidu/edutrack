@@ -54,13 +54,15 @@ function PlanCard({
         "relative flex flex-col transition-shadow hover:shadow-lg",
         plan.popular &&
           !isCurrent &&
-          "border-blue-500 ring-2 ring-blue-500 shadow-xl",
+          "border-orange-500 ring-2 ring-orange-500 shadow-xl",
         isCurrent && "border-green-500 ring-2 ring-green-500",
       )}
     >
       {plan.popular && !isCurrent && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <Badge className="bg-blue-600 text-white shadow">Most Popular</Badge>
+          <Badge className="bg-orange-500 text-white shadow">
+            Most Popular
+          </Badge>
         </div>
       )}
       {isCurrent && (
@@ -157,12 +159,12 @@ function PlansInner() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 p-4 dark:from-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-slate-100 p-4 dark:from-slate-900 dark:to-slate-950">
       <div className="mx-auto max-w-6xl py-12">
         {/* Header */}
         <div className="mb-10 text-center">
           <Link href="/" className="mb-6 inline-flex items-center gap-2">
-            <GraduationCap className="h-10 w-10 text-blue-600" />
+            <GraduationCap className="h-10 w-10 text-orange-500 dark:text-orange-400" />
             <span className="text-2xl font-bold text-slate-900 dark:text-white">
               CampusIQ
             </span>
@@ -181,6 +183,13 @@ function PlansInner() {
             <Badge className="mt-3 bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
               <Sparkles className="mr-1 h-3 w-3" />
               Your 7-day trial has ended. Please select a plan to continue.
+            </Badge>
+          )}
+          {subStatus === "cancelled" && (
+            <Badge className="mt-3 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+              <Sparkles className="mr-1 h-3 w-3" />
+              Your subscription was cancelled. You&apos;re on the free Starter
+              plan. Upgrade anytime.
             </Badge>
           )}
           {subStatus === "trial" && (
@@ -208,7 +217,7 @@ function PlansInner() {
             onClick={() =>
               setBilling((b) => (b === "monthly" ? "yearly" : "monthly"))
             }
-            className="relative h-7 w-14 rounded-full bg-blue-600"
+            className="relative h-7 w-14 rounded-full bg-orange-500"
           >
             <div
               className={cn(

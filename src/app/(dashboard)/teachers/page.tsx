@@ -246,8 +246,8 @@ export default function TeachersPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-blue-100 p-2">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-2">
+                <Users className="h-5 w-5 text-orange-500 dark:text-orange-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{teachers.length}</p>

@@ -14,7 +14,7 @@ const getClasses = () => ({
   title: isDark() ? "!text-gray-100" : "!text-gray-900",
   htmlContainer: isDark() ? "!text-gray-300" : "!text-gray-600",
   confirmButton:
-    "!bg-blue-600 hover:!bg-blue-700 !text-white !rounded-lg !px-5 !py-2.5 !font-medium !shadow-md !transition-all !duration-200",
+    "!bg-orange-500 hover:!bg-orange-600 !text-white !rounded-lg !px-5 !py-2.5 !font-medium !shadow-md !transition-all !duration-200",
   cancelButton:
     "!bg-gray-200 hover:!bg-gray-300 !text-gray-800 !rounded-lg !px-5 !py-2.5 !font-medium !shadow-md !transition-all !duration-200",
   denyButton:

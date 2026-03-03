@@ -115,8 +115,8 @@ export default function BulkMessagesPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
-            <div className="rounded-lg bg-blue-100 p-2">
-              <Mail className="h-5 w-5 text-blue-600" />
+            <div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-2">
+              <Mail className="h-5 w-5 text-orange-500 dark:text-orange-400" />
             </div>
             <div>
               <p className="font-semibold">Email</p>
@@ -141,8 +141,8 @@ export default function BulkMessagesPage() {
         </Card>
         <Card>
           <CardContent className="flex items-center gap-4 p-6">
-            <div className="rounded-lg bg-purple-100 p-2">
-              <Megaphone className="h-5 w-5 text-purple-600" />
+            <div className="rounded-lg bg-amber-100 p-2">
+              <Megaphone className="h-5 w-5 text-amber-600" />
             </div>
             <div>
               <p className="font-semibold">Both</p>

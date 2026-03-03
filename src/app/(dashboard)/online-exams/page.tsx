@@ -127,7 +127,7 @@ function getExamStatus(exam: OnlineExam) {
   if (now >= start && now <= end)
     return {
       label: "Live",
-      color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+      color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
       icon: Play,
     };
   return {
@@ -494,7 +494,7 @@ export default function OnlineExamsPage() {
             label: "Total",
             count: exams.length,
             icon: Monitor,
-            color: "text-blue-600",
+            color: "text-orange-500 dark:text-orange-400",
           },
           {
             label: "Draft",
@@ -512,7 +512,7 @@ export default function OnlineExamsPage() {
             label: "Active",
             count: exams.filter((e) => e.status === "active").length,
             icon: Play,
-            color: "text-blue-600",
+            color: "text-orange-500 dark:text-orange-400",
           },
           {
             label: "Completed",

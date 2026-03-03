@@ -47,9 +47,9 @@ export default function PWAInstallPrompt() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-xl border border-blue-200 bg-white p-4 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-xl border border-orange-200 dark:border-orange-800 bg-white p-4 shadow-lg dark:border-slate-700 dark:bg-slate-800">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-lg font-bold text-white">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500 text-lg font-bold text-white">
           E
         </div>
         <div className="flex-1">
@@ -63,7 +63,7 @@ export default function PWAInstallPrompt() {
           <div className="mt-3 flex gap-2">
             <button
               onClick={handleInstall}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+              className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 transition-colors"
             >
               Install
             </button>

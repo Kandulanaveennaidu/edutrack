@@ -59,19 +59,19 @@ const PERIODS = [
 ];
 
 const SUBJECT_COLORS: Record<string, string> = {
-  Mathematics: "bg-blue-100 text-blue-800 border-blue-200",
+  Mathematics: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-800",
   English: "bg-green-100 text-green-800 border-green-200",
-  Science: "bg-purple-100 text-purple-800 border-purple-200",
+  Science: "bg-amber-100 text-amber-800 border-amber-200",
   Hindi: "bg-orange-100 text-orange-800 border-orange-200",
   History: "bg-yellow-100 text-yellow-800 border-yellow-200",
   Geography: "bg-teal-100 text-teal-800 border-teal-200",
-  Physics: "bg-indigo-100 text-indigo-800 border-indigo-200",
+  Physics: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 border-orange-200 dark:border-orange-800",
   Chemistry: "bg-pink-100 text-pink-800 border-pink-200",
   Biology: "bg-emerald-100 text-emerald-800 border-emerald-200",
   "Computer Science": "bg-cyan-100 text-cyan-800 border-cyan-200",
   "Physical Education": "bg-red-100 text-red-800 border-red-200",
   Art: "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200",
-  Music: "bg-violet-100 text-violet-800 border-violet-200",
+  Music: "bg-amber-100 text-amber-800 border-amber-200",
 };
 
 export default function TimetablePage() {
@@ -413,7 +413,7 @@ export default function TimetablePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <BookOpen className="h-5 w-5 mx-auto mb-1 text-blue-600" />
+            <BookOpen className="h-5 w-5 mx-auto mb-1 text-orange-500 dark:text-orange-400" />
             <p className="text-2xl font-bold">{timetable.length}</p>
             <p className="text-xs text-muted-foreground">Total Periods</p>
           </CardContent>

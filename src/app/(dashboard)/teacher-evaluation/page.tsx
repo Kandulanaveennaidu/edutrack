@@ -211,7 +211,7 @@ export default function TeacherEvaluationPage() {
 
   const getRatingColor = (rating: number) => {
     if (rating >= 4.5) return "text-green-600 dark:text-green-400";
-    if (rating >= 3.5) return "text-blue-600 dark:text-blue-400";
+    if (rating >= 3.5) return "text-orange-500 dark:text-orange-400";
     if (rating >= 2.5) return "text-amber-600 dark:text-amber-400";
     return "text-red-600 dark:text-red-400";
   };
@@ -256,8 +256,8 @@ export default function TeacherEvaluationPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900">
-              <Users className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+            <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900">
+              <Users className="h-5 w-5 text-orange-500 dark:text-orange-300" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
@@ -299,8 +299,8 @@ export default function TeacherEvaluationPage() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900">
-              <MessageSquare className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+            <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900">
+              <MessageSquare className="h-5 w-5 text-amber-600 dark:text-amber-300" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Top Rated</p>
@@ -349,7 +349,7 @@ export default function TeacherEvaluationPage() {
                               avg >= 4
                                 ? "#10b981"
                                 : avg >= 3
-                                  ? "#3b82f6"
+                                  ? "#8b5cf6"
                                   : avg >= 2
                                     ? "#f59e0b"
                                     : "#ef4444",
@@ -381,7 +381,7 @@ export default function TeacherEvaluationPage() {
                       className="flex items-center gap-3 p-3 rounded-lg border"
                     >
                       <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-sm font-bold ${i === 0 ? "bg-amber-500" : i === 1 ? "bg-gray-400" : i === 2 ? "bg-orange-600" : "bg-blue-500"}`}
+                        className={`flex h-8 w-8 items-center justify-center rounded-full text-white text-sm font-bold ${i === 0 ? "bg-amber-500" : i === 1 ? "bg-gray-400" : i === 2 ? "bg-orange-600" : "bg-orange-50 dark:bg-orange-950/300"}`}
                       >
                         #{i + 1}
                       </div>

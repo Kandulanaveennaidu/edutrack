@@ -84,7 +84,7 @@ const PRESET_THEMES = [
     name: "Crimson Red",
     primary: "#dc2626",
     secondary: "#ef4444",
-    accent: "#3b82f6",
+    accent: "#8b5cf6",
   },
   {
     name: "Slate Modern",
@@ -170,7 +170,7 @@ export default function BrandingPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -181,7 +181,7 @@ export default function BrandingPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Palette className="h-7 w-7 text-indigo-600" /> White-Label Branding
+            <Palette className="h-7 w-7 text-orange-500 dark:text-orange-400" /> White-Label Branding
           </h1>
           <p className="text-muted-foreground mt-1">
             Customize your institution&apos;s brand: colors, logo, domain & more
@@ -197,7 +197,7 @@ export default function BrandingPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 disabled:opacity-50 flex items-center gap-2"
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

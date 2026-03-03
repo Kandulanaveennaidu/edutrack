@@ -277,8 +277,8 @@ export default function DocumentsPage() {
       <div className="grid gap-4 md:grid-cols-5">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900">
-              <FolderOpen className="h-5 w-5 text-blue-600" />
+            <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900">
+              <FolderOpen className="h-5 w-5 text-orange-500 dark:text-orange-400" />
             </div>
             <div>
               <p className="text-2xl font-bold">{docs.length}</p>
@@ -288,8 +288,8 @@ export default function DocumentsPage() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900">
-              <HardDrive className="h-5 w-5 text-purple-600" />
+            <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900">
+              <HardDrive className="h-5 w-5 text-amber-600" />
             </div>
             <div>
               <p className="text-2xl font-bold">

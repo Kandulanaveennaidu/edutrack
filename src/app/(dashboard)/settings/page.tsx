@@ -136,7 +136,7 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <School className="h-5 w-5 text-blue-600" />
+            <School className="h-5 w-5 text-orange-500 dark:text-orange-400" />
             <CardTitle>Institution Information</CardTitle>
           </div>
           <CardDescription>
@@ -176,7 +176,7 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-600" />
+            <Clock className="h-5 w-5 text-orange-500 dark:text-orange-400" />
             <CardTitle>Attendance Settings</CardTitle>
           </div>
           <CardDescription>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-blue-600" />
+            <Calendar className="h-5 w-5 text-orange-500 dark:text-orange-400" />
             <CardTitle>Academic Settings</CardTitle>
           </div>
           <CardDescription>
@@ -299,7 +299,7 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-blue-600" />
+            <Bell className="h-5 w-5 text-orange-500 dark:text-orange-400" />
             <CardTitle>Notification Settings</CardTitle>
           </div>
           <CardDescription>

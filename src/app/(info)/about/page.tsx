@@ -81,14 +81,14 @@ export default function AboutPage() {
       <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <GraduationCap className="h-8 w-8 text-orange-500 dark:text-orange-400" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               CampusIQ
             </span>
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -97,7 +97,7 @@ export default function AboutPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20">
+      <section className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             About CampusIQ
@@ -160,8 +160,8 @@ export default function AboutPage() {
                 key={value.title}
                 className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/40 mb-4">
-                  <value.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-orange-100 dark:bg-orange-900/40 mb-4">
+                  <value.icon className="h-6 w-6 text-orange-500 dark:text-orange-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   {value.title}
@@ -193,7 +193,7 @@ export default function AboutPage() {
                 key={member.name}
                 className="text-center bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 mx-auto mb-4 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 mx-auto mb-4 flex items-center justify-center">
                   <span className="text-2xl font-bold text-white">
                     {member.name
                       .split(" ")
@@ -204,7 +204,7 @@ export default function AboutPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {member.name}
                 </h3>
-                <p className="text-sm text-blue-600 dark:text-blue-400 font-medium mb-3">
+                <p className="text-sm text-orange-500 dark:text-orange-400 font-medium mb-3">
                   {member.role}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -217,18 +217,18 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-blue-600 dark:bg-blue-700">
+      <section className="py-16 bg-orange-500 dark:bg-orange-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to Transform Your Institution?
           </h2>
-          <p className="text-blue-100 mb-8 text-lg">
+          <p className="text-orange-100 mb-8 text-lg">
             Join hundreds of institutions that trust CampusIQ for their daily
             operations.
           </p>
           <Link
             href="/register"
-            className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors shadow-lg"
+            className="inline-flex items-center px-8 py-3 bg-white text-orange-500 dark:text-orange-400 font-semibold rounded-lg hover:bg-orange-50 transition-colors shadow-lg"
           >
             Get Started Free
           </Link>
@@ -240,7 +240,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <GraduationCap className="h-6 w-6 text-orange-500 dark:text-orange-400" />
               <span className="font-semibold text-gray-900 dark:text-white">
                 CampusIQ
               </span>
@@ -248,31 +248,31 @@ export default function AboutPage() {
             <nav className="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <Link
                 href="/about"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 About
               </Link>
               <Link
                 href="/blog"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Blog
               </Link>
               <Link
                 href="/careers"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Careers
               </Link>
               <Link
                 href="/privacy"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Terms
               </Link>

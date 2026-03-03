@@ -52,7 +52,7 @@ const EventSchema = new Schema<IEvent>(
     location: { type: String, default: "" },
     organizer: { type: Schema.Types.ObjectId, ref: "User" },
     participants: [{ type: String }],
-    color: { type: String, default: "#3b82f6" },
+    color: { type: String, default: "#8b5cf6" },
     reminders: [
       {
         type: { type: String },

@@ -128,7 +128,7 @@ export default function BackupPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Total Backups</p>
-            <p className="text-2xl font-bold text-blue-600">{backups.length}</p>
+            <p className="text-2xl font-bold text-orange-500 dark:text-orange-400">{backups.length}</p>
           </CardContent>
         </Card>
         <Card>

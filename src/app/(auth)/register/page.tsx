@@ -110,7 +110,7 @@ function PasswordStrength({ password }: { password: string }) {
         : score <= 3
           ? "bg-yellow-500"
           : score <= 4
-            ? "bg-blue-500"
+            ? "bg-emerald-500"
             : "bg-green-500";
 
   if (!password) return null;
@@ -381,24 +381,24 @@ export default function RegisterPage() {
               </div>
 
               {/* Login Credentials */}
-              <div className="rounded-2xl bg-blue-50 p-4 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
-                <p className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
+              <div className="rounded-2xl bg-orange-50 p-4 border border-orange-200 dark:border-orange-800 dark:bg-orange-950/30">
+                <p className="text-sm font-semibold text-orange-800 dark:text-orange-300 mb-3 flex items-center gap-2">
                   <Shield className="h-4 w-4" />
                   Login Credentials
                 </p>
-                <div className="space-y-2 text-sm text-blue-700 dark:text-blue-400">
+                <div className="space-y-2 text-sm text-orange-600 dark:text-orange-400">
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-600/80">Email:</span>
-                    <span className="font-medium font-mono text-xs bg-blue-100 dark:bg-blue-900/40 px-2 py-0.5 rounded">
+                    <span className="text-orange-500/80">Email:</span>
+                    <span className="font-medium font-mono text-xs bg-orange-100 dark:bg-orange-900/40 px-2 py-0.5 rounded">
                       {formData.admin_email}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-600/80">Role:</span>
+                    <span className="text-orange-500/80">Role:</span>
                     <span className="font-medium">Administrator</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-blue-600/80">Login As:</span>
+                    <span className="text-orange-500/80">Login As:</span>
                     <span className="font-medium">Admin</span>
                   </div>
                 </div>
@@ -455,7 +455,7 @@ export default function RegisterPage() {
 
         {/* Logo */}
         <div className="mb-6 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-200/60 dark:shadow-blue-900/30">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-500 shadow-lg shadow-orange-200/60 dark:shadow-orange-900/30">
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
           <h1 className="mt-3 text-2xl font-bold text-foreground">
@@ -477,9 +477,9 @@ export default function RegisterPage() {
                 }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                   step >= s.id
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-200/50 dark:shadow-blue-900/30"
+                    ? "bg-orange-500 text-white shadow-md shadow-orange-200/50 dark:shadow-orange-900/30"
                     : "bg-slate-100 text-muted-foreground dark:bg-slate-800 dark:text-muted-foreground"
-                } ${s.id < step ? "cursor-pointer hover:bg-blue-700" : s.id > step ? "cursor-default" : ""}`}
+                } ${s.id < step ? "cursor-pointer hover:bg-orange-600" : s.id > step ? "cursor-default" : ""}`}
               >
                 {step > s.id ? (
                   <Check className="h-3.5 w-3.5" />
@@ -493,7 +493,7 @@ export default function RegisterPage() {
                 <div
                   className={`w-8 h-0.5 mx-1 transition-colors duration-500 ${
                     step > s.id
-                      ? "bg-blue-600"
+                      ? "bg-orange-500"
                       : "bg-slate-200 dark:bg-slate-700"
                   }`}
                 />
@@ -512,7 +512,7 @@ export default function RegisterPage() {
                     ? "Admin Account"
                     : "Review & Register"}
               </CardTitle>
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium dark:bg-blue-900/40 dark:text-blue-300">
+              <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-medium dark:bg-orange-900/40 dark:text-orange-300">
                 Step {step}/3
               </span>
             </div>
@@ -576,7 +576,7 @@ export default function RegisterPage() {
                           !formData.school_type
                             ? "text-muted-foreground"
                             : "text-slate-900 dark:text-slate-100"
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer`}
+                        } focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors cursor-pointer`}
                       >
                         <option value="" disabled>
                           Select type
@@ -608,7 +608,7 @@ export default function RegisterPage() {
                           !formData.board
                             ? "text-muted-foreground"
                             : "text-slate-900 dark:text-slate-100"
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer`}
+                        } focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors cursor-pointer`}
                       >
                         <option value="" disabled>
                           Select board
@@ -688,9 +688,9 @@ export default function RegisterPage() {
             {step === 2 && (
               <>
                 {/* Info */}
-                <div className="flex items-start gap-2.5 rounded-xl bg-blue-50 p-3 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-900">
-                  <Shield className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-                  <p className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
+                <div className="flex items-start gap-2.5 rounded-xl bg-orange-50 p-3 border border-orange-100 dark:bg-orange-950/30 dark:border-orange-900">
+                  <Shield className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <p className="text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
                     This will be the primary administrator account for your
                     institution. You can add more staff and teachers after
                     logging in.
@@ -821,11 +821,11 @@ export default function RegisterPage() {
                 {/* School Details */}
                 <div className="rounded-xl bg-muted/50 p-4 dark:bg-slate-800/50 border border-border dark:border-slate-700">
                   <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-blue-600" />
+                    <Building2 className="h-4 w-4 text-orange-500 dark:text-orange-400" />
                     Institution Details
                     <button
                       onClick={() => setStep(1)}
-                      className="ml-auto text-xs text-blue-600 hover:underline"
+                      className="ml-auto text-xs text-orange-500 dark:text-orange-400 hover:underline"
                     >
                       Edit
                     </button>
@@ -879,11 +879,11 @@ export default function RegisterPage() {
                 {/* Admin Account */}
                 <div className="rounded-xl bg-muted/50 p-4 dark:bg-slate-800/50 border border-border dark:border-slate-700">
                   <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-blue-600" />
+                    <Lock className="h-4 w-4 text-orange-500 dark:text-orange-400" />
                     Admin Account
                     <button
                       onClick={() => setStep(2)}
-                      className="ml-auto text-xs text-blue-600 hover:underline"
+                      className="ml-auto text-xs text-orange-500 dark:text-orange-400 hover:underline"
                     >
                       Edit
                     </button>
@@ -905,7 +905,7 @@ export default function RegisterPage() {
                     </div>
                     <div className="flex justify-between items-center py-1">
                       <span className="text-muted-foreground">Role</span>
-                      <span className="inline-flex items-center gap-1 font-medium text-blue-700 dark:text-blue-400">
+                      <span className="inline-flex items-center gap-1 font-medium text-orange-600 dark:text-orange-400">
                         <Shield className="h-3 w-3" />
                         Administrator
                       </span>
@@ -914,8 +914,8 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Features */}
-                <div className="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border border-blue-200 dark:from-blue-950/30 dark:to-indigo-950/30 dark:border-blue-800">
-                  <p className="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-1">
+                <div className="rounded-xl bg-gradient-to-r from-orange-50 to-orange-50 p-4 border border-orange-200 dark:border-orange-800 dark:from-orange-950/30 dark:to-orange-950/30">
+                  <p className="text-xs font-semibold text-orange-800 dark:text-orange-300 mb-2 flex items-center gap-1">
                     <Sparkles className="h-3.5 w-3.5" />
                     Included with your free trial
                   </p>
@@ -930,9 +930,9 @@ export default function RegisterPage() {
                     ].map((f) => (
                       <div
                         key={f}
-                        className="flex items-center gap-1 text-xs text-blue-700 dark:text-blue-400"
+                        className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400"
                       >
-                        <Check className="h-3 w-3 shrink-0 text-blue-600" />
+                        <Check className="h-3 w-3 shrink-0 text-orange-500 dark:text-orange-400" />
                         <span>{f}</span>
                       </div>
                     ))}
@@ -963,7 +963,7 @@ export default function RegisterPage() {
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-1 text-sm text-blue-600 hover:underline font-medium"
+                className="flex items-center gap-1 text-sm text-orange-500 dark:text-orange-400 hover:underline font-medium"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Sign in instead

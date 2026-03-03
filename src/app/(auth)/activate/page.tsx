@@ -61,7 +61,7 @@ function PasswordStrength({ password }: { password: string }) {
         : score <= 3
           ? "bg-yellow-500"
           : score <= 4
-            ? "bg-blue-500"
+            ? "bg-emerald-500"
             : "bg-green-500";
 
   if (!password) return null;
@@ -211,7 +211,7 @@ function ActivatePageContent() {
 
         {/* Logo */}
         <div className="mb-7 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-200/60 dark:shadow-blue-900/30">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-500 shadow-lg shadow-orange-200/60 dark:shadow-orange-900/30">
             <GraduationCap className="h-10 w-10 text-white" />
           </div>
           <h1 className="mt-4 text-3xl font-bold text-foreground">CampusIQ</h1>
@@ -222,7 +222,7 @@ function ActivatePageContent() {
         {tokenStatus === "loading" && (
           <Card className="shadow-xl border-0 ring-1 ring-border/60 dark:ring-slate-700/40">
             <CardContent className="flex flex-col items-center justify-center py-16">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
+              <Loader2 className="h-8 w-8 animate-spin text-orange-500 dark:text-orange-400 mb-4" />
               <p className="text-muted-foreground">
                 Validating your invitation...
               </p>
@@ -301,7 +301,7 @@ function ActivatePageContent() {
               <CardDescription>
                 Welcome, <strong>{userInfo.name}</strong>! Create a password to
                 activate your{" "}
-                <span className="capitalize font-medium text-blue-600">
+                <span className="capitalize font-medium text-orange-500 dark:text-orange-400">
                   {userInfo.role}
                 </span>{" "}
                 account.
@@ -310,9 +310,9 @@ function ActivatePageContent() {
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 {/* Account Info */}
-                <div className="flex items-start gap-2.5 rounded-xl bg-blue-50 p-3 border border-blue-100 dark:bg-blue-950/30 dark:border-blue-900">
-                  <ShieldCheck className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-                  <div className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">
+                <div className="flex items-start gap-2.5 rounded-xl bg-orange-50 p-3 border border-orange-100 dark:bg-orange-950/30 dark:border-orange-900">
+                  <ShieldCheck className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
+                  <div className="text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
                     <p>
                       <strong>Email:</strong> {userInfo.email}
                     </p>
@@ -444,7 +444,7 @@ export default function ActivatePage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-orange-500 dark:text-orange-400" />
         </div>
       }
     >

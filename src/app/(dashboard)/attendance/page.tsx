@@ -57,8 +57,8 @@ const quickActions = [
     description: "Take daily student attendance by class",
     href: "/attendance/mark",
     icon: ClipboardList,
-    color: "bg-blue-500",
-    lightColor: "bg-blue-50 dark:bg-blue-950",
+    color: "bg-orange-50 dark:bg-orange-950/300",
+    lightColor: "bg-orange-50 dark:bg-orange-950",
   },
   {
     title: "Attendance History",
@@ -73,8 +73,8 @@ const quickActions = [
     description: "Generate QR codes for quick check-in",
     href: "/attendance/qr",
     icon: QrCode,
-    color: "bg-purple-500",
-    lightColor: "bg-purple-50 dark:bg-purple-950",
+    color: "bg-amber-500",
+    lightColor: "bg-amber-50 dark:bg-amber-950",
   },
   {
     title: "Subject Attendance",
@@ -192,8 +192,8 @@ export default function AttendancePage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-50 dark:bg-blue-950">
-                <Users className="h-5 w-5 text-blue-500" />
+              <div className="p-2 rounded-lg bg-orange-50 dark:bg-orange-950">
+                <Users className="h-5 w-5 text-orange-500" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Students</p>
@@ -250,8 +250,8 @@ export default function AttendancePage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-950">
-                <TrendingUp className="h-5 w-5 text-purple-500" />
+              <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950">
+                <TrendingUp className="h-5 w-5 text-amber-500" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Attendance %</p>
@@ -306,7 +306,7 @@ export default function AttendancePage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 flex-shrink-0 mt-0.5">
+              <div className="h-6 w-6 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center text-xs font-bold text-orange-500 dark:text-orange-400 flex-shrink-0 mt-0.5">
                 1
               </div>
               <div>
@@ -319,7 +319,7 @@ export default function AttendancePage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 flex-shrink-0 mt-0.5">
+              <div className="h-6 w-6 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center text-xs font-bold text-orange-500 dark:text-orange-400 flex-shrink-0 mt-0.5">
                 2
               </div>
               <div>
@@ -330,7 +330,7 @@ export default function AttendancePage() {
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-xs font-bold text-blue-600 flex-shrink-0 mt-0.5">
+              <div className="h-6 w-6 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center text-xs font-bold text-orange-500 dark:text-orange-400 flex-shrink-0 mt-0.5">
                 3
               </div>
               <div>

@@ -56,7 +56,7 @@ const PRIORITY_STYLES: Record<string, string> = {
     "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-red-300 dark:border-red-700",
   high: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 border-orange-300 dark:border-orange-700",
   medium:
-    "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 border-blue-300 dark:border-blue-700",
+    "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 border-orange-300 dark:border-orange-600",
   low: "bg-muted text-foreground dark:bg-card dark:text-gray-200 border-border",
 };
 
@@ -455,7 +455,7 @@ export default function CircularsPage() {
             <div>
               <Label>Content *</Label>
               <textarea
-                className="w-full min-h-[120px] rounded-md border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full min-h-[120px] rounded-md border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 value={form.content}
                 onChange={(e) =>
                   setForm((p) => ({ ...p, content: e.target.value }))

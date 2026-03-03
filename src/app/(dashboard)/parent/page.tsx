@@ -175,11 +175,11 @@ export default function ParentDashboardPage() {
 
       {childrenData.map(({ child, attendance, grades, fees }) => (
         <Card key={child.student_id} className="overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-750 border-b dark:border-border">
+          <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-50 dark:from-gray-800 dark:to-gray-750 border-b dark:border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                  <GraduationCap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+                  <GraduationCap className="h-6 w-6 text-orange-500 dark:text-orange-400" />
                 </div>
                 <div>
                   <CardTitle className="text-xl">{child.name}</CardTitle>
@@ -257,7 +257,7 @@ export default function ParentDashboardPage() {
                     <CardTitle className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                       Academic Performance
                     </CardTitle>
-                    <BookOpen className="h-4 w-4 text-blue-500" />
+                    <BookOpen className="h-4 w-4 text-orange-500" />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -295,7 +295,7 @@ export default function ParentDashboardPage() {
                     <CardTitle className="text-sm font-medium text-muted-foreground dark:text-muted-foreground">
                       Fee Status
                     </CardTitle>
-                    <CreditCard className="h-4 w-4 text-purple-500" />
+                    <CreditCard className="h-4 w-4 text-amber-500" />
                   </div>
                 </CardHeader>
                 <CardContent>

@@ -82,7 +82,7 @@ export function LanguageSwitcher() {
               </span>
             </span>
             {locale === lang.code && (
-              <span className="h-2 w-2 rounded-full bg-blue-600" />
+              <span className="h-2 w-2 rounded-full bg-orange-500" />
             )}
           </DropdownMenuItem>
         ))}

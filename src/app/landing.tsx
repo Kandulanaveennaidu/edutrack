@@ -151,7 +151,7 @@ function ParticleField() {
       {Array.from({ length: 30 }).map((_, i) => (
         <div
           key={i}
-          className="absolute rounded-full bg-blue-500/10 dark:bg-blue-400/10"
+          className="absolute rounded-full bg-orange-500/10 dark:bg-amber-400/10"
           style={{
             width: `${Math.random() * 6 + 2}px`,
             height: `${Math.random() * 6 + 2}px`,
@@ -215,17 +215,17 @@ function PlanCard({
         className={cn(
           "group relative flex h-full flex-col rounded-2xl border bg-white/80 backdrop-blur-sm p-6 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 dark:bg-slate-900/80",
           plan.popular
-            ? "border-blue-500 ring-2 ring-blue-500 shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10"
-            : "border-slate-200/80 hover:border-blue-300 dark:border-slate-700/80 dark:hover:border-blue-600",
+            ? "border-orange-500 ring-2 ring-orange-500 shadow-xl shadow-orange-500/20 dark:shadow-orange-500/10"
+            : "border-slate-200/80 hover:border-orange-300 dark:border-slate-700/80 dark:hover:border-orange-600",
         )}
       >
         {/* Hover gradient overlay */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-50/0 to-indigo-50/0 transition-all duration-500 group-hover:from-blue-50/50 group-hover:to-indigo-50/50 dark:group-hover:from-blue-950/20 dark:group-hover:to-indigo-950/20" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-50/0 to-orange-50/0 transition-all duration-500 group-hover:from-orange-50/50 group-hover:to-orange-50/50 dark:group-hover:from-orange-950/20 dark:group-hover:to-orange-950/20" />
 
         <div className="relative z-10 flex flex-col flex-1">
           {plan.popular && (
             <div className="absolute -top-9 left-1/2 -translate-x-1/2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-blue-500/30">
+              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-1.5 text-xs font-semibold text-white shadow-lg shadow-orange-500/30">
                 <Sparkles className="h-3 w-3" />
                 Most Popular
               </span>
@@ -284,7 +284,7 @@ function PlanCard({
             className={cn(
               "mt-6 w-full group/btn transition-all duration-300",
               plan.popular
-                ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/25"
+                ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/25"
                 : "",
             )}
             size="lg"
@@ -314,8 +314,9 @@ const FEATURE_HIGHLIGHTS: {
     icon: Users,
     title: "Student Management",
     desc: "Complete student lifecycle from admission to graduation — enrollment, profiles, parent info, class assignments, and more.",
-    color: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
-    gradient: "from-blue-500 to-cyan-500",
+    color:
+      "bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400",
+    gradient: "from-orange-500 to-amber-500",
   },
   {
     icon: CalendarCheck,
@@ -330,8 +331,8 @@ const FEATURE_HIGHLIGHTS: {
     title: "Exam & Grades",
     desc: "Full exam scheduling, grade entry, automatic GPA calculation, and downloadable report cards.",
     color:
-      "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400",
-    gradient: "from-purple-500 to-pink-500",
+      "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400",
+    gradient: "from-amber-500 to-yellow-500",
   },
   {
     icon: DollarSign,
@@ -346,15 +347,15 @@ const FEATURE_HIGHLIGHTS: {
     title: "Hostel Management",
     desc: "Room & bed allocation, floor management, warden assignment, and occupancy tracking.",
     color: "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400",
-    gradient: "from-rose-500 to-pink-500",
+    gradient: "from-rose-500 to-orange-500",
   },
   {
     icon: Library,
     title: "Library System",
     desc: "Book catalog, issuing, returns, fine management with barcode scanning support.",
     color:
-      "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400",
-    gradient: "from-indigo-500 to-blue-500",
+      "bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400",
+    gradient: "from-orange-500 to-amber-500",
   },
   {
     icon: BusFront,
@@ -390,7 +391,7 @@ const FEATURE_HIGHLIGHTS: {
     title: "Salary Management",
     desc: "Automated salary calculation, payslips, deduction management, and payment history.",
     color: "bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400",
-    gradient: "from-pink-500 to-rose-500",
+    gradient: "from-amber-500 to-rose-500",
   },
   {
     icon: Shield,
@@ -398,7 +399,7 @@ const FEATURE_HIGHLIGHTS: {
     desc: "Granular role-based access control with custom roles and per-module permissions.",
     color:
       "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400",
-    gradient: "from-emerald-500 to-teal-500",
+    gradient: "from-emerald-500 to-green-500",
   },
 ];
 
@@ -408,14 +409,14 @@ const HOW_IT_WORKS = [
     title: "Register Your Institution",
     desc: "Create your institution account in under 2 minutes. No credit card required for the free trial.",
     icon: FileText,
-    color: "from-blue-500 to-cyan-500",
+    color: "from-orange-500 to-amber-500",
   },
   {
     step: "02",
     title: "Configure & Customize",
     desc: "Set up classes, add teachers, configure fee structures, and customize settings for your institution.",
     icon: Settings,
-    color: "from-purple-500 to-pink-500",
+    color: "from-amber-500 to-yellow-500",
   },
   {
     step: "03",
@@ -466,7 +467,7 @@ const TESTIMONIALS = [
       "CampusIQ transformed how we manage our school. Attendance tracking that used to take hours now happens in minutes. The fee management module alone saved us from hiring an extra accountant.",
     rating: 5,
     avatar: "RK",
-    gradient: "from-blue-500 to-cyan-500",
+    gradient: "from-orange-500 to-amber-500",
   },
   {
     name: "Priya Sharma",
@@ -475,7 +476,7 @@ const TESTIMONIALS = [
       "We switched from paper-based systems to CampusIQ and the difference is night and day. Parents love the real-time attendance notifications. The QR code attendance feature is a game changer.",
     rating: 5,
     avatar: "PS",
-    gradient: "from-purple-500 to-pink-500",
+    gradient: "from-amber-500 to-yellow-500",
   },
   {
     name: "Mohammed Fahad",
@@ -499,19 +500,19 @@ const WHY_CAMPUSIQ = [
     icon: Smartphone,
     title: "Mobile Friendly",
     desc: "Access from any device — desktop, tablet, or mobile. Fully responsive design.",
-    gradient: "from-blue-500 to-indigo-500",
+    gradient: "from-orange-500 to-amber-500",
   },
   {
     icon: Layers,
     title: "Modular Architecture",
     desc: "Only pay for modules you need. Start small and add features as your institution grows.",
-    gradient: "from-purple-500 to-pink-500",
+    gradient: "from-amber-500 to-yellow-500",
   },
   {
     icon: Database,
     title: "Cloud-Based",
     desc: "No software to install. Access your data from anywhere with automatic updates.",
-    gradient: "from-cyan-500 to-blue-500",
+    gradient: "from-teal-500 to-emerald-500",
   },
   {
     icon: Monitor,
@@ -523,7 +524,7 @@ const WHY_CAMPUSIQ = [
     icon: HeadphonesIcon,
     title: "Dedicated Support",
     desc: "Priority support with dedicated account managers for Pro and Enterprise plans.",
-    gradient: "from-rose-500 to-pink-500",
+    gradient: "from-rose-500 to-orange-500",
   },
 ];
 
@@ -584,12 +585,12 @@ function StatCounter({ stat }: { stat: (typeof STATS)[number] }) {
 
   return (
     <div ref={ref} className="group relative text-center">
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500/5 to-indigo-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-orange-500/5 to-amber-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       <div className="relative p-6">
-        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 transition-transform duration-300 group-hover:scale-110">
-          <stat.icon className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+        <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 transition-transform duration-300 group-hover:scale-110">
+          <stat.icon className="h-7 w-7 text-orange-600 dark:text-orange-400" />
         </div>
-        <div className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        <div className="text-4xl font-extrabold bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
           {display}
           {stat.suffix}
         </div>
@@ -632,10 +633,10 @@ function TypingText({ words }: { words: string[] }) {
 
   return (
     <span className="relative inline-block">
-      <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+      <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 bg-clip-text text-transparent">
         {displayed}
       </span>
-      <span className="ml-0.5 inline-block w-[3px] h-[0.85em] bg-blue-600 animate-pulse align-middle" />
+      <span className="ml-0.5 inline-block w-[3px] h-[0.85em] bg-orange-500 animate-pulse align-middle" />
     </span>
   );
 }
@@ -685,8 +686,8 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="group flex items-center gap-2.5">
             <div className="relative">
-              <div className="absolute inset-0 rounded-xl bg-blue-600/20 blur-md transition-all group-hover:bg-blue-600/30" />
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-lg shadow-blue-500/30">
+              <div className="absolute inset-0 rounded-xl bg-orange-500/20 blur-md transition-all group-hover:bg-orange-500/30" />
+              <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/30">
                 <GraduationCap className="h-5 w-5 text-white" />
               </div>
             </div>
@@ -703,7 +704,7 @@ export default function LandingPage() {
                 className="relative px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white group"
               >
                 {link.label}
-                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300 group-hover:left-2 group-hover:w-[calc(100%-16px)]" />
+                <span className="absolute bottom-0 left-1/2 h-0.5 w-0 bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-300 group-hover:left-2 group-hover:w-[calc(100%-16px)]" />
               </a>
             ))}
           </div>
@@ -720,7 +721,7 @@ export default function LandingPage() {
             <Button
               asChild
               size="sm"
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md shadow-blue-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/30"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-md shadow-orange-500/20 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/30"
             >
               <Link href="/register">
                 Get Started Free
@@ -756,7 +757,7 @@ export default function LandingPage() {
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-blue-50 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-blue-950/30 dark:hover:text-blue-400 transition-colors"
+                className="block rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-orange-50 hover:text-orange-600 dark:text-slate-400 dark:hover:bg-orange-950/30 dark:hover:text-orange-400 transition-colors"
               >
                 {link.label}
               </a>
@@ -777,28 +778,47 @@ export default function LandingPage() {
         className="relative overflow-hidden px-4 pb-28 pt-32 sm:pt-36 lg:pt-40 min-h-[90vh] flex items-center"
         onMouseMove={handleMouseMove}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/80 via-white to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-orange-50/80 via-amber-50/40 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-950" />
 
-        {/* Grid pattern */}
+        {/* Subtle warm grid pattern */}
         <div
           className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, #6366f1 1px, transparent 1px), linear-gradient(to bottom, #6366f1 1px, transparent 1px)",
+              "linear-gradient(to right, #f97316 1px, transparent 1px), linear-gradient(to bottom, #f97316 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
 
+        {/* Mountain silhouette at bottom of hero */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 overflow-hidden pointer-events-none">
+          <svg
+            viewBox="0 0 1440 120"
+            fill="none"
+            className="absolute bottom-0 w-full h-full"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0 120L1440 120L1440 60L1200 30L1080 50L960 20L840 45L720 10L600 40L480 15L360 50L240 25L120 55L0 30Z"
+              className="fill-white dark:fill-slate-950"
+            />
+            <path
+              d="M0 120L1440 120L1440 80L1300 50L1100 70L900 35L700 65L500 30L300 60L100 40L0 55Z"
+              className="fill-orange-100/40 dark:fill-slate-900/40"
+            />
+          </svg>
+        </div>
+
         <GradientOrb
-          className="bg-blue-400/20 dark:bg-blue-600/10 top-20 -left-20"
+          className="bg-orange-400/20 dark:bg-orange-600/10 top-20 -left-20"
           size="xl"
         />
         <GradientOrb
-          className="bg-indigo-400/20 dark:bg-indigo-600/10 top-40 -right-20"
+          className="bg-amber-400/20 dark:bg-amber-600/10 top-40 -right-20"
           size="lg"
         />
         <GradientOrb
-          className="bg-purple-400/15 dark:bg-purple-600/10 bottom-20 left-1/3"
+          className="bg-yellow-400/15 dark:bg-yellow-600/10 bottom-20 left-1/3"
           size="md"
         />
 
@@ -811,7 +831,7 @@ export default function LandingPage() {
             transform: `translate(${mousePos.x * 2}px, ${mousePos.y * 2}px)`,
           }}
         >
-          <BookOpen className="h-12 w-12 text-blue-500" />
+          <BookOpen className="h-12 w-12 text-orange-500" />
         </div>
         <div
           className="absolute top-48 right-[12%] hidden lg:block animate-float-slow opacity-20"
@@ -819,7 +839,7 @@ export default function LandingPage() {
             transform: `translate(${mousePos.x * -1.5}px, ${mousePos.y * -1.5}px)`,
           }}
         >
-          <GraduationCap className="h-16 w-16 text-indigo-500" />
+          <GraduationCap className="h-16 w-16 text-amber-500" />
         </div>
         <div
           className="absolute bottom-40 left-[8%] hidden lg:block animate-float-reverse opacity-15"
@@ -827,7 +847,7 @@ export default function LandingPage() {
             transform: `translate(${mousePos.x * 1}px, ${mousePos.y * 1}px)`,
           }}
         >
-          <CalendarCheck className="h-10 w-10 text-purple-500" />
+          <CalendarCheck className="h-10 w-10 text-orange-500" />
         </div>
         <div
           className="absolute bottom-60 right-[8%] hidden lg:block animate-float opacity-15"
@@ -836,16 +856,16 @@ export default function LandingPage() {
             transform: `translate(${mousePos.x * -2}px, ${mousePos.y * -2}px)`,
           }}
         >
-          <BarChart3 className="h-12 w-12 text-cyan-500" />
+          <BarChart3 className="h-12 w-12 text-amber-500" />
         </div>
 
         <div className="relative mx-auto max-w-6xl text-center">
           {/* Badge */}
           <div
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/80 backdrop-blur-sm px-5 py-2 text-sm font-medium text-blue-700 dark:border-blue-800/60 dark:bg-blue-950/50 dark:text-blue-300 shadow-sm animate-slide-down opacity-0"
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-orange-200 dark:border-orange-800/60 bg-orange-50/80 backdrop-blur-sm px-5 py-2 text-sm font-medium text-orange-700 dark:bg-orange-950/50 dark:text-orange-300 shadow-sm animate-slide-down opacity-0"
             style={{ animationFillMode: "forwards" }}
           >
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 animate-pulse">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 animate-pulse">
               <Zap className="h-3 w-3 text-white" />
             </div>
             Trusted by 500+ institutions across India
@@ -887,7 +907,7 @@ export default function LandingPage() {
           >
             Streamline attendance, fees, exams, hostel, library, transport,
             salary — and{" "}
-            <span className="font-semibold text-blue-600 dark:text-blue-400">
+            <span className="font-semibold text-orange-600 dark:text-orange-400">
               20+ more modules
             </span>
             . Built for modern institutions, trusted by thousands.
@@ -901,7 +921,7 @@ export default function LandingPage() {
             <Button
               asChild
               size="lg"
-              className="group h-14 px-10 text-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-xl shadow-blue-500/25 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/30 hover:-translate-y-0.5"
+              className="group h-14 px-10 text-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-xl shadow-orange-500/25 transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/30 hover:-translate-y-0.5"
             >
               <Link href="/register">
                 Start Free 7-Day Trial
@@ -912,10 +932,10 @@ export default function LandingPage() {
               asChild
               size="lg"
               variant="outline"
-              className="group h-14 px-10 text-lg border-slate-300 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 hover:-translate-y-0.5"
+              className="group h-14 px-10 text-lg border-slate-300 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-700 transition-all duration-300 hover:-translate-y-0.5"
             >
               <a href="#how-it-works">
-                <div className="relative mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md">
+                <div className="relative mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-amber-500 shadow-md">
                   <Play className="h-3.5 w-3.5 text-white ml-0.5" />
                 </div>
                 See How It Works
@@ -950,7 +970,7 @@ export default function LandingPage() {
             style={{ animationDelay: "1.3s", animationFillMode: "forwards" }}
           >
             <div
-              className="rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm p-2 shadow-2xl shadow-slate-900/10 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-blue-900/10 transition-transform duration-500"
+              className="rounded-2xl border border-slate-200/80 bg-white/90 backdrop-blur-sm p-2 shadow-2xl shadow-slate-900/10 dark:border-slate-700/80 dark:bg-slate-900/90 dark:shadow-orange-900/10 transition-transform duration-500"
               style={{
                 transform: `perspective(1000px) rotateY(${mousePos.x * 0.15}deg) rotateX(${-mousePos.y * 0.15}deg)`,
               }}
@@ -976,8 +996,8 @@ export default function LandingPage() {
                   {
                     label: "Total Students",
                     value: "2,450",
-                    color: "text-blue-600",
-                    bg: "bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-800/10",
+                    color: "text-orange-600 dark:text-orange-400",
+                    bg: "bg-gradient-to-br from-orange-50 to-amber-100/50 dark:from-orange-900/20 dark:to-orange-800/10",
                     icon: Users,
                   },
                   {
@@ -997,8 +1017,8 @@ export default function LandingPage() {
                   {
                     label: "Active Teachers",
                     value: "156",
-                    color: "text-purple-600",
-                    bg: "bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-800/10",
+                    color: "text-amber-600",
+                    bg: "bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-800/10",
                     icon: GraduationCap,
                   },
                 ].map((stat) => (
@@ -1038,7 +1058,7 @@ export default function LandingPage() {
                         className="flex flex-1 flex-col items-center gap-1.5"
                       >
                         <div
-                          className="w-full rounded-lg bg-gradient-to-t from-blue-600 to-blue-400 dark:from-blue-700 dark:to-blue-500 transition-all duration-500 hover:from-indigo-600 hover:to-indigo-400"
+                          className="w-full rounded-lg bg-gradient-to-t from-orange-500 to-amber-400 dark:from-orange-700 dark:to-amber-500 transition-all duration-500 hover:from-orange-500 hover:to-orange-400"
                           style={{ height: `${v * 0.8}px` }}
                         />
                         <span className="text-[10px] font-medium text-slate-400">
@@ -1061,7 +1081,7 @@ export default function LandingPage() {
                     ].map((action) => (
                       <div
                         key={action}
-                        className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 dark:bg-slate-800/80 dark:text-slate-300 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 cursor-pointer"
+                        className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600 dark:bg-slate-800/80 dark:text-slate-300 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:hover:bg-orange-900/20 dark:hover:text-orange-400 cursor-pointer"
                       >
                         <ChevronRight className="h-3 w-3" />
                         {action}
@@ -1073,9 +1093,9 @@ export default function LandingPage() {
             </div>
 
             {/* Glow effects */}
-            <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-r from-blue-400/20 via-indigo-400/20 to-purple-400/20 blur-3xl animate-pulse-glow dark:from-blue-600/10 dark:via-indigo-600/10 dark:to-purple-600/10" />
+            <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-r from-orange-400/20 via-amber-400/20 to-yellow-400/20 blur-3xl animate-pulse-glow dark:from-orange-600/10 dark:via-amber-600/10 dark:to-yellow-600/10" />
             <div
-              className="absolute -inset-8 -z-20 rounded-3xl bg-gradient-to-r from-blue-300/10 to-purple-300/10 blur-3xl animate-pulse-glow dark:from-blue-700/5 dark:to-purple-700/5"
+              className="absolute -inset-8 -z-20 rounded-3xl bg-gradient-to-r from-orange-300/10 to-amber-300/10 blur-3xl animate-pulse-glow dark:from-orange-700/5 dark:to-amber-700/5"
               style={{ animationDelay: "1.5s" }}
             />
           </div>
@@ -1084,7 +1104,7 @@ export default function LandingPage() {
           <div className="mt-12 flex justify-center animate-bounce-subtle">
             <a
               href="#stats"
-              className="flex flex-col items-center gap-1 text-slate-400 hover:text-blue-600 transition-colors"
+              className="flex flex-col items-center gap-1 text-slate-400 hover:text-orange-600 dark:text-orange-400 transition-colors"
             >
               <span className="text-xs font-medium">Scroll to explore</span>
               <ChevronDown className="h-5 w-5" />
@@ -1096,7 +1116,7 @@ export default function LandingPage() {
       {/* ═══════════════════ STATS BAR ═══════════════════ */}
       <section
         id="stats"
-        className="relative border-y border-slate-200/60 bg-gradient-to-r from-slate-50 via-white to-slate-50 dark:border-slate-800/60 dark:from-slate-900/50 dark:via-slate-900/80 dark:to-slate-900/50"
+        className="relative border-y border-orange-200/40 bg-gradient-to-r from-orange-50/50 via-white to-orange-50/50 dark:border-slate-800/60 dark:from-slate-900/50 dark:via-slate-900/80 dark:to-slate-900/50"
       >
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-16 sm:grid-cols-4">
           {STATS.map((stat) => (
@@ -1109,24 +1129,24 @@ export default function LandingPage() {
       <section id="features" className="relative px-4 py-28">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <GradientOrb
-            className="bg-blue-400/5 dark:bg-blue-600/5 -top-20 -right-40"
+            className="bg-orange-400/5 dark:bg-orange-600/5 -top-20 -right-40"
             size="xl"
           />
           <GradientOrb
-            className="bg-purple-400/5 dark:bg-purple-600/5 bottom-20 -left-40"
+            className="bg-amber-400/5 dark:bg-amber-600/5 bottom-20 -left-40"
             size="lg"
           />
         </div>
 
         <div className="relative mx-auto max-w-7xl">
           <AnimateOnScroll direction="up" className="mb-16 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200/60 bg-blue-50/80 px-5 py-2 text-sm font-semibold text-blue-700 dark:border-blue-800/60 dark:bg-blue-950/50 dark:text-blue-300 backdrop-blur-sm">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200 dark:border-orange-800/60 bg-orange-50/80 px-5 py-2 text-sm font-semibold text-orange-700 dark:bg-orange-950/50 dark:text-orange-300 backdrop-blur-sm">
               <Layers className="h-4 w-4" />
               20+ Powerful Modules
             </div>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
               Everything You Need to{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                 Run Your Institution
               </span>
             </h2>
@@ -1169,7 +1189,7 @@ export default function LandingPage() {
                     >
                       <f.icon className="h-6 w-6" />
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                       {f.title}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground dark:text-slate-400">
@@ -1186,10 +1206,10 @@ export default function LandingPage() {
       {/* ═══════════════════ HOW IT WORKS ═══════════════════ */}
       <section
         id="how-it-works"
-        className="relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/50 dark:to-slate-950 px-4 py-28 overflow-hidden"
+        className="relative bg-gradient-to-b from-orange-50/40 to-white dark:from-slate-900/50 dark:to-slate-950 px-4 py-28 overflow-hidden"
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-blue-100/30 dark:bg-blue-900/10 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-orange-100/30 dark:bg-orange-900/10 blur-3xl" />
         </div>
 
         <div className="relative mx-auto max-w-7xl">
@@ -1216,8 +1236,8 @@ export default function LandingPage() {
                 <div className="relative group">
                   {idx < HOW_IT_WORKS.length - 1 && (
                     <div className="absolute top-14 left-[calc(50%+48px)] hidden w-[calc(100%-48px)] lg:block">
-                      <div className="h-0.5 w-full bg-gradient-to-r from-blue-300 via-blue-200 to-transparent dark:from-blue-700 dark:via-blue-800 dark:to-transparent" />
-                      <div className="absolute right-0 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-blue-300 dark:bg-blue-700" />
+                      <div className="h-0.5 w-full bg-gradient-to-r from-orange-300 via-amber-200 to-transparent dark:from-orange-700 dark:via-amber-800 dark:to-transparent" />
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-orange-300 dark:bg-orange-700" />
                     </div>
                   )}
 
@@ -1237,8 +1257,8 @@ export default function LandingPage() {
                       >
                         <item.icon className="h-10 w-10 text-white" />
                       </div>
-                      <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-lg border-2 border-blue-200 dark:border-blue-800">
-                        <span className="text-xs font-extrabold text-blue-600">
+                      <div className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-slate-800 shadow-lg border-2 border-orange-200 dark:border-orange-800">
+                        <span className="text-xs font-extrabold text-orange-600 dark:text-orange-400">
                           {item.step}
                         </span>
                       </div>
@@ -1261,7 +1281,7 @@ export default function LandingPage() {
       {/* ═══════════════════ WHY CAMPUSIQ ═══════════════════ */}
       <section className="relative px-4 py-28 overflow-hidden">
         <GradientOrb
-          className="bg-purple-400/10 dark:bg-purple-600/5 -top-40 right-0"
+          className="bg-orange-400/10 dark:bg-orange-600/5 -top-40 right-0"
           size="xl"
         />
 
@@ -1269,13 +1289,13 @@ export default function LandingPage() {
           <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
             <AnimateOnScroll direction="right">
               <div>
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200/60 bg-purple-50/80 px-5 py-2 text-sm font-semibold text-purple-700 dark:border-purple-800/60 dark:bg-purple-950/50 dark:text-purple-300">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200/60 bg-orange-50/80 px-5 py-2 text-sm font-semibold text-orange-700 dark:border-orange-800/60 dark:bg-orange-950/50 dark:text-orange-300">
                   <Award className="h-4 w-4" />
                   Why Choose Us
                 </div>
                 <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
                   Built for Institutions That Want to{" "}
-                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                     Go Digital
                   </span>
                 </h2>
@@ -1310,7 +1330,7 @@ export default function LandingPage() {
                 <Button
                   asChild
                   size="lg"
-                  className="mt-10 group h-13 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/30"
+                  className="mt-10 group h-13 px-8 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 shadow-lg shadow-orange-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/30"
                 >
                   <Link href="/register">
                     Start Your Free Trial
@@ -1364,22 +1384,19 @@ export default function LandingPage() {
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage:
-              "radial-gradient(circle at center, #60a5fa 1px, transparent 1px)",
+              "radial-gradient(circle at center, #f97316 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
 
-        <GradientOrb className="bg-blue-600/10 top-0 left-1/4" size="xl" />
-        <GradientOrb
-          className="bg-indigo-600/10 bottom-0 right-1/4"
-          size="lg"
-        />
+        <GradientOrb className="bg-orange-600/10 top-0 left-1/4" size="xl" />
+        <GradientOrb className="bg-amber-600/10 bottom-0 right-1/4" size="lg" />
 
         <div className="relative mx-auto max-w-7xl">
           <AnimateOnScroll direction="up" className="mb-16 text-center">
             <h2 className="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
               One Platform,{" "}
-              <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-400 to-amber-400 bg-clip-text text-transparent">
                 Endless Possibilities
               </span>
             </h2>
@@ -1392,11 +1409,11 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {MODULES.map((mod, i) => (
               <AnimateOnScroll key={mod.label} direction="scale" delay={i * 40}>
-                <div className="group relative flex flex-col items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-800/30 backdrop-blur-sm p-5 transition-all duration-500 hover:border-blue-500/60 hover:bg-blue-500/10 hover:-translate-y-1 cursor-pointer">
-                  <div className="absolute inset-0 rounded-xl bg-blue-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="group relative flex flex-col items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-800/30 backdrop-blur-sm p-5 transition-all duration-500 hover:border-orange-500/60 hover:bg-orange-50 dark:bg-orange-950/300/10 hover:-translate-y-1 cursor-pointer">
+                  <div className="absolute inset-0 rounded-xl bg-orange-50 dark:bg-orange-950/300/5 opacity-0 transition-opacity group-hover:opacity-100" />
 
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-slate-700/50 transition-all duration-300 group-hover:bg-blue-500/20 group-hover:scale-110">
-                    <mod.icon className="h-6 w-6 text-slate-400 transition-colors duration-300 group-hover:text-blue-400" />
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-slate-700/50 transition-all duration-300 group-hover:bg-orange-50 dark:bg-orange-950/300/20 group-hover:scale-110">
+                    <mod.icon className="h-6 w-6 text-slate-400 transition-colors duration-300 group-hover:text-orange-400" />
                   </div>
                   <span className="relative text-xs font-semibold text-slate-400 transition-colors group-hover:text-white">
                     {mod.label}
@@ -1486,14 +1503,14 @@ export default function LandingPage() {
       {/* ═══════════════════ PRICING ═══════════════════ */}
       <section
         id="pricing"
-        className="relative bg-gradient-to-b from-slate-50 to-white dark:from-slate-900/50 dark:to-slate-950 px-4 py-28 overflow-hidden"
+        className="relative bg-gradient-to-b from-amber-50/30 to-white dark:from-slate-900/50 dark:to-slate-950 px-4 py-28 overflow-hidden"
       >
         <GradientOrb
           className="bg-green-400/5 dark:bg-green-600/5 -top-20 left-1/4"
           size="xl"
         />
         <GradientOrb
-          className="bg-blue-400/5 dark:bg-blue-600/5 bottom-20 right-1/4"
+          className="bg-orange-400/5 dark:bg-orange-600/5 bottom-20 right-1/4"
           size="lg"
         />
 
@@ -1521,7 +1538,7 @@ export default function LandingPage() {
                 className={cn(
                   "rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-300",
                   billing === "monthly"
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
                 )}
               >
@@ -1533,7 +1550,7 @@ export default function LandingPage() {
                 className={cn(
                   "rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-300 flex items-center gap-2",
                   billing === "yearly"
-                    ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
+                    ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
                 )}
               >
@@ -1564,13 +1581,13 @@ export default function LandingPage() {
       <section id="faq" className="relative px-4 py-28">
         <div className="relative mx-auto max-w-3xl">
           <AnimateOnScroll direction="up" className="mb-16 text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-200/60 bg-indigo-50/80 px-5 py-2 text-sm font-semibold text-indigo-700 dark:border-indigo-800/60 dark:bg-indigo-950/50 dark:text-indigo-300">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200/60 bg-orange-50/80 px-5 py-2 text-sm font-semibold text-orange-700 dark:border-orange-800/60 dark:bg-orange-950/50 dark:text-orange-300">
               <Bell className="h-4 w-4" />
               FAQ
             </div>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
               Frequently Asked{" "}
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
                 Questions
               </span>
             </h2>
@@ -1582,7 +1599,7 @@ export default function LandingPage() {
           <div className="space-y-3">
             {FAQS.map((faq, idx) => (
               <AnimateOnScroll key={idx} direction="up" delay={idx * 80}>
-                <div className="group rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-blue-200 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900/80 dark:hover:border-blue-800 overflow-hidden">
+                <div className="group rounded-2xl border border-slate-200/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:border-orange-200 dark:border-orange-800 hover:shadow-lg dark:border-slate-700/80 dark:bg-slate-900/80 dark:hover:border-orange-800 overflow-hidden">
                   <button
                     type="button"
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -1595,7 +1612,7 @@ export default function LandingPage() {
                       className={cn(
                         "flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all duration-300",
                         openFaq === idx
-                          ? "bg-blue-600 text-white rotate-180"
+                          ? "bg-orange-500 text-white rotate-180"
                           : "bg-slate-100 text-slate-400 dark:bg-slate-800",
                       )}
                     >
@@ -1623,7 +1640,7 @@ export default function LandingPage() {
 
       {/* ═══════════════════ CTA ═══════════════════ */}
       <section className="relative overflow-hidden px-4 py-28">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700" />
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600" />
 
         <div
           className="absolute inset-0 opacity-10"
@@ -1649,7 +1666,7 @@ export default function LandingPage() {
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl leading-tight">
             Ready to Transform Your Institution?
           </h2>
-          <p className="mt-6 text-lg text-blue-100/90 leading-relaxed max-w-2xl mx-auto">
+          <p className="mt-6 text-lg text-orange-100/90 leading-relaxed max-w-2xl mx-auto">
             Join 500+ institutions already using CampusIQ to manage their
             institutions efficiently. Start your free 7-day trial today — no
             credit card required.
@@ -1658,7 +1675,7 @@ export default function LandingPage() {
             <Button
               asChild
               size="lg"
-              className="group h-14 bg-white px-10 text-lg text-blue-600 hover:bg-blue-50 shadow-xl shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
+              className="group h-14 bg-white px-10 text-lg text-orange-600 dark:text-orange-400 hover:bg-orange-50 shadow-xl shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl"
             >
               <Link href="/register">
                 Get Started Free
@@ -1683,7 +1700,7 @@ export default function LandingPage() {
           className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage:
-              "linear-gradient(to right, #6366f1 1px, transparent 1px), linear-gradient(to bottom, #6366f1 1px, transparent 1px)",
+              "linear-gradient(to right, #f97316 1px, transparent 1px), linear-gradient(to bottom, #f97316 1px, transparent 1px)",
             backgroundSize: "60px 60px",
           }}
         />
@@ -1693,7 +1710,7 @@ export default function LandingPage() {
             {/* Brand */}
             <div className="md:col-span-1">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/30">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/30">
                   <GraduationCap className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-white">CampusIQ</span>
@@ -1707,7 +1724,7 @@ export default function LandingPage() {
                   {["RK", "PS", "MF", "AK"].map((initials) => (
                     <div
                       key={initials}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white border-2 border-slate-900"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-[10px] font-bold text-white border-2 border-slate-900"
                     >
                       {initials}
                     </div>
@@ -1775,24 +1792,24 @@ export default function LandingPage() {
               </h4>
               <ul className="space-y-4 text-sm">
                 <li className="flex items-center gap-3 text-slate-400 group">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 transition-colors group-hover:bg-blue-600/20">
-                    <Mail className="h-4 w-4 text-blue-400" />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 transition-colors group-hover:bg-orange-600/20">
+                    <Mail className="h-4 w-4 text-orange-400" />
                   </div>
                   <span className="group-hover:text-white transition-colors">
                     support@campusiq.in
                   </span>
                 </li>
                 <li className="flex items-center gap-3 text-slate-400 group">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 transition-colors group-hover:bg-blue-600/20">
-                    <Phone className="h-4 w-4 text-blue-400" />
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 transition-colors group-hover:bg-orange-600/20">
+                    <Phone className="h-4 w-4 text-orange-400" />
                   </div>
                   <span className="group-hover:text-white transition-colors">
                     +91 1800-123-4567
                   </span>
                 </li>
                 <li className="flex items-start gap-3 text-slate-400 group">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800 transition-colors group-hover:bg-blue-600/20">
-                    <MapPin className="h-4 w-4 text-blue-400" />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-800 transition-colors group-hover:bg-orange-600/20">
+                    <MapPin className="h-4 w-4 text-orange-400" />
                   </div>
                   <span className="group-hover:text-white transition-colors">
                     Hyderabad, Telangana, India

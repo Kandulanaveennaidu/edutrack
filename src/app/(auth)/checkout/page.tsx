@@ -48,57 +48,28 @@ const PLAN_PRICES_USD: Record<string, number> = {
   enterprise: 47.99,
 };
 
-const US_STATES = [
-  { value: "AL", label: "Alabama" },
-  { value: "AK", label: "Alaska" },
-  { value: "AZ", label: "Arizona" },
-  { value: "AR", label: "Arkansas" },
-  { value: "CA", label: "California" },
-  { value: "CO", label: "Colorado" },
-  { value: "CT", label: "Connecticut" },
-  { value: "DE", label: "Delaware" },
-  { value: "FL", label: "Florida" },
-  { value: "GA", label: "Georgia" },
-  { value: "HI", label: "Hawaii" },
-  { value: "ID", label: "Idaho" },
-  { value: "IL", label: "Illinois" },
-  { value: "IN", label: "Indiana" },
-  { value: "IA", label: "Iowa" },
-  { value: "KS", label: "Kansas" },
-  { value: "KY", label: "Kentucky" },
-  { value: "LA", label: "Louisiana" },
-  { value: "ME", label: "Maine" },
-  { value: "MD", label: "Maryland" },
-  { value: "MA", label: "Massachusetts" },
-  { value: "MI", label: "Michigan" },
-  { value: "MN", label: "Minnesota" },
-  { value: "MS", label: "Mississippi" },
-  { value: "MO", label: "Missouri" },
-  { value: "MT", label: "Montana" },
-  { value: "NE", label: "Nebraska" },
-  { value: "NV", label: "Nevada" },
-  { value: "NH", label: "New Hampshire" },
-  { value: "NJ", label: "New Jersey" },
-  { value: "NM", label: "New Mexico" },
-  { value: "NY", label: "New York" },
-  { value: "NC", label: "North Carolina" },
-  { value: "ND", label: "North Dakota" },
-  { value: "OH", label: "Ohio" },
-  { value: "OK", label: "Oklahoma" },
-  { value: "OR", label: "Oregon" },
-  { value: "PA", label: "Pennsylvania" },
-  { value: "RI", label: "Rhode Island" },
-  { value: "SC", label: "South Carolina" },
-  { value: "SD", label: "South Dakota" },
-  { value: "TN", label: "Tennessee" },
-  { value: "TX", label: "Texas" },
-  { value: "UT", label: "Utah" },
-  { value: "VT", label: "Vermont" },
-  { value: "VA", label: "Virginia" },
-  { value: "WA", label: "Washington" },
-  { value: "WV", label: "West Virginia" },
-  { value: "WI", label: "Wisconsin" },
-  { value: "WY", label: "Wyoming" },
+// ─── Country options ─────────────────────────────────────────────────────────
+const COUNTRIES = [
+  { value: "US", label: "United States" },
+  { value: "IN", label: "India" },
+  { value: "GB", label: "United Kingdom" },
+  { value: "CA", label: "Canada" },
+  { value: "AU", label: "Australia" },
+  { value: "DE", label: "Germany" },
+  { value: "FR", label: "France" },
+  { value: "AE", label: "United Arab Emirates" },
+  { value: "SG", label: "Singapore" },
+  { value: "JP", label: "Japan" },
+  { value: "BR", label: "Brazil" },
+  { value: "MX", label: "Mexico" },
+  { value: "ZA", label: "South Africa" },
+  { value: "NG", label: "Nigeria" },
+  { value: "KE", label: "Kenya" },
+  { value: "PH", label: "Philippines" },
+  { value: "MY", label: "Malaysia" },
+  { value: "ID", label: "Indonesia" },
+  { value: "NZ", label: "New Zealand" },
+  { value: "SA", label: "Saudi Arabia" },
 ];
 
 // ─── Card formatting helpers ─────────────────────────────────────────────────
@@ -145,8 +116,11 @@ function validateForm(
   if (!billing.address.trim()) errors.address = "Street address is required";
   if (!billing.city.trim()) errors.city = "City is required";
   if (!billing.state) errors.state = "State is required";
-  if (!billing.zip.trim() || !/^\d{5}(-\d{4})?$/.test(billing.zip))
-    errors.zip = "Valid ZIP code is required";
+  if (
+    !billing.zip.trim() ||
+    !/^[a-zA-Z0-9\s\-]{3,10}$/.test(billing.zip.trim())
+  )
+    errors.zip = "Valid ZIP / postal code is required";
 
   const cardDigits = card.number.replace(/\D/g, "");
   if (!cardDigits || cardDigits.length < 13 || cardDigits.length > 16)
@@ -196,6 +170,22 @@ function CheckoutInner() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [processing, setProcessing] = useState(false);
   const [touched, setTouched] = useState<Set<string>>(new Set());
+
+  // ── Helpers: functional setState + real-time error clearing ──────────────
+  const updateBilling = (field: string, value: string) => {
+    setBilling((prev) => ({ ...prev, [field]: value }));
+    if (errors[field as keyof FormErrors]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const updateCard = (field: string, value: string) => {
+    setCard((prev) => ({ ...prev, [field]: value }));
+    const errorKey = field === "number" ? "cardNumber" : field;
+    if (errors[errorKey as keyof FormErrors]) {
+      setErrors((prev) => ({ ...prev, [errorKey]: undefined }));
+    }
+  };
 
   const planConfig = PLANS.find((p) => p.id === planId);
   const monthlyPrice = PLAN_PRICES_USD[planId] || 0;
@@ -274,9 +264,10 @@ function CheckoutInner() {
     );
 
     if (Object.keys(validationErrors).length > 0) {
+      const errorFields = Object.values(validationErrors).filter(Boolean);
       showError(
         "Validation Error",
-        "Please fill in all required fields correctly.",
+        `Please fix the following: ${errorFields.join(", ")}`,
       );
       return;
     }
@@ -343,13 +334,13 @@ function CheckoutInner() {
     touched.has(field) && errors[field];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-orange-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 dark:border-slate-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-              <GraduationCap className="h-8 w-8 text-blue-600" />
+              <GraduationCap className="h-8 w-8 text-orange-500 dark:text-orange-400" />
               <span className="text-xl font-bold text-slate-900 dark:text-white">
                 CampusIQ
               </span>
@@ -374,6 +365,51 @@ function CheckoutInner() {
           Back to {source === "billing" ? "Billing" : "Plans"}
         </Button>
 
+        {/* Progress Steps */}
+        <div className="mb-8 flex items-center justify-center gap-0">
+          {[
+            { step: 1, label: "Billing Details", icon: Building2 },
+            { step: 2, label: "Payment Info", icon: CreditCard },
+            { step: 3, label: "Confirm & Pay", icon: ShieldCheck },
+          ].map(({ step, label, icon: Icon }, idx) => (
+            <div key={step} className="flex items-center">
+              {idx > 0 && (
+                <div className="w-8 sm:w-16 h-0.5 bg-orange-200 dark:bg-orange-800" />
+              )}
+              <div className="flex flex-col items-center gap-1.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-500 text-white shadow-md shadow-orange-200 dark:shadow-orange-900/40">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                  {label}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Processing Overlay */}
+        {processing && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div className="rounded-2xl bg-white dark:bg-slate-900 p-8 shadow-2xl text-center space-y-4 max-w-sm mx-4">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/40">
+                <Loader2 className="h-8 w-8 animate-spin text-orange-500 dark:text-orange-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                Processing Payment
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Please wait while we securely process your payment via
+                Authorize.net...
+              </p>
+              <div className="flex items-center justify-center gap-2 text-xs text-green-600 dark:text-green-400">
+                <Lock className="h-3 w-3" />
+                <span>256-bit TLS encrypted</span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-8 lg:grid-cols-5">
           {/* ─── Left: Billing & Payment Form (3 cols) ─────────────────────── */}
           <div className="lg:col-span-3 space-y-6">
@@ -381,7 +417,7 @@ function CheckoutInner() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <Building2 className="h-5 w-5 text-orange-500 dark:text-orange-400" />
                   Billing Information
                 </CardTitle>
                 <CardDescription>
@@ -404,7 +440,7 @@ function CheckoutInner() {
                       placeholder="John"
                       value={billing.firstName}
                       onChange={(e) =>
-                        setBilling({ ...billing, firstName: e.target.value })
+                        updateBilling("firstName", e.target.value)
                       }
                       onBlur={() => handleFieldBlur("firstName")}
                       className={
@@ -429,7 +465,7 @@ function CheckoutInner() {
                       placeholder="Doe"
                       value={billing.lastName}
                       onChange={(e) =>
-                        setBilling({ ...billing, lastName: e.target.value })
+                        updateBilling("lastName", e.target.value)
                       }
                       onBlur={() => handleFieldBlur("lastName")}
                       className={
@@ -456,9 +492,7 @@ function CheckoutInner() {
                       type="email"
                       placeholder="john@school.edu"
                       value={billing.email}
-                      onChange={(e) =>
-                        setBilling({ ...billing, email: e.target.value })
-                      }
+                      onChange={(e) => updateBilling("email", e.target.value)}
                       onBlur={() => handleFieldBlur("email")}
                       className={
                         showFieldError("email")
@@ -480,9 +514,7 @@ function CheckoutInner() {
                       type="tel"
                       placeholder="(555) 123-4567"
                       value={billing.phone}
-                      onChange={(e) =>
-                        setBilling({ ...billing, phone: e.target.value })
-                      }
+                      onChange={(e) => updateBilling("phone", e.target.value)}
                     />
                   </div>
                 </div>
@@ -497,9 +529,7 @@ function CheckoutInner() {
                     id="company"
                     placeholder="Springfield School District"
                     value={billing.company}
-                    onChange={(e) =>
-                      setBilling({ ...billing, company: e.target.value })
-                    }
+                    onChange={(e) => updateBilling("company", e.target.value)}
                   />
                 </div>
 
@@ -513,9 +543,7 @@ function CheckoutInner() {
                     id="address"
                     placeholder="123 Main Street, Suite 100"
                     value={billing.address}
-                    onChange={(e) =>
-                      setBilling({ ...billing, address: e.target.value })
-                    }
+                    onChange={(e) => updateBilling("address", e.target.value)}
                     onBlur={() => handleFieldBlur("address")}
                     className={
                       showFieldError("address")
@@ -528,6 +556,29 @@ function CheckoutInner() {
                   )}
                 </div>
 
+                {/* Country */}
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                    Country <span className="text-red-500">*</span>
+                  </Label>
+                  <Select
+                    value={billing.country}
+                    onValueChange={(v) => updateBilling("country", v)}
+                  >
+                    <SelectTrigger id="country">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {COUNTRIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>
+                          {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* City, State, ZIP */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
@@ -538,9 +589,7 @@ function CheckoutInner() {
                       id="city"
                       placeholder="Springfield"
                       value={billing.city}
-                      onChange={(e) =>
-                        setBilling({ ...billing, city: e.target.value })
-                      }
+                      onChange={(e) => updateBilling("city", e.target.value)}
                       onBlur={() => handleFieldBlur("city")}
                       className={
                         showFieldError("city")
@@ -554,49 +603,34 @@ function CheckoutInner() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="state">
-                      State <span className="text-red-500">*</span>
+                      State / Province <span className="text-red-500">*</span>
                     </Label>
-                    <Select
+                    <Input
+                      id="state"
+                      placeholder="e.g. California, Telangana"
                       value={billing.state}
-                      onValueChange={(v) =>
-                        setBilling({ ...billing, state: v })
+                      onChange={(e) => updateBilling("state", e.target.value)}
+                      onBlur={() => handleFieldBlur("state")}
+                      className={
+                        showFieldError("state")
+                          ? "border-red-500 focus-visible:ring-red-500"
+                          : ""
                       }
-                    >
-                      <SelectTrigger
-                        id="state"
-                        className={
-                          showFieldError("state")
-                            ? "border-red-500 focus:ring-red-500"
-                            : ""
-                        }
-                        onBlur={() => handleFieldBlur("state")}
-                      >
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {US_STATES.map((s) => (
-                          <SelectItem key={s.value} value={s.value}>
-                            {s.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                     {showFieldError("state") && (
                       <p className="text-xs text-red-500">{errors.state}</p>
                     )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="zip">
-                      ZIP Code <span className="text-red-500">*</span>
+                      ZIP / Postal Code <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="zip"
-                      placeholder="62704"
+                      placeholder="62704 or 500001"
                       maxLength={10}
                       value={billing.zip}
-                      onChange={(e) =>
-                        setBilling({ ...billing, zip: e.target.value })
-                      }
+                      onChange={(e) => updateBilling("zip", e.target.value)}
                       onBlur={() => handleFieldBlur("zip")}
                       className={
                         showFieldError("zip")
@@ -616,7 +650,7 @@ function CheckoutInner() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <CreditCard className="h-5 w-5 text-blue-600" />
+                  <CreditCard className="h-5 w-5 text-orange-500 dark:text-orange-400" />
                   Payment Method
                 </CardTitle>
                 <CardDescription>
@@ -637,10 +671,7 @@ function CheckoutInner() {
                       value={card.number}
                       maxLength={19}
                       onChange={(e) =>
-                        setCard({
-                          ...card,
-                          number: formatCardNumber(e.target.value),
-                        })
+                        updateCard("number", formatCardNumber(e.target.value))
                       }
                       onBlur={() => handleFieldBlur("cardNumber")}
                       className={`pr-20 font-mono tracking-wider ${
@@ -675,7 +706,7 @@ function CheckoutInner() {
                     </Label>
                     <Select
                       value={card.expMonth}
-                      onValueChange={(v) => setCard({ ...card, expMonth: v })}
+                      onValueChange={(v) => updateCard("expMonth", v)}
                     >
                       <SelectTrigger
                         id="expMonth"
@@ -707,7 +738,7 @@ function CheckoutInner() {
                     </Label>
                     <Select
                       value={card.expYear}
-                      onValueChange={(v) => setCard({ ...card, expYear: v })}
+                      onValueChange={(v) => updateCard("expYear", v)}
                     >
                       <SelectTrigger
                         id="expYear"
@@ -741,10 +772,7 @@ function CheckoutInner() {
                       maxLength={4}
                       value={card.cvv}
                       onChange={(e) =>
-                        setCard({
-                          ...card,
-                          cvv: e.target.value.replace(/\D/g, ""),
-                        })
+                        updateCard("cvv", e.target.value.replace(/\D/g, ""))
                       }
                       onBlur={() => handleFieldBlur("cvv")}
                       className={`text-center tracking-widest ${
@@ -777,7 +805,7 @@ function CheckoutInner() {
               <Button
                 onClick={handleSubmit}
                 disabled={processing}
-                className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700"
+                className="w-full h-12 text-base font-semibold bg-orange-500 hover:bg-orange-600"
                 size="lg"
               >
                 {processing ? (
@@ -799,10 +827,10 @@ function CheckoutInner() {
           <div className="lg:col-span-2">
             <div className="lg:sticky lg:top-8 space-y-6">
               {/* Order Summary Card */}
-              <Card className="border-blue-200 dark:border-blue-800">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+              <Card className="border-orange-200 dark:border-orange-800">
+                <CardHeader className="bg-gradient-to-r from-orange-500 to-orange-500 text-white rounded-t-lg">
                   <CardTitle className="text-lg">Order Summary</CardTitle>
-                  <CardDescription className="text-blue-100">
+                  <CardDescription className="text-orange-100">
                     Review your subscription details
                   </CardDescription>
                 </CardHeader>
@@ -819,7 +847,7 @@ function CheckoutInner() {
                     </div>
                     <Badge
                       variant="secondary"
-                      className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                      className="bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-200"
                     >
                       {planConfig.badge || planConfig.id}
                     </Badge>
@@ -834,7 +862,7 @@ function CheckoutInner() {
                         onClick={() => setBillingCycle("monthly")}
                         className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
                           billingCycle === "monthly"
-                            ? "border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-400"
+                            ? "border-orange-500 bg-orange-50 text-orange-600 ring-1 ring-orange-500 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-400"
                             : "border-border text-muted-foreground hover:border-slate-300 dark:border-slate-700 dark:text-muted-foreground dark:hover:border-slate-600"
                         }`}
                       >
@@ -845,7 +873,7 @@ function CheckoutInner() {
                         onClick={() => setBillingCycle("yearly")}
                         className={`relative rounded-lg border px-3 py-2.5 text-sm font-medium transition-all ${
                           billingCycle === "yearly"
-                            ? "border-blue-500 bg-blue-50 text-blue-700 ring-1 ring-blue-500 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-400"
+                            ? "border-orange-500 bg-orange-50 text-orange-600 ring-1 ring-orange-500 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-400"
                             : "border-border text-muted-foreground hover:border-slate-300 dark:border-slate-700 dark:text-muted-foreground dark:hover:border-slate-600"
                         }`}
                       >
@@ -886,7 +914,7 @@ function CheckoutInner() {
                         <span className="text-base font-semibold text-slate-900 dark:text-white">
                           Total Due Today
                         </span>
-                        <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                        <span className="text-xl font-bold text-orange-500 dark:text-orange-400">
                           ${totalPrice.toFixed(2)}
                         </span>
                       </div>
@@ -923,7 +951,7 @@ function CheckoutInner() {
                     <Button
                       onClick={handleSubmit}
                       disabled={processing}
-                      className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700"
+                      className="w-full h-12 text-base font-semibold bg-orange-500 hover:bg-orange-600"
                       size="lg"
                     >
                       {processing ? (
@@ -968,13 +996,13 @@ function CheckoutInner() {
                   </span>
                 </div>
                 <div className="flex flex-col items-center text-center p-3 rounded-lg bg-white dark:bg-slate-900 border border-border dark:border-slate-800">
-                  <Lock className="h-5 w-5 text-blue-600 mb-1" />
+                  <Lock className="h-5 w-5 text-orange-500 dark:text-orange-400 mb-1" />
                   <span className="text-[10px] font-medium text-muted-foreground dark:text-muted-foreground leading-tight">
                     256-bit TLS Encryption
                   </span>
                 </div>
                 <div className="flex flex-col items-center text-center p-3 rounded-lg bg-white dark:bg-slate-900 border border-border dark:border-slate-800">
-                  <CreditCard className="h-5 w-5 text-purple-600 mb-1" />
+                  <CreditCard className="h-5 w-5 text-amber-600 mb-1" />
                   <span className="text-[10px] font-medium text-muted-foreground dark:text-muted-foreground leading-tight">
                     Authorize.net
                   </span>

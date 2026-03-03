@@ -248,7 +248,7 @@ export default function SalaryPage() {
           {
             label: "Gross Salary",
             value: summary.total_salary,
-            color: "text-blue-600",
+            color: "text-orange-500 dark:text-orange-400",
           },
           {
             label: "Deductions",
@@ -263,7 +263,7 @@ export default function SalaryPage() {
           {
             label: "Net Payable",
             value: summary.total_net,
-            color: "text-purple-600",
+            color: "text-amber-600",
           },
         ].map((s) => (
           <Card key={s.label}>

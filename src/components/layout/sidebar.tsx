@@ -476,8 +476,8 @@ const NAV_KEY_MAP: Record<string, string> = {
 
 const PLAN_BADGE_COLORS: Record<string, string> = {
   starter: "bg-gray-100 text-gray-700 border-gray-300",
-  basic: "bg-blue-50 text-blue-700 border-blue-300",
-  pro: "bg-purple-50 text-purple-700 border-purple-300",
+  basic: "bg-orange-50 text-orange-700 dark:text-orange-300 border-orange-300",
+  pro: "bg-amber-50 text-amber-700 border-amber-300",
   enterprise: "bg-amber-50 text-amber-700 border-amber-300",
 };
 
@@ -564,15 +564,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="flex h-16 items-center border-b border-white/10 px-5">
+      <div className="flex h-16 items-center border-b border-white/[0.06] px-5">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2.5 font-bold text-lg text-white"
+          className="flex items-center gap-2.5 font-bold text-lg text-white group"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 shadow-lg shadow-blue-500/30">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20 ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-110">
             <GraduationCap className="h-5 w-5 text-white" />
           </div>
-          <span className="tracking-tight">CampusIQ</span>
+          <span className="tracking-tight bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            CampusIQ
+          </span>
         </Link>
       </div>
 
@@ -589,10 +591,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       </nav>
 
       {/* Plan Badge Footer */}
-      <div className="border-t border-white/10 p-3 space-y-2">
+      <div className="border-t border-white/[0.06] p-3 space-y-2">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/50 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/80"
         >
           <Globe className="h-4 w-4" />
           <span>Back to Home</span>
@@ -600,20 +602,20 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <Link
           href="/plans"
           className={cn(
-            "flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm font-medium transition-all hover:bg-white/10",
+            "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-200 hover:bg-white/[0.06]",
             userPlan === "enterprise"
-              ? "text-amber-400 border-amber-400/30"
+              ? "text-amber-400 border-amber-400/20"
               : userPlan === "pro"
-                ? "text-purple-400 border-purple-400/30"
+                ? "text-orange-400 border-orange-400/20"
                 : userPlan === "basic"
-                  ? "text-blue-400 border-blue-400/30"
-                  : "text-white/70 border-white/15",
+                  ? "text-orange-400 border-orange-400/20"
+                  : "text-white/60 border-white/[0.08]",
           )}
         >
           <Crown className="h-4 w-4" />
           <span>{planConfig.name}</span>
           {userPlan === "starter" && (
-            <span className="ml-auto text-xs text-blue-400">Upgrade</span>
+            <span className="ml-auto text-xs text-orange-400">Upgrade</span>
           )}
         </Link>
       </div>
@@ -682,10 +684,10 @@ function NavItemRenderer({
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
         isActive
-          ? "bg-blue-500/15 text-blue-400"
-          : "text-white/60 hover:bg-white/8 hover:text-white",
+          ? "bg-white/[0.08] text-white shadow-[inset_0_0_0_1px_rgba(249,115,22,0.2)]"
+          : "text-white/50 hover:bg-white/[0.04] hover:text-white/80",
       )}
     >
       <Icon className="h-4 w-4 shrink-0" />
@@ -715,17 +717,17 @@ function CollapsibleNavItem({
     <details open={defaultExpanded || undefined} className="group">
       <summary
         className={cn(
-          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all cursor-pointer list-none",
+          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer list-none",
           isParentActive
-            ? "bg-blue-500/10 text-blue-400"
-            : "text-white/60 hover:bg-white/8 hover:text-white",
+            ? "bg-white/[0.08] text-white shadow-[inset_0_0_0_1px_rgba(249,115,22,0.2)]"
+            : "text-white/50 hover:bg-white/[0.04] hover:text-white/80",
         )}
       >
         <Icon className="h-4 w-4 shrink-0" />
         <span className="flex-1">{tNav(item.title)}</span>
         <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
       </summary>
-      <div className="ml-4 mt-1 space-y-0.5 border-l border-white/10 pl-3">
+      <div className="ml-4 mt-1 space-y-0.5 border-l border-white/[0.06] pl-3">
         {item.children!.map((child) => {
           const ChildIcon = child.icon;
           const isChildActive = pathname === child.href;
@@ -734,10 +736,10 @@ function CollapsibleNavItem({
               key={child.href}
               href={child.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-all",
+                "flex items-center gap-3 rounded-lg px-3 py-1.5 text-sm transition-all duration-200",
                 isChildActive
-                  ? "bg-blue-500/15 text-blue-400 font-medium"
-                  : "text-white/50 hover:bg-white/8 hover:text-white",
+                  ? "bg-white/[0.06] text-white font-medium"
+                  : "text-white/40 hover:bg-white/[0.04] hover:text-white/70",
               )}
             >
               <ChildIcon className="h-3.5 w-3.5 shrink-0" />

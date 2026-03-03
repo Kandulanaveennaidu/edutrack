@@ -56,7 +56,7 @@ const HOLIDAY_TYPES = [
     value: "regional",
     label: "Regional Holiday",
     icon: MapPin,
-    color: "bg-blue-100 text-blue-800",
+    color: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200",
   },
   {
     value: "school",
@@ -68,7 +68,7 @@ const HOLIDAY_TYPES = [
     value: "exam",
     label: "Exam Day",
     icon: CalendarDays,
-    color: "bg-purple-100 text-purple-800",
+    color: "bg-amber-100 text-amber-800",
   },
   {
     value: "event",

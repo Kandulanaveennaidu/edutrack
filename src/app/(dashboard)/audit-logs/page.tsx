@@ -72,10 +72,10 @@ const ACTION_TYPES = [
 const ACTION_COLORS: Record<string, string> = {
   create:
     "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-  update: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+  update: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
   delete: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
   login:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400",
+    "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400",
   logout: "bg-muted text-foreground dark:bg-background/30 dark:text-muted-foreground",
   export:
     "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
@@ -198,7 +198,7 @@ export default function AuditLogsPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <Shield className="h-8 w-8 text-orange-500 dark:text-orange-400" />
           <div>
             <h1 className="text-2xl font-bold text-foreground">Audit Logs</h1>
             <p className="text-muted-foreground">

@@ -230,16 +230,16 @@ export default function MessagesPage() {
   const getConversationAvatar = (convo: ConversationItem) => {
     if (convo.type === "group") {
       return (
-        <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center shrink-0">
-          <Users className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+        <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center shrink-0">
+          <Users className="h-5 w-5 text-amber-600 dark:text-amber-300" />
         </div>
       );
     }
     const other = convo.participants?.find((p) => p._id !== currentUserId);
     const initial = (other?.name || "?")[0].toUpperCase();
     return (
-      <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
-        <span className="text-sm font-bold text-blue-600 dark:text-blue-300">
+      <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center shrink-0">
+        <span className="text-sm font-bold text-orange-500 dark:text-orange-300">
           {initial}
         </span>
       </div>
@@ -334,7 +334,7 @@ export default function MessagesPage() {
                     key={convo._id}
                     className={`flex items-center gap-3 p-3 cursor-pointer border-b dark:border-border transition-colors ${
                       selectedConvo?._id === convo._id
-                        ? "bg-blue-50 dark:bg-blue-950/30"
+                        ? "bg-orange-50 dark:bg-orange-950/30"
                         : "hover:bg-muted/50 dark:hover:bg-card"
                     }`}
                     onClick={() => selectConversation(convo)}
@@ -356,7 +356,7 @@ export default function MessagesPage() {
                           {convo.lastMessage?.content || "No messages yet"}
                         </p>
                         {convo.unreadCount > 0 && (
-                          <Badge className="bg-blue-600 text-white text-[10px] h-5 min-w-[20px] flex items-center justify-center rounded-full ml-2 shrink-0">
+                          <Badge className="bg-orange-500 text-white text-[10px] h-5 min-w-[20px] flex items-center justify-center rounded-full ml-2 shrink-0">
                             {convo.unreadCount}
                           </Badge>
                         )}
@@ -434,7 +434,7 @@ export default function MessagesPage() {
                               <div
                                 className={`px-3 py-2 rounded-2xl text-sm ${
                                   isOwn
-                                    ? "bg-blue-600 text-white rounded-br-md"
+                                    ? "bg-orange-500 text-white rounded-br-md"
                                     : "bg-card text-foreground border dark:border-border rounded-bl-md"
                                 }`}
                               >
@@ -521,8 +521,8 @@ export default function MessagesPage() {
                     className="flex items-center gap-3 p-2 rounded-lg cursor-pointer hover:bg-muted/50 dark:hover:bg-card transition-colors"
                     onClick={() => startConversation(user._id)}
                   >
-                    <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                      <User className="h-4 w-4 text-blue-600 dark:text-blue-300" />
+                    <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
+                      <User className="h-4 w-4 text-orange-500 dark:text-orange-300" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate text-foreground">

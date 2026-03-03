@@ -30,9 +30,9 @@ echo "📥 Cloning CampusIQ..."
 cd /home/ubuntu
 if [ -d "campusiq" ]; then
     cd campusiq
-    git pull origin master
+    git pull origin main
 else
-    git clone https://github.com/Kandulanaveennaidu/CampusIQ-ERP.git campusiq
+    git clone -b main https://github.com/Kandulanaveennaidu/CampusIQ-ERP.git campusiq
     cd campusiq
 fi
 
@@ -53,7 +53,7 @@ npm run build
 
 # ── Step 9: Setup Systemd Service ──
 echo "⚙️  Setting up systemd service..."
-sudo cp campusiq.service /etc/systemd/system/campusiq.service
+sudo cp edutrack.service /etc/systemd/system/campusiq.service
 sudo systemctl daemon-reload
 sudo systemctl enable campusiq
 sudo systemctl start campusiq

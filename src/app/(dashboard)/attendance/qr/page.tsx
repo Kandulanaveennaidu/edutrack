@@ -163,7 +163,7 @@ export default function QRAttendancePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <QrCode className="h-5 w-5 text-blue-600" />
+                <QrCode className="h-5 w-5 text-orange-500 dark:text-orange-400" />
                 Generate QR Code
               </CardTitle>
               <CardDescription>
@@ -236,9 +236,9 @@ export default function QRAttendancePage() {
                   </div>
 
                   {/* QR Visual Representation */}
-                  <div className="mx-auto mb-4 flex h-48 w-48 items-center justify-center rounded-lg border-4 border-dashed border-blue-300 bg-card">
+                  <div className="mx-auto mb-4 flex h-48 w-48 items-center justify-center rounded-lg border-4 border-dashed border-orange-300 bg-card">
                     <div className="text-center">
-                      <QrCode className="mx-auto h-16 w-16 text-blue-600" />
+                      <QrCode className="mx-auto h-16 w-16 text-orange-500 dark:text-orange-400" />
                       <p className="mt-2 text-xs text-muted-foreground">
                         {qrData.class_name}
                       </p>
@@ -359,9 +359,9 @@ export default function QRAttendancePage() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-lg bg-blue-50 p-4 text-center">
-              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                <span className="text-lg font-bold text-blue-600">1</span>
+            <div className="rounded-lg bg-orange-50 p-4 text-center">
+              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
+                <span className="text-lg font-bold text-orange-500 dark:text-orange-400">1</span>
               </div>
               <h3 className="font-medium">Teacher Generates</h3>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -377,9 +377,9 @@ export default function QRAttendancePage() {
                 Students enter the token within the time window
               </p>
             </div>
-            <div className="rounded-lg bg-purple-50 p-4 text-center">
-              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
-                <span className="text-lg font-bold text-purple-600">3</span>
+            <div className="rounded-lg bg-amber-50 p-4 text-center">
+              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+                <span className="text-lg font-bold text-amber-600">3</span>
               </div>
               <h3 className="font-medium">Auto-Recorded</h3>
               <p className="mt-1 text-sm text-muted-foreground">

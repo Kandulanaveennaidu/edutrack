@@ -214,7 +214,7 @@ export default function AttendanceHistoryPage() {
             { label: "Present", value: stats.present, color: "bg-green-100" },
             { label: "Absent", value: stats.absent, color: "bg-red-100" },
             { label: "Late", value: stats.late, color: "bg-amber-100" },
-            { label: "Leave", value: stats.leave, color: "bg-blue-100" },
+            { label: "Leave", value: stats.leave, color: "bg-orange-100 dark:bg-orange-900/30" },
           ].map((stat) => (
             <Card key={stat.label}>
               <CardContent className={`p-4 ${stat.color}`}>

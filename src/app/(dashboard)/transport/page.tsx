@@ -174,7 +174,7 @@ export default function TransportPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Total Vehicles</p>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-2xl font-bold text-orange-500 dark:text-orange-400">
               {vehicles.length}
             </p>
           </CardContent>
@@ -190,7 +190,7 @@ export default function TransportPage() {
         <Card>
           <CardContent className="p-4">
             <p className="text-sm text-muted-foreground">Total Capacity</p>
-            <p className="text-2xl font-bold text-purple-600">
+            <p className="text-2xl font-bold text-amber-600">
               {vehicles.reduce((s, v) => s + v.capacity, 0)}
             </p>
           </CardContent>
@@ -291,7 +291,7 @@ export default function TransportPage() {
                       key={i}
                       className="flex items-center gap-2 rounded border p-2 text-sm"
                     >
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-bold text-blue-600">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 text-xs font-bold text-orange-500 dark:text-orange-400">
                         {s.order}
                       </span>
                       <span className="flex-1 font-medium">{s.stopName}</span>

@@ -148,7 +148,7 @@ export default function AlumniPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -159,7 +159,7 @@ export default function AlumniPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <GraduationCap className="h-7 w-7 text-indigo-600" /> Alumni Network
+            <GraduationCap className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Alumni Network
           </h1>
           <p className="text-muted-foreground mt-1">
             Connect with past students, track achievements & donations
@@ -168,7 +168,7 @@ export default function AlumniPage() {
         {canAdd && (
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 flex items-center gap-2"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 flex items-center gap-2"
           >
             <UserPlus className="h-4 w-4" /> Register Alumni
           </button>
@@ -179,7 +179,7 @@ export default function AlumniPage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl p-4 shadow-sm border">
           <div className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-blue-500" />
+            <Users className="h-5 w-5 text-orange-500" />
             <span className="text-sm text-muted-foreground">Total Alumni</span>
           </div>
           <p className="text-2xl font-bold mt-1">
@@ -202,7 +202,7 @@ export default function AlumniPage() {
         </div>
         <div className="bg-card rounded-xl p-4 shadow-sm border">
           <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-purple-500" />
+            <MapPin className="h-5 w-5 text-amber-500" />
             <span className="text-sm text-muted-foreground">Cities</span>
           </div>
           <p className="text-2xl font-bold mt-1">
@@ -342,13 +342,13 @@ export default function AlumniPage() {
         <div className="flex border rounded-lg overflow-hidden">
           <button
             onClick={() => setView("grid")}
-            className={`px-3 py-2 text-sm ${view === "grid" ? "bg-indigo-600 text-white" : ""}`}
+            className={`px-3 py-2 text-sm ${view === "grid" ? "bg-orange-500 text-white" : ""}`}
           >
             Grid
           </button>
           <button
             onClick={() => setView("table")}
-            className={`px-3 py-2 text-sm ${view === "table" ? "bg-indigo-600 text-white" : ""}`}
+            className={`px-3 py-2 text-sm ${view === "table" ? "bg-orange-500 text-white" : ""}`}
           >
             Table
           </button>
@@ -411,7 +411,7 @@ export default function AlumniPage() {
                       href={a.linkedIn}
                       target="_blank"
                       rel="noopener"
-                      className="text-blue-600 hover:text-blue-700"
+                      className="text-orange-500 dark:text-orange-400 hover:text-orange-600 dark:text-orange-300"
                     >
                       <LinkIcon className="h-4 w-4" />
                     </a>

@@ -139,7 +139,7 @@ function PasswordStrength({ password }: { password: string }) {
       : score <= 3
         ? "bg-yellow-500"
         : score <= 4
-          ? "bg-blue-500"
+          ? "bg-orange-50 dark:bg-orange-950/300"
           : "bg-green-500";
 
   if (!password) return null;
@@ -175,8 +175,8 @@ function PasswordStrength({ password }: { password: string }) {
 function RoleBadge({ role }: { role: string }) {
   const m: Record<string, string> = {
     admin:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300",
-    teacher: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
+      "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+    teacher: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
     student:
       "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
     parent:
@@ -846,12 +846,12 @@ export default function UserManagementPage() {
                 {
                   label: "Admins",
                   value: summary.admins,
-                  color: "text-purple-600",
+                  color: "text-amber-600",
                 },
                 {
                   label: "Teachers",
                   value: summary.teachers,
-                  color: "text-blue-600",
+                  color: "text-orange-500 dark:text-orange-400",
                 },
                 {
                   label: "Students",
@@ -1045,7 +1045,7 @@ export default function UserManagementPage() {
                                 onClick={() => resetPassword(user)}
                                 title="Reset Password"
                               >
-                                <KeyRound className="h-4 w-4 text-blue-500" />
+                                <KeyRound className="h-4 w-4 text-orange-500" />
                               </Button>
                             )}
                             {canDelete && (

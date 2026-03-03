@@ -33,7 +33,7 @@ const toggleGroupItemVariants = cva(
           "data-[state=on]:bg-red-500 data-[state=on]:text-white hover:bg-red-100",
         late: "data-[state=on]:bg-amber-500 data-[state=on]:text-white hover:bg-amber-100",
         leave:
-          "data-[state=on]:bg-blue-500 data-[state=on]:text-white hover:bg-blue-100",
+          "data-[state=on]:bg-orange-500 data-[state=on]:text-white hover:bg-orange-100 dark:bg-orange-900/30",
       },
       size: {
         default: "h-9 px-3",

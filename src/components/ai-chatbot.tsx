@@ -147,7 +147,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
           "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm",
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-gradient-to-br from-violet-500 to-indigo-600 text-white",
+            : "bg-gradient-to-br from-amber-500 to-orange-500 text-white",
         )}
       >
         {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -193,7 +193,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
 function TypingIndicator() {
   return (
     <div className="flex gap-3">
-      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-sm">
+      <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-sm">
         <Bot className="w-4 h-4" />
       </div>
       <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
@@ -334,9 +334,9 @@ export default function AIChatbot() {
         >
           <div className="relative">
             {/* Pulse ring */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 to-indigo-600 animate-ping opacity-20" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 animate-ping opacity-20" />
             {/* Button */}
-            <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-white shadow-lg shadow-violet-500/25 flex items-center justify-center transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/40 hover:scale-110 active:scale-95">
+            <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/25 flex items-center justify-center transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/40 hover:scale-110 active:scale-95">
               <Sparkles className="w-6 h-6" />
             </div>
             {/* Label */}
@@ -359,7 +359,7 @@ export default function AIChatbot() {
           )}
         >
           {/* ── Header ── */}
-          <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-t-2xl">
+          <div className="flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-amber-600 to-orange-500 text-white rounded-t-2xl">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                 <Bot className="w-5 h-5" />
@@ -414,7 +414,7 @@ export default function AIChatbot() {
             {/* Welcome / Empty State */}
             {messages.length === 0 && !isLoading && (
               <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white flex items-center justify-center mb-4 shadow-lg shadow-violet-500/25">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white flex items-center justify-center mb-4 shadow-lg shadow-amber-500/25">
                   <Sparkles className="w-8 h-8" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-1">
@@ -431,10 +431,10 @@ export default function AIChatbot() {
                       type="button"
                       key={prompt.label}
                       onClick={() => sendMessage(prompt.prompt)}
-                      className="text-left p-3 rounded-xl bg-card border border-border hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-md transition-all duration-200 group"
+                      className="text-left p-3 rounded-xl bg-card border border-border hover:border-amber-300 dark:hover:border-amber-600 hover:shadow-md transition-all duration-200 group"
                     >
                       <span className="text-lg">{prompt.icon}</span>
-                      <p className="text-xs font-medium text-foreground mt-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+                      <p className="text-xs font-medium text-foreground mt-1 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                         {prompt.label}
                       </p>
                     </button>
@@ -481,7 +481,7 @@ export default function AIChatbot() {
 
           {/* ── Input Area ── */}
           <div className="px-4 pb-4 pt-2 border-t border-border">
-            <div className="flex items-end gap-2 bg-card rounded-xl border border-border focus-within:border-violet-400 dark:focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-500/20 transition-all duration-200 p-1">
+            <div className="flex items-end gap-2 bg-card rounded-xl border border-border focus-within:border-amber-400 dark:focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-500/20 transition-all duration-200 p-1">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -500,7 +500,7 @@ export default function AIChatbot() {
                 className={cn(
                   "p-2.5 rounded-lg transition-all duration-200 flex-shrink-0",
                   input.trim() && !isLoading
-                    ? "bg-gradient-to-r from-violet-500 to-indigo-600 text-white shadow-md shadow-violet-500/25 hover:shadow-lg hover:shadow-violet-500/40 hover:scale-105 active:scale-95"
+                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md shadow-amber-500/25 hover:shadow-lg hover:shadow-amber-500/40 hover:scale-105 active:scale-95"
                     : "bg-muted text-muted-foreground cursor-not-allowed",
                 )}
                 aria-label="Send message"

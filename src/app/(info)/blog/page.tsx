@@ -106,14 +106,14 @@ export default function BlogPage() {
       <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <GraduationCap className="h-8 w-8 text-orange-500 dark:text-orange-400" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               CampusIQ
             </span>
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -122,7 +122,7 @@ export default function BlogPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20">
+      <section className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             CampusIQ Blog
@@ -143,7 +143,7 @@ export default function BlogPage() {
                 key={cat}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
                   cat === "All"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-orange-500 text-white"
                     : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
                 }`}
               >
@@ -157,17 +157,17 @@ export default function BlogPage() {
       {/* Featured Post */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-6">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-orange-500 dark:text-orange-400 mb-6">
             Featured Article
           </h2>
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl overflow-hidden shadow-xl">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-500 rounded-2xl overflow-hidden shadow-xl">
             <div className="p-8 sm:p-12">
               <div className="flex items-center gap-3 mb-4">
                 <span className="inline-flex items-center gap-1 bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full">
                   <Tag className="h-3 w-3" />
                   {featuredPost.category}
                 </span>
-                <span className="inline-flex items-center gap-1 text-blue-100 text-xs">
+                <span className="inline-flex items-center gap-1 text-orange-100 text-xs">
                   <Clock className="h-3 w-3" />
                   {featuredPost.readTime}
                 </span>
@@ -175,18 +175,18 @@ export default function BlogPage() {
               <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight">
                 {featuredPost.title}
               </h3>
-              <p className="text-blue-100 leading-relaxed mb-6 max-w-3xl">
+              <p className="text-orange-100 leading-relaxed mb-6 max-w-3xl">
                 {featuredPost.excerpt}
               </p>
               <div className="flex items-center justify-between flex-wrap gap-4">
-                <div className="text-sm text-blue-200">
+                <div className="text-sm text-orange-200">
                   By{" "}
                   <span className="text-white font-medium">
                     {featuredPost.author}
                   </span>{" "}
                   · {featuredPost.date}
                 </div>
-                <button className="inline-flex items-center gap-2 bg-white text-blue-600 font-semibold px-5 py-2.5 rounded-lg hover:bg-blue-50 transition-colors text-sm">
+                <button className="inline-flex items-center gap-2 bg-white text-orange-500 dark:text-orange-400 font-semibold px-5 py-2.5 rounded-lg hover:bg-orange-50 transition-colors text-sm">
                   Read Article
                   <ArrowRight className="h-4 w-4" />
                 </button>
@@ -210,14 +210,14 @@ export default function BlogPage() {
               >
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                      <post.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/30">
+                      <post.icon className="h-5 w-5 text-orange-500 dark:text-orange-400" />
                     </div>
-                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-orange-500 dark:text-orange-400 uppercase tracking-wider">
                       {post.category}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-500 dark:text-orange-400 dark:group-hover:text-orange-400 transition-colors leading-snug">
                     {post.title}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-3">
@@ -262,9 +262,9 @@ export default function BlogPage() {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
             />
-            <button className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
+            <button className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition-colors whitespace-nowrap">
               Subscribe
             </button>
           </div>
@@ -279,7 +279,7 @@ export default function BlogPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <GraduationCap className="h-6 w-6 text-orange-500 dark:text-orange-400" />
               <span className="font-semibold text-gray-900 dark:text-white">
                 CampusIQ
               </span>
@@ -287,31 +287,31 @@ export default function BlogPage() {
             <nav className="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <Link
                 href="/about"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 About
               </Link>
               <Link
                 href="/blog"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Blog
               </Link>
               <Link
                 href="/careers"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Careers
               </Link>
               <Link
                 href="/privacy"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Terms
               </Link>

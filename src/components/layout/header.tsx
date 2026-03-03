@@ -26,7 +26,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { setTheme, resolvedTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/50 bg-background/80 backdrop-blur-xl px-4 lg:px-6 shadow-sm">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/40 bg-background/70 backdrop-blur-2xl backdrop-saturate-[200%] px-4 lg:px-6 shadow-[0_1px_3px_hsl(20_14%_10%/0.03)] dark:shadow-[0_1px_0_hsl(20_12%_14%/0.8)]">
       {/* Left side */}
       <div className="flex items-center space-x-4">
         <Button
@@ -39,7 +39,10 @@ export function Header({ onMenuClick }: HeaderProps) {
         </Button>
         <div className="hidden lg:block">
           <h2 className="text-lg font-semibold text-foreground tracking-tight">
-            Welcome back, {session?.user?.name?.split(" ")[0] || "User"}
+            Welcome back,{" "}
+            <span className="text-gradient-primary">
+              {session?.user?.name?.split(" ")[0] || "User"}
+            </span>
           </h2>
           <p className="text-sm text-muted-foreground">
             {new Date().toLocaleDateString("en-US", {
@@ -95,7 +98,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-500/30 ring-2 ring-blue-500/20">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white font-semibold text-sm shadow-lg shadow-orange-500/25 ring-2 ring-white/20 dark:ring-white/10">
                 {session?.user?.name?.charAt(0).toUpperCase() || "U"}
               </div>
             </Button>
@@ -104,7 +107,9 @@ export function Header({ onMenuClick }: HeaderProps) {
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium">{session?.user?.name}</p>
-                <p className="text-xs text-muted-foreground">{session?.user?.email}</p>
+                <p className="text-xs text-muted-foreground">
+                  {session?.user?.email}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Institution: {session?.user?.school_id}
                 </p>

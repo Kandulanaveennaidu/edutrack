@@ -74,7 +74,7 @@ export async function middleware(request: NextRequest) {
   if (isDashboardPage) {
     try {
       const token = await getToken({ req: request });
-      
+
       // Enforce authentication
       if (!token) {
         const url = new URL("/login", request.url);
@@ -83,11 +83,13 @@ export async function middleware(request: NextRequest) {
       }
 
       if (token) {
-        // Redirect expired/cancelled subscriptions to plans page
+        // Redirect expired trial subscriptions to plans page.
+        // Note: "cancelled" users are already downgraded to the free
+        // Starter plan and should retain dashboard access.
         const subStatus = token.subscriptionStatus as string;
-        if (subStatus === "expired" || subStatus === "cancelled") {
-          if (pathname !== "/plans") {
-            return NextResponse.redirect(new URL("/plans", request.url));
+        if (subStatus === "expired") {
+          if (pathname !== "/plans" && pathname !== "/") {
+            return NextResponse.redirect(new URL("/", request.url));
           }
         }
 

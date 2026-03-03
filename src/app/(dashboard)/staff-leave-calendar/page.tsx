@@ -62,7 +62,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 const LEAVE_TYPE_COLORS: Record<string, string> = {
   sick: "#ef4444",
-  casual: "#3b82f6",
+  casual: "#8b5cf6",
   earned: "#8b5cf6",
   maternity: "#ec4899",
   paternity: "#06b6d4",
@@ -127,7 +127,7 @@ export default function StaffLeaveCalendarPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -138,7 +138,7 @@ export default function StaffLeaveCalendarPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Calendar className="h-7 w-7 text-indigo-600" /> Staff Leave
+            <Calendar className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Staff Leave
             Calendar
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -166,7 +166,7 @@ export default function StaffLeaveCalendarPage() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="bg-card rounded-xl p-4 shadow-sm border">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-500" />
+              <Users className="h-5 w-5 text-orange-500" />
               <span className="text-sm text-muted-foreground">Total Staff</span>
             </div>
             <p className="text-2xl font-bold mt-1">{summary.totalStaff}</p>
@@ -269,11 +269,11 @@ export default function StaffLeaveCalendarPage() {
               return (
                 <div
                   key={day}
-                  className={`min-h-[90px] p-1.5 rounded-lg border text-xs transition-colors ${isToday ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950" : isWeekend ? "bg-muted/50 dark:bg-gray-850 border-border" : "border-gray-100 dark:border-border"}`}
+                  className={`min-h-[90px] p-1.5 rounded-lg border text-xs transition-colors ${isToday ? "border-orange-500 bg-orange-50 dark:bg-orange-950" : isWeekend ? "bg-muted/50 dark:bg-gray-850 border-border" : "border-gray-100 dark:border-border"}`}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span
-                      className={`font-medium ${isToday ? "text-indigo-600" : isWeekend ? "text-muted-foreground" : ""}`}
+                      className={`font-medium ${isToday ? "text-orange-500 dark:text-orange-400" : isWeekend ? "text-muted-foreground" : ""}`}
                     >
                       {day}
                     </span>

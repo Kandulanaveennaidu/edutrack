@@ -154,8 +154,8 @@ export default function TeacherAttendancePage() {
     {
       label: "Total Teachers",
       value: summary.total,
-      color: "text-blue-600",
-      bg: "bg-blue-100",
+      color: "text-orange-500 dark:text-orange-400",
+      bg: "bg-orange-100 dark:bg-orange-900/30",
     },
     {
       label: "Present",

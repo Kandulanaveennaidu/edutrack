@@ -56,14 +56,14 @@ const CATEGORIES = [
 
 const STATUS_COLORS: Record<string, string> = {
   available: "bg-green-100 text-green-700",
-  checked_out: "bg-blue-100 text-blue-700",
+  checked_out: "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300",
   maintenance: "bg-yellow-100 text-yellow-700",
   retired: "bg-muted text-foreground",
 };
 
 const CONDITION_COLORS: Record<string, string> = {
   new: "text-green-600",
-  good: "text-blue-600",
+  good: "text-orange-500 dark:text-orange-400",
   fair: "text-yellow-600",
   poor: "text-orange-600",
   damaged: "text-red-600",
@@ -194,7 +194,7 @@ export default function InventoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -205,7 +205,7 @@ export default function InventoryPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Package className="h-7 w-7 text-indigo-600" /> Inventory & Asset
+            <Package className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Inventory & Asset
             Management
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -215,7 +215,7 @@ export default function InventoryPage() {
         {canAdd && (
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 flex items-center gap-2"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 flex items-center gap-2"
           >
             <Plus className="h-4 w-4" /> Add Item
           </button>
@@ -241,7 +241,7 @@ export default function InventoryPage() {
         </div>
         <div className="bg-card rounded-xl p-4 shadow-sm border">
           <p className="text-sm text-muted-foreground">Available</p>
-          <p className="text-2xl font-bold text-blue-600">
+          <p className="text-2xl font-bold text-orange-500 dark:text-orange-400">
             {(summary as Record<string, Record<string, number>>).statuses
               ?.available || 0}
           </p>
@@ -456,7 +456,7 @@ export default function InventoryPage() {
                       {canEdit && item.status === "available" && (
                         <button
                           onClick={() => handleAction(item._id, "checkout")}
-                          className="p-1.5 hover:bg-blue-50 rounded text-blue-600"
+                          className="p-1.5 hover:bg-orange-50 rounded text-orange-500 dark:text-orange-400"
                           title="Checkout"
                         >
                           <LogOut className="h-4 w-4" />

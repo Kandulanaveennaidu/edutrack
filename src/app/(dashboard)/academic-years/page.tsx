@@ -133,7 +133,7 @@ export default function AcademicYearsPage() {
         {years.map((y) => (
           <Card
             key={y._id}
-            className={y.isCurrent ? "border-blue-500 border-2" : ""}
+            className={y.isCurrent ? "border-orange-500 border-2" : ""}
           >
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">

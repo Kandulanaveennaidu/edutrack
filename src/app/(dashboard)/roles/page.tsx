@@ -273,7 +273,7 @@ export default function RolesPage() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <Shield className="h-8 w-8 text-blue-600" />
+            <Shield className="h-8 w-8 text-orange-500 dark:text-orange-400" />
             <div>
               <p className="text-2xl font-bold">{roles.length}</p>
               <p className="text-xs text-muted-foreground">Total Roles</p>
@@ -335,7 +335,7 @@ export default function RolesPage() {
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         {role.isSystem ? (
-                          <ShieldCheck className="h-4 w-4 text-blue-500" />
+                          <ShieldCheck className="h-4 w-4 text-orange-500" />
                         ) : (
                           <Shield className="h-4 w-4 text-muted-foreground" />
                         )}

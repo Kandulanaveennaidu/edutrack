@@ -63,9 +63,9 @@ const statusOptions: {
     value: "leave",
     label: "Lv",
     icon: CalendarOff,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50 hover:bg-blue-100",
-    activeColor: "bg-blue-500 text-white",
+    color: "text-orange-500 dark:text-orange-400",
+    bgColor: "bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/30",
+    activeColor: "bg-orange-50 dark:bg-orange-950/300 text-white",
   },
 ];
 

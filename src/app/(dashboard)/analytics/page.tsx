@@ -39,7 +39,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
 
 const COLORS = [
-  "#3b82f6",
+  "#8b5cf6",
   "#10b981",
   "#f59e0b",
   "#ef4444",
@@ -244,8 +244,8 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900">
-                <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+              <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900">
+                <GraduationCap className="h-5 w-5 text-orange-500 dark:text-orange-300" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Students</p>
@@ -285,8 +285,8 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900">
-                <GraduationCap className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+              <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900">
+                <GraduationCap className="h-5 w-5 text-amber-600 dark:text-amber-300" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pass Rate</p>
@@ -431,7 +431,7 @@ export default function AnalyticsPage() {
                 <Legend />
                 <Bar
                   dataKey="average"
-                  fill="#3b82f6"
+                  fill="#8b5cf6"
                   name="Average Score"
                   radius={[4, 4, 0, 0]}
                 />

@@ -17,10 +17,12 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
     redirect("/login");
   }
 
-  // Redirect users with expired subscriptions to the plans page
+  // Redirect users with expired trial to the plans page.
+  // "cancelled" users are downgraded to the free Starter plan
+  // and should still have dashboard access.
   const subStatus = session.user?.subscriptionStatus;
-  if (subStatus === "expired" || subStatus === "cancelled") {
-    redirect("/plans");
+  if (subStatus === "expired") {
+    redirect("/");
   }
 
   return <DashboardShell>{children}</DashboardShell>;

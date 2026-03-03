@@ -41,7 +41,7 @@ export function AttendanceStats({ stats }: AttendanceStatsProps) {
       label: "Leave",
       value: stats.leave,
       icon: CalendarOff,
-      color: "bg-blue-100 text-blue-600",
+      color: "bg-orange-100 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400",
     },
   ];
 

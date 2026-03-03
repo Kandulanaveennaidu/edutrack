@@ -105,7 +105,7 @@ export default function AIInsightsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function AIInsightsPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Brain className="h-7 w-7 text-indigo-600" />
+            <Brain className="h-7 w-7 text-orange-500 dark:text-orange-400" />
             AI Attendance Insights
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -171,7 +171,7 @@ export default function AIInsightsPage() {
           />
           <button
             onClick={fetchInsights}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 flex items-center gap-1"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 flex items-center gap-1"
           >
             <RefreshCw className="h-4 w-4" /> Analyze
           </button>
@@ -182,8 +182,8 @@ export default function AIInsightsPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl p-5 shadow-sm border">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg">
-              <Users className="h-6 w-6 text-blue-600" />
+            <div className="bg-orange-100 dark:bg-orange-900 p-3 rounded-lg">
+              <Users className="h-6 w-6 text-orange-500 dark:text-orange-400" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Students</p>
@@ -226,8 +226,8 @@ export default function AIInsightsPage() {
         </div>
         <div className="bg-card rounded-xl p-5 shadow-sm border">
           <div className="flex items-center gap-3">
-            <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded-lg">
-              <Activity className="h-6 w-6 text-purple-600" />
+            <div className="bg-amber-100 dark:bg-amber-900 p-3 rounded-lg">
+              <Activity className="h-6 w-6 text-amber-600" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Anomalous Days</p>
@@ -312,14 +312,14 @@ export default function AIInsightsPage() {
 
       {/* Recommendations */}
       {data.recommendations.length > 0 && (
-        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950 rounded-xl p-5 border border-indigo-200 dark:border-indigo-800">
+        <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950 rounded-xl p-5 border border-orange-200 dark:border-orange-800">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Brain className="h-5 w-5 text-indigo-600" /> AI Recommendations
+            <Brain className="h-5 w-5 text-orange-500 dark:text-orange-400" /> AI Recommendations
           </h3>
           <ul className="space-y-2">
             {data.recommendations.map((r, i) => (
               <li key={i} className="flex items-start gap-2 text-sm">
-                <Shield className="h-4 w-4 text-indigo-500 mt-0.5 shrink-0" />
+                <Shield className="h-4 w-4 text-orange-500 mt-0.5 shrink-0" />
                 <span>{r}</span>
               </li>
             ))}

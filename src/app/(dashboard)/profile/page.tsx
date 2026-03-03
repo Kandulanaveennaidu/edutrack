@@ -133,7 +133,7 @@ export default function ProfilePage() {
         {/* Profile Card */}
         <Card className="md:col-span-1">
           <CardContent className="flex flex-col items-center p-6">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-500 dark:text-orange-400">
               <User className="h-10 w-10" />
             </div>
             <h2 className="mt-4 text-lg font-semibold">{profile.name}</h2>

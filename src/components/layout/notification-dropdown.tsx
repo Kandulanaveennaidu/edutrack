@@ -87,13 +87,13 @@ function getColor(type: string): string {
     type.includes("paid")
   )
     return "bg-green-500";
-  if (type.includes("updated") || type.includes("edit")) return "bg-blue-500";
+  if (type.includes("updated") || type.includes("edit")) return "bg-orange-50 dark:bg-orange-950/300";
   if (type.includes("fee") || type.includes("salary")) return "bg-amber-500";
-  if (type.includes("attendance")) return "bg-purple-500";
+  if (type.includes("attendance")) return "bg-amber-500";
   if (type.includes("message") || type.includes("circular"))
-    return "bg-indigo-500";
+    return "bg-orange-50 dark:bg-orange-950/300";
   if (type.includes("leave")) return "bg-orange-500";
-  return "bg-blue-500";
+  return "bg-orange-50 dark:bg-orange-950/300";
 }
 
 function timeAgo(timestamp: string): string {

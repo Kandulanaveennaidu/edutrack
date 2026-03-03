@@ -25,7 +25,7 @@ EC2_IP="44.192.75.16"
 APP_DIR="/home/ubuntu/campusiq"
 BACKUP_DIR="/home/ubuntu/campusiq-backup"
 REPO_URL="https://github.com/Kandulanaveennaidu/CampusIQ-ERP.git"
-BRANCH="master"
+BRANCH="main"
 
 echo ""
 echo "═══════════════════════════════════════════════════════════"

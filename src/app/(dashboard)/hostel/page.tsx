@@ -253,7 +253,7 @@ export default function HostelPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-muted-foreground"}`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground"}`}
           >
             {t}
           </button>
@@ -290,7 +290,7 @@ export default function HostelPage() {
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full transition-all"
+                      className="bg-orange-500 h-2 rounded-full transition-all"
                       style={{ width: `${h.occupancy_rate}%` }}
                     />
                   </div>

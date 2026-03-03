@@ -262,8 +262,8 @@ export default function ParentFeesPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-5 flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
+                    <CreditCard className="h-5 w-5 text-orange-500 dark:text-orange-400" />
                   </div>
                   <div>
                     <p className="text-xl font-bold text-foreground dark:text-foreground">

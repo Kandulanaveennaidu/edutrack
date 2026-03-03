@@ -4,10 +4,13 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 overflow-hidden">
-      {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-blue-400/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-3xl" />
+    <div className="relative min-h-screen bg-[hsl(0_0%_98.5%)] dark:bg-[hsl(240_10%_4%)] overflow-hidden">
+      {/* Premium mesh gradient background */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(252_82%_58%/0.08),transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_0%_100%,hsl(280_68%_55%/0.06),transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_80%_50%,hsl(199_89%_48%/0.04),transparent_40%)]" />
+      {/* Dark mode adjustments */}
+      <div className="pointer-events-none absolute inset-0 dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(252_90%_67%/0.10),transparent_60%)]" />
       <div className="relative z-10">{children}</div>
     </div>
   );

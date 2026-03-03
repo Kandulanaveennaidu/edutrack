@@ -76,8 +76,8 @@ const SEVERITY_CONFIG: Record<
     label: "MEDIUM",
   },
   low: {
-    color: "text-blue-700",
-    bg: "bg-blue-100 border-blue-300",
+    color: "text-orange-600 dark:text-orange-300",
+    bg: "bg-orange-100 dark:bg-orange-900/30 border-orange-300",
     label: "LOW",
   },
 };

@@ -41,7 +41,7 @@ export default function Error({
         <div className="flex gap-4 justify-center pt-4">
           <button
             onClick={reset}
-            className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition-colors"
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-orange-50 dark:bg-orange-950/300 text-white font-medium hover:bg-orange-500 transition-colors"
           >
             Try Again
           </button>

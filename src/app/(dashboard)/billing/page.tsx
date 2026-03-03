@@ -58,8 +58,9 @@ const PLAN_LABELS: Record<string, string> = {
 
 const PLAN_COLORS: Record<string, string> = {
   starter: "bg-muted text-foreground dark:bg-card dark:text-gray-200",
-  basic: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  pro: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  basic:
+    "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+  pro: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   enterprise:
     "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
 };
@@ -155,86 +156,285 @@ export default function BillingPage() {
     try {
       const { jsPDF } = await import("jspdf");
       const doc = new jsPDF();
-      const schoolName = session?.user?.school_id || "Institution";
+      const schoolName = session?.user?.name || "Institution";
+      const schoolEmail = session?.user?.email || "";
       const isUsd = payment.currency === "USD" || !payment.currency;
-
-      // Header
-      doc.setFontSize(22);
-      doc.setTextColor(37, 99, 235);
-      doc.text("CampusIQ", 20, 25);
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text("Institution Management Platform", 20, 32);
-
-      // Invoice title
-      doc.setFontSize(16);
-      doc.setTextColor(0, 0, 0);
-      doc.text("INVOICE", 150, 25);
-
-      // Divider
-      doc.setDrawColor(200, 200, 200);
-      doc.line(20, 38, 190, 38);
-
-      // Invoice details
-      doc.setFontSize(10);
-      doc.setTextColor(80, 80, 80);
-      doc.text(`Invoice Date: ${formatDate(payment.createdAt)}`, 20, 48);
-      doc.text(`Order ID: ${payment.orderId}`, 20, 55);
-      if (payment.paymentId)
-        doc.text(`Transaction ID: ${payment.paymentId}`, 20, 62);
-      doc.text(`Institution: ${schoolName}`, 130, 48);
-      doc.text(`Status: ${payment.status.toUpperCase()}`, 130, 55);
-
-      // Table header
-      const tableY = 78;
-      doc.setFillColor(37, 99, 235);
-      doc.rect(20, tableY, 170, 10, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(10);
-      doc.text("Description", 25, tableY + 7);
-      doc.text("Plan", 90, tableY + 7);
-      doc.text("Amount", 155, tableY + 7);
-
-      // Table row
-      doc.setTextColor(0, 0, 0);
-      doc.setFillColor(245, 245, 245);
-      doc.rect(20, tableY + 10, 170, 10, "F");
-      doc.text(
-        payment.type === "subscription"
-          ? "Subscription Payment"
-          : "Fee Payment",
-        25,
-        tableY + 17,
-      );
-      doc.text(PLAN_LABELS[payment.plan] || payment.plan, 90, tableY + 17);
       const amountStr = isUsd
         ? formatCurrency(payment.amount)
         : `$${payment.amount.toFixed(2)}`;
-      doc.text(amountStr, 155, tableY + 17);
+      const invoiceDate = formatDate(payment.createdAt);
+      const invoiceNo = payment.orderId.replace("ord_", "INV-").toUpperCase();
 
-      // Total
+      // ─── Page dimensions ───────────────────────────────────────────
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 20;
+
+      // ─── Premium gradient header bar ───────────────────────────────
+      doc.setFillColor(67, 56, 202); // orange-600
+      doc.rect(0, 0, pageW, 48, "F");
+      doc.setFillColor(79, 70, 229); // orange-500 overlay strip
+      doc.rect(0, 42, pageW, 6, "F");
+
+      // Logo text in header
+      doc.setFontSize(24);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text("CampusIQ", margin, 28);
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(199, 210, 254); // orange-200
+      doc.text("Institution Management Platform", margin, 37);
+
+      // INVOICE label in header
+      doc.setFontSize(28);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text("INVOICE", pageW - margin, 28, { align: "right" });
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(199, 210, 254);
+      doc.text(`#${invoiceNo}`, pageW - margin, 37, { align: "right" });
+
+      // ─── Invoice meta info section ─────────────────────────────────
+      let y = 62;
+
+      // Left column — From
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(107, 114, 128); // gray-500
+      doc.text("FROM", margin, y);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(31, 41, 55); // gray-800
+      doc.text("CampusIQ Inc.", margin, y + 8);
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128);
+      doc.text("billing@campusiq.com", margin, y + 15);
+      doc.text("www.campusiq.com", margin, y + 21);
+
+      // Right column — Bill To
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(107, 114, 128);
+      doc.text("BILL TO", 120, y);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(31, 41, 55);
+      doc.text(schoolName, 120, y + 8);
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128);
+      if (schoolEmail) doc.text(schoolEmail, 120, y + 15);
+
+      // ─── Invoice details cards ─────────────────────────────────────
+      y = 98;
+      const cardW = (pageW - margin * 2 - 12) / 3;
+
+      // Card backgrounds
+      const cards = [
+        { label: "Invoice Date", value: invoiceDate },
+        { label: "Payment Status", value: payment.status.toUpperCase() },
+        { label: "Amount Due", value: amountStr },
+      ];
+
+      cards.forEach((card, i) => {
+        const cx = margin + i * (cardW + 6);
+        // Card bg
+        doc.setFillColor(249, 250, 251); // gray-50
+        doc.roundedRect(cx, y, cardW, 22, 3, 3, "F");
+        // Card border
+        doc.setDrawColor(229, 231, 235); // gray-200
+        doc.roundedRect(cx, y, cardW, 22, 3, 3, "S");
+        // Label
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(107, 114, 128);
+        doc.text(card.label.toUpperCase(), cx + 6, y + 8);
+        // Value
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        if (card.label === "Payment Status") {
+          doc.setTextColor(
+            payment.status === "paid" ? 22 : 220,
+            payment.status === "paid" ? 163 : 38,
+            payment.status === "paid" ? 74 : 38,
+          );
+        } else if (card.label === "Amount Due") {
+          doc.setTextColor(67, 56, 202); // orange-600
+        } else {
+          doc.setTextColor(31, 41, 55);
+        }
+        doc.text(card.value, cx + 6, y + 17);
+      });
+
+      // ─── Items table ───────────────────────────────────────────────
+      y = 134;
+
+      // Table header
+      doc.setFillColor(67, 56, 202); // orange-600
+      doc.roundedRect(margin, y, pageW - margin * 2, 12, 2, 2, "F");
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(255, 255, 255);
+      doc.text("#", margin + 6, y + 8);
+      doc.text("DESCRIPTION", margin + 18, y + 8);
+      doc.text("PLAN", 105, y + 8);
+      doc.text("QTY", 135, y + 8);
+      doc.text("RATE", 152, y + 8);
+      doc.text("AMOUNT", pageW - margin - 6, y + 8, { align: "right" });
+
+      // Table row 1
+      y += 12;
+      doc.setFillColor(249, 250, 251);
+      doc.rect(margin, y, pageW - margin * 2, 14, "F");
+      doc.setDrawColor(229, 231, 235);
+      doc.line(margin, y + 14, pageW - margin, y + 14);
+
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(31, 41, 55);
+      doc.text("1", margin + 6, y + 9);
+      doc.text(
+        payment.type === "subscription"
+          ? "SaaS Platform Subscription"
+          : "Fee Payment",
+        margin + 18,
+        y + 9,
+      );
+      doc.text(PLAN_LABELS[payment.plan] || payment.plan, 105, y + 9);
+      doc.text("1", 137, y + 9);
+      doc.text(amountStr, 152, y + 9);
+      doc.setFont("helvetica", "bold");
+      doc.text(amountStr, pageW - margin - 6, y + 9, { align: "right" });
+
+      // ─── Totals section ────────────────────────────────────────────
+      y += 24;
+      const totalsX = 125;
+
+      // Subtotal
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(107, 114, 128);
+      doc.text("Subtotal", totalsX, y);
+      doc.setTextColor(31, 41, 55);
+      doc.text(amountStr, pageW - margin - 6, y, { align: "right" });
+
+      // Tax
+      y += 8;
+      doc.setTextColor(107, 114, 128);
+      doc.text("Tax (0%)", totalsX, y);
+      doc.setTextColor(31, 41, 55);
+      doc.text("$0.00", pageW - margin - 6, y, { align: "right" });
+
+      // Discount line
+      y += 8;
+      doc.setTextColor(107, 114, 128);
+      doc.text("Discount", totalsX, y);
+      doc.setTextColor(22, 163, 74); // green
+      doc.text("$0.00", pageW - margin - 6, y, { align: "right" });
+
+      // Total divider
+      y += 5;
+      doc.setDrawColor(67, 56, 202);
+      doc.setLineWidth(0.5);
+      doc.line(totalsX, y, pageW - margin, y);
+      doc.setLineWidth(0.2);
+
+      // Grand Total
+      y += 10;
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text("Total:", 130, tableY + 35);
-      doc.text(amountStr, 155, tableY + 35);
+      doc.setTextColor(67, 56, 202);
+      doc.text("TOTAL", totalsX, y);
+      doc.setFontSize(14);
+      doc.text(amountStr, pageW - margin - 6, y, { align: "right" });
 
-      // Footer
+      // ─── Transaction details ───────────────────────────────────────
+      y += 20;
+      doc.setFillColor(249, 250, 251);
+      doc.roundedRect(margin, y, pageW - margin * 2, 28, 3, 3, "F");
+      doc.setDrawColor(229, 231, 235);
+      doc.roundedRect(margin, y, pageW - margin * 2, 28, 3, 3, "S");
+
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(107, 114, 128);
+      doc.text("TRANSACTION DETAILS", margin + 8, y + 8);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(55, 65, 81);
+      doc.text(`Order ID: ${payment.orderId}`, margin + 8, y + 16);
+      doc.text(
+        `Transaction ID: ${payment.paymentId || "N/A"}`,
+        margin + 8,
+        y + 23,
+      );
+      doc.text(`Payment Method: Credit Card`, 120, y + 16);
+      doc.text(`Currency: ${payment.currency || "USD"}`, 120, y + 23);
+
+      // ─── Terms & Notes ─────────────────────────────────────────────
+      y += 38;
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(107, 114, 128);
+      doc.text("TERMS & CONDITIONS", margin, y);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
+      doc.setTextColor(156, 163, 175);
       doc.text(
-        "This is a computer-generated invoice. No signature required.",
-        20,
-        270,
+        "1. This invoice is auto-generated and valid without signature.",
+        margin,
+        y + 7,
       );
-      doc.text("Payments processed securely via Authorize.net.", 20, 276);
       doc.text(
-        `Generated by CampusIQ on ${new Date().toLocaleString()}`,
-        20,
-        282,
+        "2. Subscription is billed according to the selected billing cycle.",
+        margin,
+        y + 13,
+      );
+      doc.text(
+        "3. Refunds are processed as per our Refund Policy within 30 days.",
+        margin,
+        y + 19,
+      );
+      doc.text("4. For queries, contact billing@campusiq.com.", margin, y + 25);
+
+      // ─── Footer bar ───────────────────────────────────────────────
+      doc.setFillColor(249, 250, 251);
+      doc.rect(0, pageH - 24, pageW, 24, "F");
+      doc.setDrawColor(229, 231, 235);
+      doc.line(0, pageH - 24, pageW, pageH - 24);
+
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(156, 163, 175);
+      doc.text(
+        "CampusIQ Inc. \u2022 Institution Management Platform \u2022 www.campusiq.com \u2022 billing@campusiq.com",
+        pageW / 2,
+        pageH - 16,
+        { align: "center" },
+      );
+      doc.text(
+        `Generated on ${new Date().toLocaleString()} \u2022 Payments processed securely via Authorize.net`,
+        pageW / 2,
+        pageH - 10,
+        { align: "center" },
       );
 
-      doc.save(`CampusIQ-Invoice-${payment.orderId}.pdf`);
+      // ─── Thank You strip ──────────────────────────────────────────
+      const thankY = y + 34;
+      if (thankY < pageH - 40) {
+        doc.setFillColor(238, 242, 255); // orange-50
+        doc.roundedRect(margin, thankY, pageW - margin * 2, 16, 3, 3, "F");
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(67, 56, 202);
+        doc.text("Thank you for choosing CampusIQ!", pageW / 2, thankY + 10, {
+          align: "center",
+        });
+      }
+
+      doc.save(`CampusIQ-Invoice-${invoiceNo}.pdf`);
     } catch {
       showError("Error", "Failed to generate invoice PDF");
     }
@@ -259,9 +459,12 @@ export default function BillingPage() {
         const err = await res.json();
         throw new Error(err.error || "Failed to cancel");
       }
-      showSuccess("Cancelled", "Your subscription has been cancelled.");
       await updateSession();
-      await fetchBilling();
+      showSuccess(
+        "Cancelled",
+        "Your subscription has been cancelled. You are now on the free Starter plan.",
+      );
+      router.push("/plans");
     } catch (err) {
       showError(
         "Error",
@@ -289,16 +492,16 @@ export default function BillingPage() {
     const styles: Record<string, string> = {
       active:
         "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-      trial: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      trial:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
       expired: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-      cancelled:
-        "bg-muted text-foreground dark:bg-card dark:text-gray-200",
+      cancelled: "bg-muted text-foreground dark:bg-card dark:text-gray-200",
       paid: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
       created:
         "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
       failed: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
       refunded:
-        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+        "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
     };
     return (
       <Badge className={styles[status] || "bg-muted text-foreground"}>
@@ -500,14 +703,14 @@ export default function BillingPage() {
                   key={planId}
                   className={`rounded-lg border p-4 transition-all ${
                     isCurrent
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950 dark:border-blue-400"
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-950 dark:border-orange-400"
                       : "border-border hover:border-border dark:hover:border-gray-600"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold">{PLAN_LABELS[planId]}</h3>
                     {isCurrent && (
-                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                      <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                         Current
                       </Badge>
                     )}

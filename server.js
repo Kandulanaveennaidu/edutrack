@@ -12,7 +12,10 @@ const { Server: SocketIOServer } = require("socket.io");
 const jwt = require("next-auth/jwt");
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = process.env.HOSTNAME || "0.0.0.0";
+// Listen on 0.0.0.0 to accept connections from all interfaces (needed for Docker/EC2)
+// But tell Next.js the hostname is localhost so internal URL generation works correctly
+const listenHost = process.env.LISTEN_HOST || "0.0.0.0";
+const hostname = process.env.HOSTNAME || "localhost";
 const port = parseInt(process.env.PORT || "3000", 10);
 
 const app = next({ dev, hostname, port });
@@ -164,11 +167,12 @@ app.prepare().then(() => {
     }, 300000); // Log every 5 minutes
 
     // ── Start server ──────────────────────────────────────────────────
-    httpServer.listen(port, hostname, () => {
+    httpServer.listen(port, listenHost, () => {
         console.log(
-            `\n🚀 CampusIQ server ready at http://${hostname}:${port}` +
-            `\n📡 Socket.IO ready at ws://${hostname}:${port}/api/socketio` +
-            `\n🌍 Environment: ${dev ? "development" : "production"}\n`
+            `\n🚀 CampusIQ server ready at http://localhost:${port}` +
+            `\n📡 Socket.IO ready at ws://localhost:${port}/api/socketio` +
+            `\n🌍 Environment: ${dev ? "development" : "production"}` +
+            `\n🔗 Listening on ${listenHost}:${port}\n`
         );
     });
 });

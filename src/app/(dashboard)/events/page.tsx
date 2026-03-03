@@ -65,7 +65,7 @@ const EVENT_TYPES = [
     value: "academic",
     label: "Academic",
     icon: GraduationCap,
-    color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+    color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
   },
   {
     value: "sports",
@@ -78,7 +78,7 @@ const EVENT_TYPES = [
     label: "Cultural",
     icon: Music,
     color:
-      "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+      "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   },
   {
     value: "meeting",
@@ -109,7 +109,7 @@ const EVENT_TYPES = [
 ];
 
 const EVENT_COLORS = [
-  "#3b82f6",
+  "#8b5cf6",
   "#ef4444",
   "#10b981",
   "#f59e0b",
@@ -146,7 +146,7 @@ const defaultForm = {
   endDate: "",
   allDay: true,
   location: "",
-  color: "#3b82f6",
+  color: "#8b5cf6",
   status: "scheduled",
 };
 
@@ -447,7 +447,7 @@ export default function EventCalendarPage() {
                     today
                       ? "border-primary bg-primary/5 dark:bg-primary/10"
                       : "border-gray-100 dark:border-border hover:bg-muted/50 dark:hover:bg-card"
-                  } ${dayEvents.length > 0 ? "bg-blue-50/30 dark:bg-blue-950/20" : ""}`}
+                  } ${dayEvents.length > 0 ? "bg-orange-50/30 dark:bg-orange-950/20" : ""}`}
                   onClick={() => canAdd && openCreate(dateStr)}
                 >
                   <div
@@ -459,7 +459,7 @@ export default function EventCalendarPage() {
                     <div
                       key={e._id}
                       className="text-[10px] px-1 py-0.5 rounded truncate mb-0.5 cursor-pointer text-white font-medium"
-                      style={{ backgroundColor: e.color || "#3b82f6" }}
+                      style={{ backgroundColor: e.color || "#8b5cf6" }}
                       title={e.title}
                       onClick={(ev) => {
                         ev.stopPropagation();
@@ -506,7 +506,7 @@ export default function EventCalendarPage() {
                   >
                     <div
                       className="w-1 h-full min-h-[40px] rounded-full"
-                      style={{ backgroundColor: e.color || "#3b82f6" }}
+                      style={{ backgroundColor: e.color || "#8b5cf6" }}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -577,7 +577,7 @@ export default function EventCalendarPage() {
             <DialogTitle className="flex items-center gap-2">
               <div
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: selectedEvent?.color || "#3b82f6" }}
+                style={{ backgroundColor: selectedEvent?.color || "#8b5cf6" }}
               />
               {selectedEvent?.title}
             </DialogTitle>

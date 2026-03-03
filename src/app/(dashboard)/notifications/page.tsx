@@ -47,11 +47,11 @@ interface Notification {
 }
 
 const typeIcons: Record<string, React.ReactNode> = {
-  announcement: <Info className="h-5 w-5 text-blue-500" />,
+  announcement: <Info className="h-5 w-5 text-orange-500" />,
   leave_request: <Calendar className="h-5 w-5 text-amber-500" />,
   leave_approved: <Calendar className="h-5 w-5 text-green-500" />,
   leave_rejected: <Calendar className="h-5 w-5 text-red-500" />,
-  attendance: <Users className="h-5 w-5 text-purple-500" />,
+  attendance: <Users className="h-5 w-5 text-amber-500" />,
   alert: <AlertTriangle className="h-5 w-5 text-red-500" />,
 };
 
@@ -208,7 +208,7 @@ export default function NotificationsPage() {
             <Card
               key={notif.notification_id}
               className={
-                notif.status === "unread" ? "border-blue-200 bg-blue-50/50" : ""
+                notif.status === "unread" ? "border-orange-200 dark:border-orange-800 bg-orange-50/50" : ""
               }
             >
               <CardContent className="p-4">

@@ -404,8 +404,8 @@ export default function ReportsPage() {
               <div className="grid gap-4 md:grid-cols-3">
                 <Card>
                   <CardContent className="flex items-center gap-4 p-6">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                      <Users className="h-6 w-6 text-blue-600" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
+                      <Users className="h-6 w-6 text-orange-500 dark:text-orange-400" />
                     </div>
                     <div>
                       <p className="text-2xl font-bold">
@@ -573,7 +573,7 @@ export default function ReportsPage() {
                           <TableCell className="text-center text-amber-600">
                             {student.late_count}
                           </TableCell>
-                          <TableCell className="text-center text-blue-600">
+                          <TableCell className="text-center text-orange-500 dark:text-orange-400">
                             {student.leave_count}
                           </TableCell>
                           <TableCell className="text-center">

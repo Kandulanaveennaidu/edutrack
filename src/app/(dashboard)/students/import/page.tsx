@@ -219,13 +219,13 @@ export default function ImportStudentsPage() {
       </div>
 
       {/* Instructions Card */}
-      <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+      <Card className="border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/20">
         <CardContent className="pt-6">
           <div className="flex gap-3">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
-            <div className="space-y-2 text-sm text-blue-900 dark:text-blue-100">
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-orange-500 dark:text-orange-400" />
+            <div className="space-y-2 text-sm text-orange-900 dark:text-orange-100">
               <p className="font-medium">How to import students:</p>
-              <ol className="list-inside list-decimal space-y-1 text-blue-800 dark:text-blue-200">
+              <ol className="list-inside list-decimal space-y-1 text-orange-800 dark:text-orange-200">
                 <li>
                   Download the template above and fill in your student data
                 </li>
@@ -240,7 +240,7 @@ export default function ImportStudentsPage() {
                 </li>
                 <li>Upload the file below — we handle the rest!</li>
               </ol>
-              <p className="text-xs text-blue-700 dark:text-blue-300">
+              <p className="text-xs text-orange-600 dark:text-orange-300">
                 <strong>Supported formats:</strong> Excel (.xlsx, .xls) and CSV
                 (.csv) — max 500 students, 10MB file size.
                 <br />
@@ -271,7 +271,7 @@ export default function ImportStudentsPage() {
             onClick={() => !uploading && fileInputRef.current?.click()}
             className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-all ${
               isDragging
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                ? "border-orange-500 bg-orange-50 dark:bg-orange-950/20"
                 : "border-slate-200 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:hover:border-slate-500 dark:hover:bg-slate-900"
             } ${uploading ? "pointer-events-none opacity-60" : ""}`}
           >
@@ -280,7 +280,7 @@ export default function ImportStudentsPage() {
                 <Spinner className="mb-4 h-10 w-10" />
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Uploading and processing{" "}
-                  <span className="text-blue-600">{fileName}</span>...
+                  <span className="text-orange-500 dark:text-orange-400">{fileName}</span>...
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   This may take a moment for large files

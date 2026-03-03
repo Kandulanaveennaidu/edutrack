@@ -177,7 +177,7 @@ export default function VisitorsPage() {
   const statusColors: Record<string, string> = {
     checked_in: "bg-green-100 text-green-800",
     checked_out: "bg-slate-100 text-slate-800",
-    pre_registered: "bg-blue-100 text-blue-800",
+    pre_registered: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200",
     cancelled: "bg-red-100 text-red-800",
   };
 
@@ -213,8 +213,8 @@ export default function VisitorsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-blue-100 p-2">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="rounded-lg bg-orange-100 dark:bg-orange-900/30 p-2">
+                <Users className="h-5 w-5 text-orange-500 dark:text-orange-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.total_today}</p>

@@ -109,7 +109,7 @@ export async function POST(request: Request) {
           title: String(ev.title || "Event"),
           type: "event",
           description: String(ev.description || ""),
-          color: "#3b82f6",
+          color: "#8b5cf6",
         });
       }
 
@@ -162,13 +162,13 @@ export async function POST(request: Request) {
           date: new Date(year, 8, 5),
           title: "Teachers' Day",
           type: "event",
-          color: "#3b82f6",
+          color: "#8b5cf6",
         },
         {
           date: new Date(year + 1, 1, 15),
           title: "Annual Day",
           type: "event",
-          color: "#3b82f6",
+          color: "#8b5cf6",
         },
         {
           date: new Date(year + 1, 2, 1),

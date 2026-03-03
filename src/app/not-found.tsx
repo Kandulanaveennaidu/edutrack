@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-950">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-orange-50 to-white dark:from-gray-900 dark:to-gray-950">
       <div className="text-center space-y-6 px-4">
-        <h1 className="text-8xl font-bold text-blue-500 dark:text-blue-400">
+        <h1 className="text-8xl font-bold text-orange-500 dark:text-orange-400">
           404
         </h1>
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
@@ -16,7 +16,7 @@ export default function NotFound() {
         <div className="flex gap-4 justify-center pt-4">
           <Link
             href="/dashboard"
-            className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition-colors"
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-orange-50 dark:bg-orange-950/300 text-white font-medium hover:bg-orange-500 transition-colors"
           >
             Go to Dashboard
           </Link>

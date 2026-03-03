@@ -499,8 +499,8 @@ export default function RoomBookingPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Building2 className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                <Building2 className="h-5 w-5 text-orange-500 dark:text-orange-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{rooms.length}</p>
@@ -527,8 +527,8 @@ export default function RoomBookingPage() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Users className="h-5 w-5 text-purple-600" />
+              <div className="p-2 bg-amber-100 rounded-lg">
+                <Users className="h-5 w-5 text-amber-600" />
               </div>
               <div>
                 <p className="text-2xl font-bold">

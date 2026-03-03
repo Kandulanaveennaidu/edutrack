@@ -40,21 +40,21 @@ interface TimetableResult {
 }
 
 const DAY_COLORS: Record<string, string> = {
-  Monday: "bg-blue-50 dark:bg-blue-950",
+  Monday: "bg-orange-50 dark:bg-orange-950",
   Tuesday: "bg-green-50 dark:bg-green-950",
   Wednesday: "bg-yellow-50 dark:bg-yellow-950",
-  Thursday: "bg-purple-50 dark:bg-purple-950",
+  Thursday: "bg-amber-50 dark:bg-amber-950",
   Friday: "bg-pink-50 dark:bg-pink-950",
   Saturday: "bg-orange-50 dark:bg-orange-950",
 };
 
 const SUBJECT_COLORS = [
-  "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+  "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
   "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200",
   "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   "bg-rose-100 text-rose-800 dark:bg-rose-900 dark:text-rose-200",
   "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
-  "bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200",
+  "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   "bg-lime-100 text-lime-800 dark:bg-lime-900 dark:text-lime-200",
   "bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-200",
 ];
@@ -132,7 +132,7 @@ export default function TimetableGeneratorPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -143,7 +143,7 @@ export default function TimetableGeneratorPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Shuffle className="h-7 w-7 text-indigo-600" />
+            <Shuffle className="h-7 w-7 text-orange-500 dark:text-orange-400" />
             Smart Timetable Generator
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -209,7 +209,7 @@ export default function TimetableGeneratorPage() {
           <button
             onClick={generate}
             disabled={!className || loading}
-            className="bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+            className="bg-orange-500 text-white px-6 py-2 rounded-lg text-sm hover:bg-orange-600 disabled:opacity-50 flex items-center gap-2"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -251,7 +251,7 @@ export default function TimetableGeneratorPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-card rounded-xl p-4 shadow-sm border text-center">
-              <p className="text-2xl font-bold text-indigo-600">
+              <p className="text-2xl font-bold text-orange-500 dark:text-orange-400">
                 {result.stats.utilization}%
               </p>
               <p className="text-xs text-muted-foreground">Utilization</p>

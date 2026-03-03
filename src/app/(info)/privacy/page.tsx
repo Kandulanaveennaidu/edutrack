@@ -107,14 +107,14 @@ export default function PrivacyPage() {
       <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <GraduationCap className="h-8 w-8 text-orange-500 dark:text-orange-400" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               CampusIQ
             </span>
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -123,10 +123,10 @@ export default function PrivacyPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20">
+      <section className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/40 mb-6">
-            <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/40 mb-6">
+            <Shield className="h-8 w-8 text-orange-500 dark:text-orange-400" />
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             Privacy Policy
@@ -152,14 +152,14 @@ export default function PrivacyPage() {
               <a
                 key={section.id}
                 href={`#${section.id}`}
-                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-sm text-orange-500 dark:text-orange-400 hover:underline"
               >
                 {section.title}
               </a>
             ))}
             <a
               href="#contact"
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-sm text-orange-500 dark:text-orange-400 hover:underline"
             >
               8. Contact Us
             </a>
@@ -171,7 +171,7 @@ export default function PrivacyPage() {
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           {/* Intro */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
+          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-6">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               CampusIQ (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) is
               committed to protecting the privacy of institutions, students,
@@ -186,7 +186,7 @@ export default function PrivacyPage() {
             <div key={section.id} id={section.id} className="scroll-mt-20">
               <div className="flex items-center gap-3 mb-4">
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800">
-                  <section.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <section.icon className="h-5 w-5 text-orange-500 dark:text-orange-400" />
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {section.title}
@@ -213,7 +213,7 @@ export default function PrivacyPage() {
           <div id="contact" className="scroll-mt-20">
             <div className="flex items-center gap-3 mb-4">
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-800">
-                <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Mail className="h-5 w-5 text-orange-500 dark:text-orange-400" />
               </div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 8. Contact Us
@@ -255,7 +255,7 @@ export default function PrivacyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <GraduationCap className="h-6 w-6 text-orange-500 dark:text-orange-400" />
               <span className="font-semibold text-gray-900 dark:text-white">
                 CampusIQ
               </span>
@@ -263,31 +263,31 @@ export default function PrivacyPage() {
             <nav className="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <Link
                 href="/about"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 About
               </Link>
               <Link
                 href="/blog"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Blog
               </Link>
               <Link
                 href="/careers"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Careers
               </Link>
               <Link
                 href="/privacy"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Terms
               </Link>

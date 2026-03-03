@@ -23,7 +23,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <div className="lg:pl-64">
           <Header onMenuClick={() => setSidebarOpen(true)} />
 
-          <main className="p-4 lg:p-8 max-w-[1600px] mx-auto">{children}</main>
+          <main className="relative z-10 p-4 lg:p-8 max-w-[1600px] mx-auto">
+            {children}
+          </main>
         </div>
 
         {/* Real-time notification toasts */}

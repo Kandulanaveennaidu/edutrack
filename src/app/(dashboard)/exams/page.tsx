@@ -257,7 +257,7 @@ export default function ExamsPage() {
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-blue-600 text-blue-600" : "border-transparent text-muted-foreground hover:text-slate-700"}`}
+            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground hover:text-slate-700"}`}
           >
             {t}
           </button>

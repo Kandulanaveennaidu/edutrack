@@ -137,14 +137,14 @@ export default function CareersPage() {
       <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+            <GraduationCap className="h-8 w-8 text-orange-500 dark:text-orange-400" />
             <span className="text-xl font-bold text-gray-900 dark:text-white">
               CampusIQ
             </span>
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -153,7 +153,7 @@ export default function CareersPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-20">
+      <section className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-900 dark:to-gray-800 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             Join the CampusIQ Team
@@ -196,7 +196,7 @@ export default function CareersPage() {
             {cultureValues.map((item) => (
               <div
                 key={item.title}
-                className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6 border border-blue-100 dark:border-gray-700"
+                className="bg-gradient-to-br from-orange-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 rounded-xl p-6 border border-orange-100 dark:border-gray-700"
               >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   {item.title}
@@ -227,8 +227,8 @@ export default function CareersPage() {
                 key={benefit.title}
                 className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/40 mb-4">
-                  <benefit.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-orange-100 dark:bg-orange-900/40 mb-4">
+                  <benefit.icon className="h-6 w-6 text-orange-500 dark:text-orange-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                   {benefit.title}
@@ -263,11 +263,11 @@ export default function CareersPage() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                      <span className="text-xs font-semibold text-orange-500 dark:text-orange-400 uppercase tracking-wider">
                         {job.team}
                       </span>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-orange-500 dark:text-orange-400 dark:group-hover:text-orange-400 transition-colors">
                       {job.title}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 leading-relaxed">
@@ -284,7 +284,7 @@ export default function CareersPage() {
                       </span>
                     </div>
                   </div>
-                  <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap self-start">
+                  <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors text-sm whitespace-nowrap self-start">
                     Apply Now
                     <ArrowRight className="h-4 w-4" />
                   </button>
@@ -296,18 +296,18 @@ export default function CareersPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 bg-blue-600 dark:bg-blue-700">
+      <section className="py-16 bg-orange-500 dark:bg-orange-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Don&apos;t See the Right Role?
           </h2>
-          <p className="text-blue-100 mb-8 text-lg max-w-xl mx-auto">
+          <p className="text-orange-100 mb-8 text-lg max-w-xl mx-auto">
             We&apos;re always looking for exceptional people. Send us your
             resume and tell us how you&apos;d like to contribute to CampusIQ.
           </p>
           <a
             href="mailto:careers@campusiq.in"
-            className="inline-flex items-center px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors shadow-lg"
+            className="inline-flex items-center px-8 py-3 bg-white text-orange-500 dark:text-orange-400 font-semibold rounded-lg hover:bg-orange-50 transition-colors shadow-lg"
           >
             Send Your Resume
           </a>
@@ -319,7 +319,7 @@ export default function CareersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <GraduationCap className="h-6 w-6 text-orange-500 dark:text-orange-400" />
               <span className="font-semibold text-gray-900 dark:text-white">
                 CampusIQ
               </span>
@@ -327,31 +327,31 @@ export default function CareersPage() {
             <nav className="flex flex-wrap justify-center gap-6 text-sm text-gray-600 dark:text-gray-400">
               <Link
                 href="/about"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 About
               </Link>
               <Link
                 href="/blog"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Blog
               </Link>
               <Link
                 href="/careers"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Careers
               </Link>
               <Link
                 href="/privacy"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="hover:text-blue-600 dark:hover:text-blue-400"
+                className="hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-400"
               >
                 Terms
               </Link>

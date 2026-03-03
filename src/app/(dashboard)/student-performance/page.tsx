@@ -228,7 +228,7 @@ export default function StudentPerformancePage() {
 
   const GRADE_COLORS = [
     "#10b981",
-    "#3b82f6",
+    "#8b5cf6",
     "#8b5cf6",
     "#f59e0b",
     "#f97316",
@@ -240,7 +240,7 @@ export default function StudentPerformancePage() {
   const percentileRanges = (() => {
     const ranges = [
       { range: "90-100%", min: 90, max: 100, count: 0, color: "#10b981" },
-      { range: "80-89%", min: 80, max: 89, count: 0, color: "#3b82f6" },
+      { range: "80-89%", min: 80, max: 89, count: 0, color: "#8b5cf6" },
       { range: "70-79%", min: 70, max: 79, count: 0, color: "#8b5cf6" },
       { range: "60-69%", min: 60, max: 69, count: 0, color: "#f59e0b" },
       { range: "50-59%", min: 50, max: 59, count: 0, color: "#f97316" },
@@ -319,8 +319,8 @@ export default function StudentPerformancePage() {
       <div className="grid gap-4 md:grid-cols-6">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-blue-100 p-2 dark:bg-blue-900">
-              <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+            <div className="rounded-lg bg-orange-100 p-2 dark:bg-orange-900">
+              <GraduationCap className="h-5 w-5 text-orange-500 dark:text-orange-300" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Students</p>
@@ -354,8 +354,8 @@ export default function StudentPerformancePage() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="rounded-lg bg-purple-100 p-2 dark:bg-purple-900">
-              <Award className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+            <div className="rounded-lg bg-amber-100 p-2 dark:bg-amber-900">
+              <Award className="h-5 w-5 text-amber-600 dark:text-amber-300" />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Top Score</p>
@@ -407,7 +407,7 @@ export default function StudentPerformancePage() {
                 <Line
                   type="monotone"
                   dataKey="average"
-                  stroke="#3b82f6"
+                  stroke="#8b5cf6"
                   strokeWidth={2}
                   dot={{ r: 5 }}
                   name="Student Avg"
@@ -441,7 +441,7 @@ export default function StudentPerformancePage() {
                 <Legend />
                 <Bar
                   dataKey="average"
-                  fill="#3b82f6"
+                  fill="#8b5cf6"
                   name="Average"
                   radius={[4, 4, 0, 0]}
                 />
@@ -544,8 +544,8 @@ export default function StudentPerformancePage() {
                 <Radar
                   name="Average"
                   dataKey="average"
-                  stroke="#3b82f6"
-                  fill="#3b82f6"
+                  stroke="#8b5cf6"
+                  fill="#8b5cf6"
                   fillOpacity={0.3}
                 />
                 <Radar
@@ -586,7 +586,7 @@ export default function StudentPerformancePage() {
                         ? "bg-gray-400"
                         : i === 2
                           ? "bg-orange-600"
-                          : "bg-blue-500"
+                          : "bg-orange-50 dark:bg-orange-950/300"
                   }`}
                 >
                   #{i + 1}

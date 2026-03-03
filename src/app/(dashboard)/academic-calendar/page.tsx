@@ -38,7 +38,7 @@ interface AcademicCalendarData {
 const TYPE_COLORS: Record<string, string> = {
   holiday: "#ef4444",
   exam: "#f59e0b",
-  event: "#3b82f6",
+  event: "#8b5cf6",
   ptm: "#8b5cf6",
   vacation: "#10b981",
   working_saturday: "#6b7280",
@@ -178,7 +178,7 @@ export default function AcademicCalendarPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500" />
       </div>
     );
   }
@@ -189,7 +189,7 @@ export default function AcademicCalendarPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Calendar className="h-7 w-7 text-indigo-600" /> Academic Calendar
+            <Calendar className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Academic Calendar
           </h1>
           <p className="text-muted-foreground mt-1">
             Auto-generate yearly calendar with holidays, exams & events
@@ -214,7 +214,7 @@ export default function AcademicCalendarPage() {
           )}
           <button
             onClick={() => setShowGenerator(!showGenerator)}
-            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-indigo-700 flex items-center gap-2"
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 flex items-center gap-2"
           >
             <Plus className="h-4 w-4" /> Generate Calendar
           </button>
@@ -277,7 +277,7 @@ export default function AcademicCalendarPage() {
             <button
               key={c._id}
               onClick={() => setActiveCalendar(c)}
-              className={`px-3 py-1.5 rounded-lg text-sm ${activeCalendar?._id === c._id ? "bg-indigo-600 text-white" : "bg-muted"}`}
+              className={`px-3 py-1.5 rounded-lg text-sm ${activeCalendar?._id === c._id ? "bg-orange-500 text-white" : "bg-muted"}`}
             >
               {c.academicYear}
             </button>
@@ -343,10 +343,10 @@ export default function AcademicCalendarPage() {
                   return (
                     <div
                       key={day}
-                      className={`min-h-[80px] p-1 rounded-lg border text-xs ${isToday ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950" : "border-gray-100 dark:border-border"}`}
+                      className={`min-h-[80px] p-1 rounded-lg border text-xs ${isToday ? "border-orange-500 bg-orange-50 dark:bg-orange-950" : "border-gray-100 dark:border-border"}`}
                     >
                       <div
-                        className={`font-medium mb-1 ${isToday ? "text-indigo-600" : ""}`}
+                        className={`font-medium mb-1 ${isToday ? "text-orange-500 dark:text-orange-400" : ""}`}
                       >
                         {day}
                       </div>

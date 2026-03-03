@@ -39,7 +39,7 @@ export function getStatusColor(status: string): string {
     present: "bg-green-100 text-green-800",
     absent: "bg-red-100 text-red-800",
     late: "bg-amber-100 text-amber-800",
-    leave: "bg-blue-100 text-blue-800",
+    leave: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200",
     active: "bg-green-100 text-green-800",
     inactive: "bg-gray-100 text-gray-800",
     pending: "bg-yellow-100 text-yellow-800",

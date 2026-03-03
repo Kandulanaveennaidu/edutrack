@@ -137,7 +137,7 @@ export default function FeeReceiptPage() {
       case "overdue":
         return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
       case "refunded":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400";
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400";
       default:
         return "bg-muted text-foreground dark:bg-card dark:text-foreground";
     }

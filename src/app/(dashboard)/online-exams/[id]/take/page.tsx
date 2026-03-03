@@ -295,7 +295,7 @@ export default function TakeExamPage() {
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-mono font-bold ${
               isUrgent
                 ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 animate-pulse"
-                : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                : "bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-300"
             }`}
           >
             <Clock className="h-4 w-4" />
@@ -326,7 +326,7 @@ export default function TakeExamPage() {
                   onClick={() => selectAnswer(currentQuestion, idx)}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     isSelected
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950 dark:border-blue-400"
+                      ? "border-orange-500 bg-orange-50 dark:bg-orange-950 dark:border-orange-400"
                       : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
                   }`}
                 >
@@ -334,7 +334,7 @@ export default function TakeExamPage() {
                     <div
                       className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-semibold ${
                         isSelected
-                          ? "bg-blue-500 text-white"
+                          ? "bg-orange-50 dark:bg-orange-950/300 text-white"
                           : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                       }`}
                     >
@@ -395,7 +395,7 @@ export default function TakeExamPage() {
                   onClick={() => setCurrentQuestion(idx)}
                   className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
                     isCurrent
-                      ? "bg-blue-600 text-white ring-2 ring-blue-300"
+                      ? "bg-orange-500 text-white ring-2 ring-orange-300"
                       : isAnswered
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                         : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
@@ -416,7 +416,7 @@ export default function TakeExamPage() {
               Unanswered
             </span>
             <span className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-blue-600 inline-block" />{" "}
+              <span className="w-3 h-3 rounded bg-orange-500 inline-block" />{" "}
               Current
             </span>
           </div>

@@ -71,12 +71,13 @@ function getNotificationColor(type: string): string {
   if (type.includes("emergency")) return "bg-red-600";
   if (type.includes("created") || type.includes("approved"))
     return "bg-green-500";
-  if (type.includes("updated") || type.includes("edit")) return "bg-blue-500";
+  if (type.includes("updated") || type.includes("edit"))
+    return "bg-orange-50 dark:bg-orange-950/300";
   if (type.includes("fee") || type.includes("salary")) return "bg-amber-500";
-  if (type.includes("attendance")) return "bg-purple-500";
+  if (type.includes("attendance")) return "bg-amber-500";
   if (type.includes("message") || type.includes("circular"))
-    return "bg-indigo-500";
-  return "bg-blue-500";
+    return "bg-fuchsia-500";
+  return "bg-orange-50 dark:bg-orange-950/300";
 }
 
 function timeAgo(timestamp: string): string {

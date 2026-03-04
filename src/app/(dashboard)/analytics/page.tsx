@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 const COLORS = [
   "#8b5cf6",
@@ -73,6 +74,7 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("reports");
   const [loading, setLoading] = useState(true);
@@ -221,7 +223,7 @@ export default function AnalyticsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <BarChart3 className="h-6 w-6" />
-            Analytics Dashboard
+            {t("nav.analytics")}
           </h1>
           <p className="text-muted-foreground">
             Institution performance overview and insights

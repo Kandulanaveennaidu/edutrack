@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { showError } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Child {
   student_id: string;
@@ -66,6 +67,7 @@ interface ChildDashboard {
 }
 
 export default function ParentDashboardPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("parent");
   const [loading, setLoading] = useState(true);
@@ -141,7 +143,7 @@ export default function ParentDashboardPage() {
     return (
       <div className="space-y-6">
         <h1 className="text-3xl font-bold text-foreground dark:text-foreground">
-          Parent Portal
+          {t("nav.parentPortal")}
         </h1>
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">

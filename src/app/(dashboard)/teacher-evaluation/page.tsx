@@ -41,6 +41,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { showSuccess, showError } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 const RATING_CATEGORIES = [
   { key: "teaching_quality", label: "Teaching Quality" },
@@ -99,6 +100,7 @@ function StarRating({
 }
 
 export default function TeacherEvaluationPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canAdd } = usePermissions("teacher_evaluation");
   const isAdmin = session?.user?.role === "admin";
@@ -238,7 +240,7 @@ export default function TeacherEvaluationPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Star className="h-6 w-6" />
-            Teacher Evaluation
+            {t("nav.teacherEvaluation")}
           </h1>
           <p className="text-muted-foreground">
             Anonymous feedback and performance ratings

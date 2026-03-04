@@ -62,6 +62,7 @@ import {
 } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 /* ═══════════════════ TYPES ═══════════════════ */
 
@@ -125,12 +126,16 @@ interface MenuItem {
 /* ═══════════════════ HELPER COMPONENTS ═══════════════════ */
 
 function PasswordStrength({ password }: { password: string }) {
+  const { t } = useLocale();
   const checks = [
-    { label: "Min 6 chars", met: password.length >= 6 },
-    { label: "Uppercase", met: /[A-Z]/.test(password) },
-    { label: "Lowercase", met: /[a-z]/.test(password) },
-    { label: "Number", met: /[0-9]/.test(password) },
-    { label: "Special char", met: /[^A-Za-z0-9]/.test(password) },
+    { label: t("users.passwordMinChars"), met: password.length >= 6 },
+    { label: t("users.passwordUppercase"), met: /[A-Z]/.test(password) },
+    { label: t("users.passwordLowercase"), met: /[a-z]/.test(password) },
+    { label: t("users.passwordNumber"), met: /[0-9]/.test(password) },
+    {
+      label: t("users.passwordSpecialChar"),
+      met: /[^A-Za-z0-9]/.test(password),
+    },
   ];
   const score = checks.filter((c) => c.met).length;
   const color =
@@ -173,10 +178,12 @@ function PasswordStrength({ password }: { password: string }) {
 }
 
 function RoleBadge({ role }: { role: string }) {
+  const { t } = useLocale();
   const m: Record<string, string> = {
     admin:
       "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-    teacher: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+    teacher:
+      "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
     student:
       "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
     parent:
@@ -193,7 +200,7 @@ function RoleBadge({ role }: { role: string }) {
       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${m[role] || "bg-muted text-foreground"}`}
     >
       {icons[role] || <UserIcon className="h-3.5 w-3.5" />}
-      {role.charAt(0).toUpperCase() + role.slice(1)}
+      {t(`common.${role}`)}
     </span>
   );
 }
@@ -201,6 +208,7 @@ function RoleBadge({ role }: { role: string }) {
 /* ═══════════════════ MAIN PAGE ═══════════════════ */
 
 export default function UserManagementPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canAdd, canEdit, canDelete } = usePermissions("user_management");
 
@@ -265,10 +273,10 @@ export default function UserManagementPage() {
         <div className="text-center">
           <Shield className="mx-auto h-16 w-16 text-muted-foreground" />
           <h2 className="mt-4 text-2xl font-bold text-foreground">
-            Access Denied
+            {t("users.accessDenied")}
           </h2>
           <p className="mt-2 text-muted-foreground">
-            Only administrators can access user management.
+            {t("users.accessDeniedMessage")}
           </p>
         </div>
       </div>
@@ -293,10 +301,10 @@ export default function UserManagementPage() {
         setSummary(json.summary || null);
         setTotalPages(json.pagination?.pages || 1);
       } else {
-        showError("Error", json.error);
+        showError(t("common.error"), json.error);
       }
     } catch {
-      showError("Error", "Failed to fetch users");
+      showError(t("common.error"), t("users.fetchFailed"));
     } finally {
       setLoadingUsers(false);
     }
@@ -466,10 +474,10 @@ export default function UserManagementPage() {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error);
-        showSuccess("User updated");
+        showSuccess(t("users.userUpdated"));
       } else {
         if (!userForm.password) {
-          showError("Error", "Password is required");
+          showError(t("common.error"), t("users.passwordRequired"));
           setSavingUser(false);
           return;
         }
@@ -480,12 +488,15 @@ export default function UserManagementPage() {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error);
-        showSuccess("User created");
+        showSuccess(t("users.userCreated"));
       }
       setShowUserDialog(false);
       fetchUsers();
     } catch (err) {
-      showError("Error", err instanceof Error ? err.message : "Failed to save");
+      showError(
+        t("common.error"),
+        err instanceof Error ? err.message : t("users.saveFailed"),
+      );
     } finally {
       setSavingUser(false);
     }
@@ -503,16 +514,21 @@ export default function UserManagementPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      showSuccess(user.isActive ? "User deactivated" : "User activated");
+      showSuccess(
+        user.isActive ? t("users.userDeactivated") : t("users.userActivated"),
+      );
       fetchUsers();
     } catch (err) {
-      showError("Error", err instanceof Error ? err.message : "Failed");
+      showError(
+        t("common.error"),
+        err instanceof Error ? err.message : t("common.failed"),
+      );
     }
   };
 
   const resetPassword = async (user: UserData) => {
     const newPass = await promptPassword(
-      "Enter new password for " + user.name + ":",
+      `${t("users.enterNewPassword")} ${user.name}:`,
     );
     if (!newPass) return;
     try {
@@ -527,9 +543,12 @@ export default function UserManagementPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      showSuccess("Password reset successfully");
+      showSuccess(t("users.passwordResetSuccess"));
     } catch (err) {
-      showError("Error", err instanceof Error ? err.message : "Failed");
+      showError(
+        t("common.error"),
+        err instanceof Error ? err.message : t("common.failed"),
+      );
     }
   };
 
@@ -542,10 +561,13 @@ export default function UserManagementPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      showSuccess("User deleted");
+      showSuccess(t("users.userDeleted"));
       fetchUsers();
     } catch (err) {
-      showError("Error", err instanceof Error ? err.message : "Failed");
+      showError(
+        t("common.error"),
+        err instanceof Error ? err.message : t("common.failed"),
+      );
     }
   };
 
@@ -608,7 +630,7 @@ export default function UserManagementPage() {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error);
-        showSuccess("Role updated");
+        showSuccess(t("users.roleUpdated"));
       } else {
         const res = await fetch("/api/roles", {
           method: "POST",
@@ -617,12 +639,15 @@ export default function UserManagementPage() {
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error);
-        showSuccess("Role created");
+        showSuccess(t("users.roleCreated"));
       }
       setShowRoleDialog(false);
       fetchRoles();
     } catch (err) {
-      showError("Error", err instanceof Error ? err.message : "Failed to save");
+      showError(
+        t("common.error"),
+        err instanceof Error ? err.message : t("users.saveFailed"),
+      );
     } finally {
       setSavingRole(false);
     }
@@ -630,13 +655,13 @@ export default function UserManagementPage() {
 
   const deleteRole = async (role: RoleData) => {
     if (role.isSystem) {
-      showError("Error", "System roles cannot be deleted");
+      showError(t("common.error"), t("users.systemRoleCannotDelete"));
       return;
     }
     const confirmed = await confirmAlert(
-      "Delete Role",
-      `Delete role "${role.name}"? Users assigned this role will lose their custom permissions.`,
-      "Delete",
+      t("users.deleteRole"),
+      `${t("users.deleteRoleConfirm")} "${role.name}"`,
+      t("common.delete"),
       "warning",
     );
     if (!confirmed) return;
@@ -646,10 +671,13 @@ export default function UserManagementPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      showSuccess("Role deleted");
+      showSuccess(t("users.roleDeleted"));
       fetchRoles();
     } catch (err) {
-      showError("Error", err instanceof Error ? err.message : "Failed");
+      showError(
+        t("common.error"),
+        err instanceof Error ? err.message : t("common.failed"),
+      );
     }
   };
 
@@ -708,7 +736,7 @@ export default function UserManagementPage() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[200px]">Menu</TableHead>
+            <TableHead className="w-[200px]">{t("users.menu")}</TableHead>
             <TableHead className="text-center w-[80px]">
               <button
                 type="button"
@@ -717,7 +745,7 @@ export default function UserManagementPage() {
                 }
                 className="text-xs font-medium hover:text-primary"
               >
-                View
+                {t("common.view")}
               </button>
             </TableHead>
             <TableHead className="text-center w-[80px]">
@@ -728,7 +756,7 @@ export default function UserManagementPage() {
                 }
                 className="text-xs font-medium hover:text-primary"
               >
-                Add
+                {t("common.add")}
               </button>
             </TableHead>
             <TableHead className="text-center w-[80px]">
@@ -739,7 +767,7 @@ export default function UserManagementPage() {
                 }
                 className="text-xs font-medium hover:text-primary"
               >
-                Edit
+                {t("common.edit")}
               </button>
             </TableHead>
             <TableHead className="text-center w-[80px]">
@@ -750,7 +778,7 @@ export default function UserManagementPage() {
                 }
                 className="text-xs font-medium hover:text-primary"
               >
-                Delete
+                {t("common.delete")}
               </button>
             </TableHead>
           </TableRow>
@@ -797,11 +825,9 @@ export default function UserManagementPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">
-            User & Role Management
+            {t("nav.userManagement")}
           </h1>
-          <p className="mt-1 text-muted-foreground">
-            Manage users, assign roles, and configure menu permissions
-          </p>
+          <p className="mt-1 text-muted-foreground">{t("users.description")}</p>
         </div>
       </div>
 
@@ -816,7 +842,7 @@ export default function UserManagementPage() {
           }`}
         >
           <Users className="h-4 w-4" />
-          User Management
+          {t("users.tabUsers")}
         </button>
         <button
           onClick={() => setActiveTab("roles")}
@@ -827,7 +853,7 @@ export default function UserManagementPage() {
           }`}
         >
           <Shield className="h-4 w-4" />
-          Role Management
+          {t("users.tabRoles")}
         </button>
       </div>
 
@@ -839,37 +865,37 @@ export default function UserManagementPage() {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-7">
               {[
                 {
-                  label: "Total",
+                  label: t("common.total"),
                   value: summary.total,
                   color: "text-foreground",
                 },
                 {
-                  label: "Admins",
+                  label: t("users.admins"),
                   value: summary.admins,
                   color: "text-amber-600",
                 },
                 {
-                  label: "Teachers",
+                  label: t("users.teachers"),
                   value: summary.teachers,
                   color: "text-orange-500 dark:text-orange-400",
                 },
                 {
-                  label: "Students",
+                  label: t("users.students"),
                   value: summary.students,
                   color: "text-green-600",
                 },
                 {
-                  label: "Parents",
+                  label: t("users.parents"),
                   value: summary.parents,
                   color: "text-orange-600",
                 },
                 {
-                  label: "Active",
+                  label: t("common.active"),
                   value: summary.active,
                   color: "text-emerald-600",
                 },
                 {
-                  label: "Inactive",
+                  label: t("common.inactive"),
                   value: summary.inactive,
                   color: "text-red-600",
                 },
@@ -890,7 +916,7 @@ export default function UserManagementPage() {
               <div className="relative max-w-xs flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search users..."
+                  placeholder={t("users.searchPlaceholder")}
                   className="pl-9"
                   value={search}
                   onChange={(e) => {
@@ -907,14 +933,14 @@ export default function UserManagementPage() {
                 }}
               >
                 <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Role" />
+                  <SelectValue placeholder={t("common.role")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Roles</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="teacher">Teacher</SelectItem>
-                  <SelectItem value="student">Student</SelectItem>
-                  <SelectItem value="parent">Parent</SelectItem>
+                  <SelectItem value="all">{t("users.allRoles")}</SelectItem>
+                  <SelectItem value="admin">{t("common.admin")}</SelectItem>
+                  <SelectItem value="teacher">{t("common.teacher")}</SelectItem>
+                  <SelectItem value="student">{t("common.student")}</SelectItem>
+                  <SelectItem value="parent">{t("common.parent")}</SelectItem>
                 </SelectContent>
               </Select>
               <Select
@@ -925,24 +951,26 @@ export default function UserManagementPage() {
                 }}
               >
                 <SelectTrigger className="w-[130px]">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t("common.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="all">{t("users.allStatus")}</SelectItem>
+                  <SelectItem value="active">{t("common.active")}</SelectItem>
+                  <SelectItem value="inactive">
+                    {t("common.inactive")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => fetchUsers()}>
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Refresh
+                {t("common.refresh")}
               </Button>
               {canAdd && (
                 <Button size="sm" onClick={openAddUser}>
                   <UserPlus className="mr-2 h-4 w-4" />
-                  Add New User
+                  {t("users.addUser")}
                 </Button>
               )}
             </div>
@@ -958,23 +986,25 @@ export default function UserManagementPage() {
               ) : users.length === 0 ? (
                 <div className="flex h-64 flex-col items-center justify-center text-muted-foreground">
                   <Users className="h-12 w-12 mb-3" />
-                  <p className="text-lg font-medium">No users found</p>
-                  <p className="text-sm">
-                    Try adjusting your search or filters
+                  <p className="text-lg font-medium">
+                    {t("users.noUsersFound")}
                   </p>
+                  <p className="text-sm">{t("users.adjustFilters")}</p>
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[50px]">#</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Custom Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("common.name")}</TableHead>
+                      <TableHead>{t("common.email")}</TableHead>
+                      <TableHead>{t("common.phone")}</TableHead>
+                      <TableHead>{t("common.role")}</TableHead>
+                      <TableHead>{t("users.customRole")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                      <TableHead className="text-right">
+                        {t("common.actions")}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -998,7 +1028,7 @@ export default function UserManagementPage() {
                         <TableCell className="text-sm">
                           {user.customRole ? (
                             roles.find((r) => r._id === user.customRole)
-                              ?.name || "Custom"
+                              ?.name || t("users.custom")
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
@@ -1007,7 +1037,9 @@ export default function UserManagementPage() {
                           <Badge
                             variant={user.isActive ? "default" : "secondary"}
                           >
-                            {user.isActive ? "Active" : "Inactive"}
+                            {user.isActive
+                              ? t("common.active")
+                              : t("common.inactive")}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -1017,7 +1049,7 @@ export default function UserManagementPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openEditUser(user)}
-                                title="Edit"
+                                title={t("common.edit")}
                               >
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -1028,7 +1060,9 @@ export default function UserManagementPage() {
                                 size="sm"
                                 onClick={() => toggleUserStatus(user)}
                                 title={
-                                  user.isActive ? "Deactivate" : "Activate"
+                                  user.isActive
+                                    ? t("users.deactivate")
+                                    : t("users.activate")
                                 }
                               >
                                 {user.isActive ? (
@@ -1043,7 +1077,7 @@ export default function UserManagementPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => resetPassword(user)}
-                                title="Reset Password"
+                                title={t("users.resetPassword")}
                               >
                                 <KeyRound className="h-4 w-4 text-orange-500" />
                               </Button>
@@ -1053,7 +1087,7 @@ export default function UserManagementPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => deleteUser(user)}
-                                title="Delete"
+                                title={t("common.delete")}
                               >
                                 <Trash2 className="h-4 w-4 text-red-500" />
                               </Button>
@@ -1080,7 +1114,7 @@ export default function UserManagementPage() {
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
+                {t("users.pageOf", { page, totalPages })}
               </span>
               <Button
                 variant="outline"
@@ -1100,13 +1134,12 @@ export default function UserManagementPage() {
         <>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Create custom roles with granular menu permissions. Assign roles
-              to users for fine-grained access control.
+              {t("users.roleDescription")}
             </p>
             {canAdd && (
               <Button size="sm" onClick={openAddRole}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add New Role
+                {t("users.addRole")}
               </Button>
             )}
           </div>
@@ -1120,22 +1153,22 @@ export default function UserManagementPage() {
               ) : roles.length === 0 ? (
                 <div className="flex h-64 flex-col items-center justify-center text-muted-foreground">
                   <Shield className="h-12 w-12 mb-3" />
-                  <p className="text-lg font-medium">No custom roles</p>
-                  <p className="text-sm">
-                    Create a role to get started with custom permissions
-                  </p>
+                  <p className="text-lg font-medium">{t("users.noRoles")}</p>
+                  <p className="text-sm">{t("users.noRolesHint")}</p>
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[50px]">#</TableHead>
-                      <TableHead>Role Name</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Permissions</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("users.roleName")}</TableHead>
+                      <TableHead>{t("common.description")}</TableHead>
+                      <TableHead>{t("users.permissions")}</TableHead>
+                      <TableHead>{t("common.status")}</TableHead>
+                      <TableHead>{t("users.type")}</TableHead>
+                      <TableHead className="text-right">
+                        {t("common.actions")}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1152,21 +1185,26 @@ export default function UserManagementPage() {
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-muted-foreground">
-                            {role.permissions?.length || 0} menus configured
+                            {role.permissions?.length || 0}{" "}
+                            {t("users.menusConfigured")}
                           </span>
                         </TableCell>
                         <TableCell>
                           <Badge
                             variant={role.isActive ? "default" : "secondary"}
                           >
-                            {role.isActive ? "Active" : "Inactive"}
+                            {role.isActive
+                              ? t("common.active")
+                              : t("common.inactive")}
                           </Badge>
                         </TableCell>
                         <TableCell>
                           <Badge
                             variant={role.isSystem ? "outline" : "secondary"}
                           >
-                            {role.isSystem ? "System" : "Custom"}
+                            {role.isSystem
+                              ? t("common.system")
+                              : t("users.custom")}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -1176,7 +1214,7 @@ export default function UserManagementPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => openEditRole(role)}
-                                title="Edit"
+                                title={t("common.edit")}
                               >
                                 <Pencil className="h-4 w-4" />
                               </Button>
@@ -1186,7 +1224,7 @@ export default function UserManagementPage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => deleteRole(role)}
-                                title="Delete"
+                                title={t("common.delete")}
                               >
                                 <Trash2 className="h-4 w-4 text-red-500" />
                               </Button>
@@ -1213,7 +1251,7 @@ export default function UserManagementPage() {
               ) : (
                 <UserPlus className="h-5 w-5" />
               )}
-              {editingUser ? "Edit User" : "Add New User"}
+              {editingUser ? t("users.editUser") : t("users.addNewUser")}
             </DialogTitle>
           </DialogHeader>
 
@@ -1221,30 +1259,31 @@ export default function UserManagementPage() {
             {/* Basic Info */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label>Full Name *</Label>
+                <Label>{t("users.fullName")}</Label>
                 <Input
                   value={userForm.name}
                   onChange={(e) =>
                     setUserForm({ ...userForm, name: e.target.value })
                   }
-                  placeholder="Enter full name"
+                  placeholder={t("users.enterFullName")}
                 />
               </div>
               <div>
-                <Label>Email *</Label>
+                <Label>{t("users.emailLabel")}</Label>
                 <Input
                   type="email"
                   value={userForm.email}
                   onChange={(e) =>
                     setUserForm({ ...userForm, email: e.target.value })
                   }
-                  placeholder="user@example.com"
+                  placeholder={t("users.emailPlaceholder")}
                   disabled={!!editingUser}
                 />
               </div>
               <div>
                 <Label>
-                  Password {editingUser ? "(leave blank to keep)" : "*"}
+                  {t("users.passwordLabel")}{" "}
+                  {editingUser ? t("users.passwordKeepBlank") : "*"}
                 </Label>
                 <div className="relative">
                   <Input
@@ -1255,8 +1294,8 @@ export default function UserManagementPage() {
                     }
                     placeholder={
                       editingUser
-                        ? "Leave blank to keep current"
-                        : "Enter password"
+                        ? t("users.leaveBlankKeep")
+                        : t("users.enterPassword")
                     }
                   />
                   <button
@@ -1274,34 +1313,38 @@ export default function UserManagementPage() {
                 <PasswordStrength password={userForm.password} />
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>{t("users.phoneLabel")}</Label>
                 <Input
                   value={userForm.phone}
                   onChange={(e) =>
                     setUserForm({ ...userForm, phone: e.target.value })
                   }
-                  placeholder="+91 1234567890"
+                  placeholder={t("users.phonePlaceholder")}
                 />
               </div>
               <div>
-                <Label>System Role *</Label>
+                <Label>{t("users.systemRole")}</Label>
                 <Select
                   value={userForm.role}
                   onValueChange={(v) => setUserForm({ ...userForm, role: v })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder={t("users.selectRole")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="teacher">Teacher</SelectItem>
-                    <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="parent">Parent</SelectItem>
+                    <SelectItem value="admin">{t("common.admin")}</SelectItem>
+                    <SelectItem value="teacher">
+                      {t("common.teacher")}
+                    </SelectItem>
+                    <SelectItem value="student">
+                      {t("common.student")}
+                    </SelectItem>
+                    <SelectItem value="parent">{t("common.parent")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Custom Role (Permissions)</Label>
+                <Label>{t("users.customRoleLabel")}</Label>
                 <Select
                   value={userForm.customRole || "none"}
                   onValueChange={(v) => {
@@ -1342,10 +1385,12 @@ export default function UserManagementPage() {
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select custom role" />
+                    <SelectValue placeholder={t("users.selectCustomRole")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">No Custom Role</SelectItem>
+                    <SelectItem value="none">
+                      {t("users.noCustomRole")}
+                    </SelectItem>
                     {roles
                       .filter((r) => r.isActive)
                       .map((r) => (
@@ -1361,30 +1406,32 @@ export default function UserManagementPage() {
             {/* Role-Specific Fields */}
             {userForm.role === "teacher" && (
               <div className="rounded-lg border p-4 dark:border-slate-700">
-                <h4 className="text-sm font-semibold mb-3">Teacher Details</h4>
+                <h4 className="text-sm font-semibold mb-3">
+                  {t("users.teacherDetails")}
+                </h4>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <div>
-                    <Label>Subject</Label>
+                    <Label>{t("users.subjectLabel")}</Label>
                     <Input
                       value={userForm.subject}
                       onChange={(e) =>
                         setUserForm({ ...userForm, subject: e.target.value })
                       }
-                      placeholder="Mathematics"
+                      placeholder={t("users.subjectPlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Classes (comma-separated)</Label>
+                    <Label>{t("users.classesLabel")}</Label>
                     <Input
                       value={userForm.classes}
                       onChange={(e) =>
                         setUserForm({ ...userForm, classes: e.target.value })
                       }
-                      placeholder="10A, 10B, 11A"
+                      placeholder={t("users.classesPlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Salary Per Day (₹)</Label>
+                    <Label>{t("users.salaryPerDay")}</Label>
                     <Input
                       type="number"
                       value={userForm.salary_per_day}
@@ -1403,20 +1450,22 @@ export default function UserManagementPage() {
 
             {userForm.role === "student" && (
               <div className="rounded-lg border p-4 dark:border-slate-700">
-                <h4 className="text-sm font-semibold mb-3">Student Details</h4>
+                <h4 className="text-sm font-semibold mb-3">
+                  {t("users.studentDetails")}
+                </h4>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <Label>Class</Label>
+                    <Label>{t("users.classLabel")}</Label>
                     <Input
                       value={userForm.class_name}
                       onChange={(e) =>
                         setUserForm({ ...userForm, class_name: e.target.value })
                       }
-                      placeholder="10A"
+                      placeholder={t("users.classPlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Roll Number</Label>
+                    <Label>{t("users.rollNumber")}</Label>
                     <Input
                       value={userForm.roll_number}
                       onChange={(e) =>
@@ -1425,11 +1474,11 @@ export default function UserManagementPage() {
                           roll_number: e.target.value,
                         })
                       }
-                      placeholder="001"
+                      placeholder={t("users.rollNumberPlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Parent Name</Label>
+                    <Label>{t("users.parentName")}</Label>
                     <Input
                       value={userForm.parent_name}
                       onChange={(e) =>
@@ -1438,11 +1487,11 @@ export default function UserManagementPage() {
                           parent_name: e.target.value,
                         })
                       }
-                      placeholder="Parent/Guardian Name"
+                      placeholder={t("users.parentNamePlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Parent Phone</Label>
+                    <Label>{t("users.parentPhone")}</Label>
                     <Input
                       value={userForm.parent_phone}
                       onChange={(e) =>
@@ -1451,17 +1500,17 @@ export default function UserManagementPage() {
                           parent_phone: e.target.value,
                         })
                       }
-                      placeholder="+91 9876543210"
+                      placeholder={t("users.parentPhonePlaceholder")}
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <Label>Address</Label>
+                    <Label>{t("users.addressLabel")}</Label>
                     <Input
                       value={userForm.address}
                       onChange={(e) =>
                         setUserForm({ ...userForm, address: e.target.value })
                       }
-                      placeholder="Full address"
+                      placeholder={t("users.addressPlaceholder")}
                     />
                   </div>
                 </div>
@@ -1473,16 +1522,14 @@ export default function UserManagementPage() {
               <div>
                 <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                   <Settings className="h-4 w-4" />
-                  Menu Permissions (from role)
+                  {t("users.menuPermissionsFromRole")}
                 </h4>
                 <PermissionTable
                   permissions={userMenuPerms}
                   setPermissions={setUserMenuPerms}
                 />
                 <p className="mt-2 text-xs text-muted-foreground">
-                  These permissions are inherited from the selected custom role.
-                  Changes here are preview-only — edit the role to modify
-                  permissions.
+                  {t("users.permissionsInherited")}
                 </p>
               </div>
             )}
@@ -1491,11 +1538,10 @@ export default function UserManagementPage() {
             <div>
               <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4" />
-                Module Access ({planConfig.name} Plan)
+                {t("users.moduleAccess")} ({planConfig.name} {t("users.plan")})
               </h4>
               <p className="text-xs text-muted-foreground mb-3">
-                Select which modules this user can access. Leave empty for full
-                plan access.
+                {t("users.moduleAccessHint")}
               </p>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                 {planConfig.modules.map((modId: ModuleId) => {
@@ -1534,14 +1580,14 @@ export default function UserManagementPage() {
                 variant="outline"
                 onClick={() => setShowUserDialog(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 onClick={saveUser}
                 disabled={savingUser || !userForm.name || !userForm.email}
               >
                 {savingUser && <Spinner className="mr-2 h-4 w-4" />}
-                {editingUser ? "Update User" : "Create User"}
+                {editingUser ? t("users.updateUser") : t("users.createUser")}
               </Button>
             </div>
           </div>
@@ -1558,31 +1604,31 @@ export default function UserManagementPage() {
               ) : (
                 <Plus className="h-5 w-5" />
               )}
-              {editingRole ? "Edit Role" : "Add New Role"}
+              {editingRole ? t("users.editRole") : t("users.addNewRole")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6 mt-2">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <Label>Role Name *</Label>
+                <Label>{t("users.roleNameLabel")}</Label>
                 <Input
                   value={roleForm.name}
                   onChange={(e) =>
                     setRoleForm({ ...roleForm, name: e.target.value })
                   }
-                  placeholder="e.g., HOD, Coordinator, Accountant"
+                  placeholder={t("users.roleNamePlaceholder")}
                   disabled={editingRole?.isSystem}
                 />
               </div>
               <div>
-                <Label>Description</Label>
+                <Label>{t("users.descriptionLabel")}</Label>
                 <Input
                   value={roleForm.description}
                   onChange={(e) =>
                     setRoleForm({ ...roleForm, description: e.target.value })
                   }
-                  placeholder="Brief description of this role"
+                  placeholder={t("users.descriptionPlaceholder")}
                 />
               </div>
             </div>
@@ -1591,11 +1637,10 @@ export default function UserManagementPage() {
             <div>
               <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
                 <Shield className="h-4 w-4" />
-                Menu Permissions
+                {t("users.menuPermissions")}
               </h4>
               <p className="text-xs text-muted-foreground mb-3">
-                Configure which menus this role can access and what actions they
-                can perform. Click column headers to select/deselect all.
+                {t("users.menuPermissionsHint")}
               </p>
               <PermissionTable
                 permissions={rolePermissions}
@@ -1609,14 +1654,14 @@ export default function UserManagementPage() {
                 variant="outline"
                 onClick={() => setShowRoleDialog(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 onClick={saveRole}
                 disabled={savingRole || !roleForm.name}
               >
                 {savingRole && <Spinner className="mr-2 h-4 w-4" />}
-                {editingRole ? "Update Role" : "Create Role"}
+                {editingRole ? t("users.updateRole") : t("users.createRole")}
               </Button>
             </div>
           </div>

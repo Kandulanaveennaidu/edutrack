@@ -31,8 +31,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { showError, showSuccess } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 
 export default function BulkMessagesPage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("notifications");
   const { classes, classLabel } = useClasses();
   const [sending, setSending] = useState(false);
@@ -105,7 +107,7 @@ export default function BulkMessagesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Bulk Messages</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t("nav.bulkMessages")}</h1>
         <p className="text-muted-foreground">
           Send SMS and email broadcasts to students, parents, or teachers
         </p>

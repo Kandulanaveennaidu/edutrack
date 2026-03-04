@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Promotion {
   _id: string;
@@ -44,6 +45,7 @@ interface Promotion {
 }
 
 export default function PromotionsPage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("academic_management");
   const [loading, setLoading] = useState(true);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
@@ -158,7 +160,7 @@ export default function PromotionsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Student Promotions
+            {t("nav.promotion")}
           </h1>
           <p className="text-muted-foreground">Bulk promote or retain students</p>
         </div>

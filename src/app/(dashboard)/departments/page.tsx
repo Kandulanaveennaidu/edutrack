@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Department {
   _id: string;
@@ -35,6 +36,7 @@ interface Department {
 }
 
 export default function DepartmentsPage() {
+  const { t } = useLocale();
   const { canAdd, canEdit, canDelete } = usePermissions("academics");
   const [loading, setLoading] = useState(true);
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -125,8 +127,8 @@ export default function DepartmentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Departments</h1>
-          <p className="text-muted-foreground">Manage academic departments</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.departments")}</h1>
+          <p className="text-muted-foreground">{t("departments.description")}</p>
         </div>
         {canAdd && (
           <Button

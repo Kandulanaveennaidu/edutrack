@@ -36,6 +36,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { showSuccess, showError } from "@/lib/alerts";
+import { useLocale } from "@/hooks/use-locale";
 
 // ── Step Config ──
 const STEPS = [
@@ -80,24 +81,29 @@ const BOARDS = [
 
 // ── Password Strength Component ──
 function PasswordStrength({ password }: { password: string }) {
+  const { t } = useLocale();
   const checks = useMemo(
     () => [
-      { label: "At least 6 characters", met: password.length >= 6 },
-      { label: "Uppercase letter", met: /[A-Z]/.test(password) },
-      { label: "Lowercase letter", met: /[a-z]/.test(password) },
-      { label: "Contains number", met: /[0-9]/.test(password) },
-      { label: "Special character", met: /[^A-Za-z0-9]/.test(password) },
+      { label: t("password.atLeast6"), met: password.length >= 6 },
+      { label: t("password.uppercase"), met: /[A-Z]/.test(password) },
+      { label: t("password.lowercase"), met: /[a-z]/.test(password) },
+      { label: t("password.number"), met: /[0-9]/.test(password) },
+      { label: t("password.special"), met: /[^A-Za-z0-9]/.test(password) },
     ],
-    [password],
+    [password, t],
   );
 
   const score = checks.filter((c) => c.met).length;
   const strengthLabel =
     score <= 1
-      ? "Weak"
+      ? t("password.weak")
       : score <= 2
-        ? "Fair"
+        ? t("password.fair")
         : score <= 3
+          ? t("password.good")
+          : score <= 4
+            ? t("password.strong")
+            : t("password.excellent");
           ? "Good"
           : score <= 4
             ? "Strong"
@@ -162,6 +168,7 @@ function PasswordStrength({ password }: { password: string }) {
 // ── Main Register Page ──
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
@@ -348,7 +355,7 @@ export default function RegisterPage() {
               <CheckCircle2 className="h-12 w-12 text-white" />
             </div>
             <h1 className="mt-5 text-3xl font-bold text-foreground">
-              Registration Complete!
+              {t("register.title")} {t("common.loading") ? "" : ""}Complete!
             </h1>
             <p className="mt-2 text-muted-foreground">
               Your institution has been successfully registered on CampusIQ
@@ -420,7 +427,7 @@ export default function RegisterPage() {
                   onClick={() => router.push("/login")}
                 >
                   <ExternalLink className="h-4 w-4" />
-                  Go to Login
+                  {t("common.signIn")}
                 </Button>
                 <Button
                   variant="outline"
@@ -428,7 +435,7 @@ export default function RegisterPage() {
                   onClick={() => router.push("/")}
                 >
                   <ArrowLeft className="h-4 w-4 mr-1" />
-                  Back to Home
+                  {t("auth.backToHome")}
                 </Button>
               </div>
             </CardContent>
@@ -449,7 +456,7 @@ export default function RegisterPage() {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            {t("auth.backToHome")}
           </Link>
         </div>
 
@@ -459,10 +466,10 @@ export default function RegisterPage() {
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
           <h1 className="mt-3 text-2xl font-bold text-foreground">
-            Register on CampusIQ
+            {t("common.registerInstitution")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Set up your institution management system
+            {t("auth.signInDesc")}
           </p>
         </div>
 
@@ -507,10 +514,10 @@ export default function RegisterPage() {
             <div className="flex items-center gap-2">
               <CardTitle className="text-xl">
                 {step === 1
-                  ? "Institution Information"
+                  ? t("register.institutionDetails")
                   : step === 2
-                    ? "Admin Account"
-                    : "Review & Register"}
+                    ? t("register.adminAccount")
+                    : t("register.confirmRegister")}
               </CardTitle>
               <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-medium dark:bg-orange-900/40 dark:text-orange-300">
                 Step {step}/3
@@ -518,10 +525,10 @@ export default function RegisterPage() {
             </div>
             <CardDescription>
               {step === 1
-                ? "Enter your institution details"
+                ? t("register.institutionInfo")
                 : step === 2
-                  ? "Create the administrator login credentials"
-                  : "Verify your details before submitting"}
+                  ? t("register.createCredentials")
+                  : t("register.review")}
             </CardDescription>
           </CardHeader>
 
@@ -808,7 +815,7 @@ export default function RegisterPage() {
                     formData.admin_password === formData.confirm_password && (
                       <p className="text-xs text-green-600 flex items-center gap-1 dark:text-green-400">
                         <Check className="h-3 w-3" />
-                        Passwords match
+                        {t("resetPassword.passwordsMatch")}
                       </p>
                     )}
                 </div>
@@ -966,7 +973,7 @@ export default function RegisterPage() {
                 className="flex items-center gap-1 text-sm text-orange-500 dark:text-orange-400 hover:underline font-medium"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Sign in instead
+                {t("auth.backToSignIn")}
               </Link>
             )}
             {step < 3 ? (
@@ -988,12 +995,12 @@ export default function RegisterPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Registering...
+                    {t("register.creating")}
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="h-4 w-4" />
-                    Register Institution
+                    {t("register.createAccount")}
                   </>
                 )}
               </Button>
@@ -1003,7 +1010,7 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          Protected by CampusIQ Security &middot; 256-bit SSL encryption
+          {t("auth.protectedBy")}
         </p>
       </div>
     </div>

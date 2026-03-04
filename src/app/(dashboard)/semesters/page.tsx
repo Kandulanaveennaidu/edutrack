@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Semester {
   _id: string;
@@ -36,6 +37,7 @@ interface Semester {
 }
 
 export default function SemestersPage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("academic_management");
   const [loading, setLoading] = useState(true);
   const [semesters, setSemesters] = useState<Semester[]>([]);
@@ -110,7 +112,7 @@ export default function SemestersPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Semesters</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.semesters")}</h1>
           <p className="text-muted-foreground">Manage academic semesters</p>
         </div>
         {canAdd && (

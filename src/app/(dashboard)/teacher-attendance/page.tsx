@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface TeacherRecord {
   _id: string;
@@ -50,6 +51,7 @@ interface Summary {
 }
 
 export default function TeacherAttendancePage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
 
   const { canAdd } = usePermissions("teacher_attendance");
@@ -190,7 +192,7 @@ export default function TeacherAttendancePage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Teacher Attendance
+            {t("nav.teacherAttendance")}
           </h1>
           <p className="text-muted-foreground">Track and manage teacher attendance</p>
         </div>

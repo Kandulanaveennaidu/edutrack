@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface FeeStructure {
   _id: string;
@@ -64,6 +65,7 @@ export default function FeesPage() {
   useSession();
 
   const { canAdd } = usePermissions("fees");
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"structures" | "payments" | "summary">(
     "structures",
@@ -231,14 +233,14 @@ export default function FeesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Fee Management</h1>
-          <p className="text-muted-foreground">Manage fee structures and payments</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.fees")}</h1>
+          <p className="text-muted-foreground">{t("fees.description")}</p>
         </div>
         <div className="flex gap-2">
           {canAdd && (
             <Button onClick={() => setShowStructureDialog(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add Structure
+              {t("fees.addStructure")}
             </Button>
           )}
           {canAdd && (
@@ -247,7 +249,7 @@ export default function FeesPage() {
               onClick={() => setShowPaymentDialog(true)}
             >
               <Receipt className="mr-2 h-4 w-4" />
-              Record Payment
+              {t("fees.recordPayment")}
             </Button>
           )}
         </div>
@@ -257,22 +259,22 @@ export default function FeesPage() {
       <div className="grid gap-4 md:grid-cols-4">
         {[
           {
-            label: "Total Expected",
+            label: t("fees.totalExpected"),
             value: summary.total_expected,
             color: "text-orange-500 dark:text-orange-400",
           },
           {
-            label: "Collected",
+            label: t("fees.totalCollected"),
             value: summary.total_collected,
             color: "text-green-600",
           },
           {
-            label: "Pending",
+            label: t("fees.pending"),
             value: summary.total_pending,
             color: "text-amber-600",
           },
           {
-            label: "Overdue",
+            label: t("fees.overdue"),
             value: summary.total_overdue,
             color: "text-red-600",
           },
@@ -290,13 +292,13 @@ export default function FeesPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 border-b">
-        {(["structures", "payments"] as const).map((t) => (
+        {(["structures", "payments"] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === t ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground hover:text-slate-700"}`}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === tabKey ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground hover:text-slate-700"}`}
           >
-            {t === "structures" ? "Fee Structures" : "Payments"}
+            {tabKey === "structures" ? t("fees.feeStructures") : t("fees.payments")}
           </button>
         ))}
       </div>
@@ -308,13 +310,13 @@ export default function FeesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Year</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Late Fee/Day</TableHead>
+                  <TableHead>{t("table.name")}</TableHead>
+                  <TableHead>{t("table.class")}</TableHead>
+                  <TableHead>{t("fees.year")}</TableHead>
+                  <TableHead>{t("table.amount")}</TableHead>
+                  <TableHead>{t("fees.dueDate")}</TableHead>
+                  <TableHead>{t("fees.category")}</TableHead>
+                  <TableHead>{t("fees.lateFeeDay")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -324,7 +326,7 @@ export default function FeesPage() {
                       colSpan={7}
                       className="text-center text-muted-foreground"
                     >
-                      No fee structures
+                      {t("fees.noStructures")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -363,15 +365,15 @@ export default function FeesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Fee</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Late Fee</TableHead>
-                  <TableHead>Total Paid</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Method</TableHead>
-                  <TableHead>Receipt</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("fees.student")}</TableHead>
+                  <TableHead>{t("fees.fee")}</TableHead>
+                  <TableHead>{t("table.amount")}</TableHead>
+                  <TableHead>{t("fees.lateFee")}</TableHead>
+                  <TableHead>{t("fees.totalPaid")}</TableHead>
+                  <TableHead>{t("fees.balance")}</TableHead>
+                  <TableHead>{t("fees.method")}</TableHead>
+                  <TableHead>{t("fees.receipt")}</TableHead>
+                  <TableHead>{t("table.status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -381,7 +383,7 @@ export default function FeesPage() {
                       colSpan={9}
                       className="text-center text-muted-foreground"
                     >
-                      No payments
+                      {t("fees.noPayments")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -433,7 +435,7 @@ export default function FeesPage() {
       <Dialog open={showStructureDialog} onOpenChange={setShowStructureDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Fee Structure</DialogTitle>
+            <DialogTitle>{t("fees.addStructure")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
@@ -543,7 +545,7 @@ export default function FeesPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Creating..." : "Create Structure"}
+              {submitting ? t("common.saving") : t("fees.createStructure")}
             </Button>
           </div>
         </DialogContent>
@@ -553,7 +555,7 @@ export default function FeesPage() {
       <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Record Payment</DialogTitle>
+            <DialogTitle>{t("fees.recordPayment")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
@@ -654,7 +656,7 @@ export default function FeesPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Recording..." : "Record Payment"}
+              {submitting ? t("common.saving") : t("fees.recordPayment")}
             </Button>
           </div>
         </DialogContent>

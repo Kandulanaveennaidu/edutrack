@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { showError } from "@/lib/alerts";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 
 interface AttendanceRecord {
   attendance_id: string;
@@ -46,6 +47,7 @@ interface AttendanceRecord {
 }
 
 export default function AttendanceHistoryPage() {
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [className, setClassName] = useState("");
@@ -138,9 +140,9 @@ export default function AttendanceHistoryPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Attendance History
+            {t("attendance.history")}
           </h1>
-          <p className="text-muted-foreground">View past attendance records</p>
+          <p className="text-muted-foreground">{t("attendance.historyDesc")}</p>
         </div>
         <Button
           variant="outline"
@@ -148,7 +150,7 @@ export default function AttendanceHistoryPage() {
           disabled={records.length === 0}
         >
           <Download className="mr-2 h-4 w-4" />
-          Export CSV
+          {t("common.exportCSV")}
         </Button>
       </div>
 
@@ -158,7 +160,9 @@ export default function AttendanceHistoryPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {/* Date Picker */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Date</label>
+              <label className="text-sm font-medium">
+                {t("attendance.date")}
+              </label>
               <div className="relative">
                 <CalendarIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -191,11 +195,13 @@ export default function AttendanceHistoryPage() {
 
             {/* Search */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Search</label>
+              <label className="text-sm font-medium">
+                {t("attendance.search")}
+              </label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search students..."
+                  placeholder={t("attendance.searchStudents")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-10"
@@ -214,7 +220,11 @@ export default function AttendanceHistoryPage() {
             { label: "Present", value: stats.present, color: "bg-green-100" },
             { label: "Absent", value: stats.absent, color: "bg-red-100" },
             { label: "Late", value: stats.late, color: "bg-amber-100" },
-            { label: "Leave", value: stats.leave, color: "bg-orange-100 dark:bg-orange-900/30" },
+            {
+              label: "Leave",
+              value: stats.leave,
+              color: "bg-orange-100 dark:bg-orange-900/30",
+            },
           ].map((stat) => (
             <Card key={stat.label}>
               <CardContent className={`p-4 ${stat.color}`}>
@@ -229,11 +239,11 @@ export default function AttendanceHistoryPage() {
       {/* Records Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Attendance Records</CardTitle>
+          <CardTitle>{t("attendance.records")}</CardTitle>
           <CardDescription>
             {className
               ? `${className} - ${format(new Date(date), "dd MMM yyyy")}`
-              : "Select a class to view records"}
+              : t("attendance.selectClassRecords")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -243,11 +253,11 @@ export default function AttendanceHistoryPage() {
             </div>
           ) : !className ? (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
-              Please select a class to view records
+              {t("attendance.selectClassRecords")}
             </div>
           ) : filteredRecords.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
-              No attendance records found for this date
+              {t("attendance.noRecordsDate")}
             </div>
           ) : (
             <Table>
@@ -257,8 +267,8 @@ export default function AttendanceHistoryPage() {
                   <TableHead>Student Name</TableHead>
                   <TableHead>Class</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Marked At</TableHead>
-                  <TableHead>Notes</TableHead>
+                  <TableHead>{t("attendance.markedAt")}</TableHead>
+                  <TableHead>{t("attendance.notes")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

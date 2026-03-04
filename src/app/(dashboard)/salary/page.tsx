@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface SalaryRecord {
   _id: string;
@@ -66,6 +67,7 @@ const months = [
 
 export default function SalaryPage() {
   useSession();
+  const { t } = useLocale();
 
   const { canAdd, canEdit } = usePermissions("salary");
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ export default function SalaryPage() {
         );
       }
     } catch {
-      showError("Error", "Failed to fetch salary data");
+      showError(t("salary.error"), t("salary.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -129,14 +131,17 @@ export default function SalaryPage() {
 
       if (res.ok) {
         const data = await res.json();
-        showSuccess("Success", data.message || "Salary generated");
+        showSuccess(
+          t("salary.success"),
+          data.message || t("salary.salaryGenerated"),
+        );
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("salary.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to generate salary");
+      showError(t("salary.error"), t("salary.generateFailed"));
     } finally {
       setGenerating(false);
     }
@@ -157,15 +162,15 @@ export default function SalaryPage() {
       });
 
       if (res.ok) {
-        showSuccess("Success", "Salary updated");
+        showSuccess(t("salary.success"), t("salary.salaryUpdated"));
         setShowEdit(false);
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("salary.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to update salary");
+      showError(t("salary.error"), t("salary.updateFailed"));
     }
   };
 
@@ -198,9 +203,9 @@ export default function SalaryPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Salary Management
+            {t("nav.salary")}
           </h1>
-          <p className="text-muted-foreground">Generate and manage teacher salaries</p>
+          <p className="text-muted-foreground">{t("salary.description")}</p>
         </div>
         <div className="flex gap-2">
           <Select
@@ -236,7 +241,7 @@ export default function SalaryPage() {
           {canAdd && (
             <Button onClick={generateSalary} disabled={generating}>
               <Calculator className="mr-2 h-4 w-4" />
-              {generating ? "Generating..." : "Generate Salary"}
+              {generating ? t("salary.generating") : t("salary.generateSalary")}
             </Button>
           )}
         </div>
@@ -246,22 +251,22 @@ export default function SalaryPage() {
       <div className="grid gap-4 md:grid-cols-4">
         {[
           {
-            label: "Gross Salary",
+            label: t("salary.grossSalary"),
             value: summary.total_salary,
             color: "text-orange-500 dark:text-orange-400",
           },
           {
-            label: "Deductions",
+            label: t("salary.deductions"),
             value: summary.total_deductions,
             color: "text-red-600",
           },
           {
-            label: "Bonus",
+            label: t("salary.bonus"),
             value: summary.total_bonus,
             color: "text-green-600",
           },
           {
-            label: "Net Payable",
+            label: t("salary.netPayable"),
             value: summary.total_net,
             color: "text-amber-600",
           },
@@ -281,30 +286,32 @@ export default function SalaryPage() {
       <Card>
         <CardHeader>
           <CardTitle>
-            Salary Records - {months[month - 1]} {year}
+            {t("salary.salaryRecords")} - {months[month - 1]} {year}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Teacher</TableHead>
-                <TableHead>Days (P/A)</TableHead>
-                <TableHead>Per Day</TableHead>
-                <TableHead>Gross</TableHead>
-                <TableHead>Deductions</TableHead>
-                <TableHead>Bonus</TableHead>
-                <TableHead>Net Salary</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("salary.teacher")}</TableHead>
+                <TableHead>{t("salary.daysPA")}</TableHead>
+                <TableHead>{t("salary.perDay")}</TableHead>
+                <TableHead>{t("salary.gross")}</TableHead>
+                <TableHead>{t("salary.deductions")}</TableHead>
+                <TableHead>{t("salary.bonus")}</TableHead>
+                <TableHead>{t("salary.netSalary")}</TableHead>
+                <TableHead>{t("salary.status")}</TableHead>
+                <TableHead>{t("salary.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {records.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground">
-                    No salary records. Click &quot;Generate Salary&quot; to
-                    create.
+                  <TableCell
+                    colSpan={9}
+                    className="text-center text-muted-foreground"
+                  >
+                    {t("salary.noRecords")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -350,7 +357,7 @@ export default function SalaryPage() {
                           variant="outline"
                           onClick={() => openEdit(r)}
                         >
-                          Edit
+                          {t("salary.edit")}
                         </Button>
                       )}
                     </TableCell>
@@ -366,11 +373,13 @@ export default function SalaryPage() {
       <Dialog open={showEdit} onOpenChange={setShowEdit}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Salary - {editRecord?.teacherName}</DialogTitle>
+            <DialogTitle>
+              {t("salary.editSalary")} - {editRecord?.teacherName}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label>Deductions (₹)</Label>
+              <Label>{t("salary.deductionsLabel")}</Label>
               <Input
                 type="number"
                 value={editForm.deductions}
@@ -383,7 +392,7 @@ export default function SalaryPage() {
               />
             </div>
             <div>
-              <Label>Bonus (₹)</Label>
+              <Label>{t("salary.bonusLabel")}</Label>
               <Input
                 type="number"
                 value={editForm.bonus}
@@ -393,7 +402,7 @@ export default function SalaryPage() {
               />
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>{t("salary.statusLabel")}</Label>
               <Select
                 value={editForm.status}
                 onValueChange={(v) => setEditForm({ ...editForm, status: v })}
@@ -402,14 +411,16 @@ export default function SalaryPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="processed">Processed</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="draft">{t("salary.draft")}</SelectItem>
+                  <SelectItem value="processed">
+                    {t("salary.processed")}
+                  </SelectItem>
+                  <SelectItem value="paid">{t("salary.paid")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Button onClick={updateSalary} className="w-full">
-              Save Changes
+              {t("salary.saveChanges")}
             </Button>
           </div>
         </DialogContent>

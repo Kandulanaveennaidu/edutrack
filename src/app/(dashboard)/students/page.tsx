@@ -57,6 +57,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { showSuccess, showError } from "@/lib/alerts";
 import { StudentForm } from "@/components/students/student-form";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 import Link from "next/link";
 
 interface Student {
@@ -75,6 +76,7 @@ interface Student {
 
 export default function StudentsPage() {
   const { canAdd, canEdit, canDelete } = usePermissions("students");
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [students, setStudents] = useState<Student[]>([]);
   const [search, setSearch] = useState("");
@@ -565,15 +567,15 @@ export default function StudentsPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Students</h1>
-          <p className="text-muted-foreground">Manage student records</p>
+          <h1 className="text-2xl font-bold text-foreground tracking-tight">{t("students.title")}</h1>
+          <p className="text-muted-foreground">{t("students.description")}</p>
         </div>
         <div className="flex gap-2">
           {canAdd && (
             <Link href="/students/import">
               <Button variant="outline">
                 <Upload className="mr-2 h-4 w-4" />
-                Import
+                {t("common.import")}
               </Button>
             </Link>
           )}
@@ -583,12 +585,12 @@ export default function StudentsPage() {
                 {exporting ? (
                   <>
                     <Spinner className="mr-2 h-4 w-4" />
-                    Exporting...
+                    {t("common.exporting")}
                   </>
                 ) : (
                   <>
                     <Download className="mr-2 h-4 w-4" />
-                    Export
+                    {t("common.export")}
                   </>
                 )}
               </Button>
@@ -600,7 +602,7 @@ export default function StudentsPage() {
               >
                 <FileText className="h-4 w-4 text-red-500" />
                 <div>
-                  <p className="font-medium">Export as PDF</p>
+                  <p className="font-medium">{t("common.exportPDF")}</p>
                   <p className="text-xs text-muted-foreground">
                     Styled report with tables
                   </p>
@@ -612,7 +614,7 @@ export default function StudentsPage() {
               >
                 <FileSpreadsheet className="h-4 w-4 text-green-600" />
                 <div>
-                  <p className="font-medium">Export as Excel</p>
+                  <p className="font-medium">{t("common.exportExcel")}</p>
                   <p className="text-xs text-muted-foreground">
                     Spreadsheet with summary
                   </p>
@@ -623,7 +625,7 @@ export default function StudentsPage() {
           {canAdd && (
             <Button onClick={handleAddStudent}>
               <Plus className="mr-2 h-4 w-4" />
-              Add Student
+              {t("students.addStudent")}
             </Button>
           )}
         </div>
@@ -637,7 +639,7 @@ export default function StudentsPage() {
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by name or roll number..."
+                placeholder={t("students.searchPlaceholder")}
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -674,8 +676,8 @@ export default function StudentsPage() {
       {/* Students Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Student List</CardTitle>
-          <CardDescription>{students.length} students found</CardDescription>
+          <CardTitle>{t("students.studentList")}</CardTitle>
+          <CardDescription>{students.length} {t("students.studentsFound")}</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -684,20 +686,20 @@ export default function StudentsPage() {
             </div>
           ) : students.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
-              No students found
+              {t("students.noStudents")}
             </div>
           ) : (
             <>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Roll No</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Class</TableHead>
-                    <TableHead>Parent Phone</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{t("table.rollNo")}</TableHead>
+                    <TableHead>{t("table.name")}</TableHead>
+                    <TableHead>{t("table.class")}</TableHead>
+                    <TableHead>{t("table.parentPhone")}</TableHead>
+                    <TableHead>{t("table.status")}</TableHead>
                     {(canEdit || canDelete) && (
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="text-right">{t("table.actions")}</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>
@@ -753,7 +755,7 @@ export default function StudentsPage() {
               {/* Pagination */}
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
+                  {t("common.page")} {page} {t("common.of")} {totalPages}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -763,7 +765,7 @@ export default function StudentsPage() {
                     disabled={page === 1}
                   >
                     <ChevronLeft className="h-4 w-4" />
-                    Previous
+                    {t("common.previous")}
                   </Button>
                   <Button
                     variant="outline"
@@ -771,7 +773,7 @@ export default function StudentsPage() {
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
                   >
-                    Next
+                    {t("common.next")}
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -786,12 +788,12 @@ export default function StudentsPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editingStudent ? "Edit Student" : "Add Student"}
+              {editingStudent ? t("students.editStudent") : t("students.addStudent")}
             </DialogTitle>
             <DialogDescription>
               {editingStudent
-                ? "Update student information"
-                : "Enter the details for the new student"}
+                ? t("students.updateInfo")
+                : t("students.enterDetails")}
             </DialogDescription>
           </DialogHeader>
           <StudentForm
@@ -809,10 +811,9 @@ export default function StudentsPage() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Student</DialogTitle>
+            <DialogTitle>{t("students.deleteStudent")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {deletingStudent?.name}? This
-              action cannot be undone.
+              {t("students.deleteConfirm")} {deletingStudent?.name}? {t("students.cannotUndo")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -820,14 +821,14 @@ export default function StudentsPage() {
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDelete}
               disabled={saving}
             >
-              {saving ? "Deleting..." : "Delete"}
+              {saving ? t("common.deleting") : t("common.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

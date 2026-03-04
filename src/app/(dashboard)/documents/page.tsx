@@ -44,6 +44,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { showSuccess, showError, showConfirm } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 const DOC_TYPES = [
   { value: "birth_certificate", label: "Birth Certificate" },
@@ -80,6 +81,7 @@ interface Student {
 }
 
 export default function DocumentsPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canAdd, canDelete } = usePermissions("documents");
   const [loading, setLoading] = useState(true);
@@ -259,7 +261,7 @@ export default function DocumentsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <FileText className="h-6 w-6" />
-            Document Management
+            {t("nav.documents")}
           </h1>
           <p className="text-muted-foreground">
             Upload and manage student documents

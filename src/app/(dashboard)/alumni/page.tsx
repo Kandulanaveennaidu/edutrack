@@ -20,6 +20,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import Swal from "sweetalert2";
+import { useLocale } from "@/hooks/use-locale";
 
 interface AlumniItem {
   _id: string;
@@ -40,6 +41,7 @@ interface AlumniItem {
 }
 
 export default function AlumniPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canAdd, canEdit, canDelete } = usePermissions("alumni");
   const [alumni, setAlumni] = useState<AlumniItem[]>([]);
@@ -159,7 +161,7 @@ export default function AlumniPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <GraduationCap className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Alumni Network
+            <GraduationCap className="h-7 w-7 text-orange-500 dark:text-orange-400" /> {t("nav.alumniNetwork")}
           </h1>
           <p className="text-muted-foreground mt-1">
             Connect with past students, track achievements & donations

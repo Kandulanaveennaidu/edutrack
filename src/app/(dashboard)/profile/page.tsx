@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Profile {
   id: string;
@@ -46,6 +47,7 @@ interface Profile {
 export default function ProfilePage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: _session } = useSession();
+  const { t } = useLocale();
   const { canEdit } = usePermissions("profile");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -125,8 +127,8 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Profile</h1>
-        <p className="text-muted-foreground">Manage your account information</p>
+        <h1 className="text-2xl font-bold text-foreground">{t("nav.profile")}</h1>
+        <p className="text-muted-foreground">{t("profile.description")}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">

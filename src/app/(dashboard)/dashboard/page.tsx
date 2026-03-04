@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 import {
   BarChart,
   Bar,
@@ -119,6 +120,7 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const attendancePerms = usePermissions("attendance");
   const studentPerms = usePermissions("students");
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<DashboardData | null>(null);
   const [chartsData, setChartsData] = useState<AttendanceStats | null>(null);
@@ -174,7 +176,7 @@ export default function DashboardPage() {
       <div className="flex h-96 flex-col items-center justify-center gap-4">
         <AlertTriangle className="h-12 w-12 text-red-500" />
         <p className="text-red-600">{error}</p>
-        <Button onClick={() => window.location.reload()}>Retry</Button>
+        <Button onClick={() => window.location.reload()}>{t('common.retry')}</Button>
       </div>
     );
   }
@@ -192,7 +194,7 @@ export default function DashboardPage() {
 
   const statCards = [
     {
-      title: "Total Students",
+      title: t("dashboard.totalStudents"),
       value: stats.total,
       icon: Users,
       gradient: "from-orange-500 to-amber-600",
@@ -203,9 +205,9 @@ export default function DashboardPage() {
       glowColor: "shadow-orange-500/10",
     },
     {
-      title: "Today's Present",
+      title: t("dashboard.todayPresent"),
       value: `${presentPercentage}%`,
-      subtitle: `${stats.present} students`,
+      subtitle: `${stats.present} ${t("dashboard.students")}`,
       icon: CheckCircle,
       gradient: "from-emerald-500 to-teal-600",
       iconBg:
@@ -215,7 +217,7 @@ export default function DashboardPage() {
       glowColor: "shadow-emerald-500/10",
     },
     {
-      title: "Absent Count",
+      title: t("dashboard.absentCount"),
       value: stats.absent,
       icon: XCircle,
       gradient: "from-rose-500 to-pink-600",
@@ -226,7 +228,7 @@ export default function DashboardPage() {
       glowColor: "shadow-rose-500/10",
     },
     {
-      title: "Late Count",
+      title: t("dashboard.lateCount"),
       value: stats.late,
       icon: Clock,
       gradient: "from-amber-500 to-orange-600",
@@ -244,10 +246,10 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Dashboard
+            {t("dashboard.title")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Overview of attendance for {session?.user?.school_id}
+            {t("dashboard.overviewFor")} {session?.user?.school_id}
           </p>
         </div>
         <div className="flex gap-2">
@@ -255,7 +257,7 @@ export default function DashboardPage() {
             <Link href="/attendance/mark">
               <Button className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-500 hover:to-amber-700 text-white shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transition-all duration-300">
                 <CalendarCheck className="mr-2 h-4 w-4" />
-                Mark Attendance
+                {t("attendance.mark")}
               </Button>
             </Link>
           )}
@@ -266,7 +268,7 @@ export default function DashboardPage() {
                 className="border-border/60 hover:border-orange-300 dark:hover:border-orange-600 transition-colors"
               >
                 <UserPlus className="mr-2 h-4 w-4" />
-                Add Student
+                {t("students.addStudent")}
               </Button>
             </Link>
           )}
@@ -317,8 +319,8 @@ export default function DashboardPage() {
         {/* Attendance Trend Chart */}
         <Card className="overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Last 7 Days Trend</CardTitle>
-            <CardDescription>Daily attendance statistics</CardDescription>
+            <CardTitle className="text-lg">{t("dashboard.trend")}</CardTitle>
+            <CardDescription>{t("dashboard.dailyStats")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-80">
@@ -377,17 +379,17 @@ export default function DashboardPage() {
         {/* Recent Activity */}
         <Card className="overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Recent Activity</CardTitle>
-            <CardDescription>Today&apos;s attendance status</CardDescription>
+            <CardTitle className="text-lg">{t("dashboard.recentActivity")}</CardTitle>
+            <CardDescription>{t("dashboard.todayAttendance") || "Today's attendance status"}</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Roll No</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Status</TableHead>
+                    <TableHead>{t("table.rollNo")}</TableHead>
+                    <TableHead>{t("table.name")}</TableHead>
+                    <TableHead>{t("table.class")}</TableHead>
+                    <TableHead>{t("table.status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -414,7 +416,7 @@ export default function DashboardPage() {
                           {student.status}
                         </Badge>
                       ) : (
-                        <Badge variant="secondary">Not Marked</Badge>
+                        <Badge variant="secondary">{t("dashboard.notMarked")}</Badge>
                       )}
                     </TableCell>
                   </TableRow>
@@ -430,9 +432,9 @@ export default function DashboardPage() {
         {/* Weekly Attendance Trend - Area Chart */}
         <Card className="overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Weekly Attendance Trend</CardTitle>
+            <CardTitle className="text-lg">{t("dashboard.weeklyTrend")}</CardTitle>
             <CardDescription>
-              Attendance percentage over the last 7 days
+              {t("dashboard.attendancePercentage")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -611,9 +613,9 @@ export default function DashboardPage() {
         {/* Class-wise Attendance - Bar Chart */}
         <Card className="overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Class-wise Attendance</CardTitle>
+            <CardTitle className="text-lg">{t("dashboard.classWise")}</CardTitle>
             <CardDescription>
-              Attendance percentage per class today
+              {t("attendance.percentage")} {t("table.class").toLowerCase()}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -665,7 +667,7 @@ export default function DashboardPage() {
         {/* Monthly Overview - Bar Chart */}
         <Card className="overflow-hidden">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Monthly Overview</CardTitle>
+            <CardTitle className="text-lg">{t("dashboard.monthlyOverview")}</CardTitle>
             <CardDescription>
               Attendance stats over the last 6 months
             </CardDescription>

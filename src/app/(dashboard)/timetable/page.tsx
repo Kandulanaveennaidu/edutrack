@@ -25,6 +25,7 @@ import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { Clock, Plus, Trash2, BookOpen } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Period {
   timetable_id: string;
@@ -76,6 +77,7 @@ const SUBJECT_COLORS: Record<string, string> = {
 
 export default function TimetablePage() {
   useSession();
+  const { t } = useLocale();
 
   const { canAdd, canEdit, canDelete } = usePermissions("timetable");
   const { classes: defaultClasses, classLabel } = useClasses();
@@ -234,9 +236,9 @@ export default function TimetablePage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Timetable Management
+            {t("nav.timetable")}
           </h1>
-          <p className="text-muted-foreground mt-1">View & manage class schedules</p>
+          <p className="text-muted-foreground mt-1">{t("timetable.description")}</p>
         </div>
         <div className="flex gap-2">
           <Select value={selectedClass} onValueChange={setSelectedClass}>

@@ -54,6 +54,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { useClasses } from "@/hooks/use-classes";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface StudentScore {
   student_id: string;
@@ -81,6 +82,7 @@ interface SemesterTrend {
 }
 
 export default function StudentPerformancePage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("student_performance");
   const [loading, setLoading] = useState(true);
@@ -303,7 +305,7 @@ export default function StudentPerformancePage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <TrendingUp className="h-6 w-6" />
-            Student Performance Tracker
+            {t("nav.studentPerformance")}
           </h1>
           <p className="text-muted-foreground">
             Track exam scores, trends, percentiles, and rankings across

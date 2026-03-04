@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'campusiq-v2';
+const CACHE_VERSION = 'campusiq-v3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const OFFLINE_DB_NAME = 'campusiq-offline';
@@ -105,6 +105,13 @@ self.addEventListener('fetch', (event) => {
 
     // Ignore non-http requests (extensions, data uris, etc.)
     if (!url.protocol.startsWith('http')) return;
+
+    // *** FIX: Skip service worker on hard refresh (Ctrl+Shift+R) ***
+    // Hard refreshes send Cache-Control: no-cache — let the browser handle it directly
+    const cacheControl = request.headers.get('cache-control') || '';
+    if (request.mode === 'navigate' && cacheControl.includes('no-cache')) {
+        return; // Don't intercept — let the browser fetch directly from the server
+    }
 
     // Intercept offline POST requests for attendance/diary — queue them
     if (request.method === 'POST' && !navigator.onLine) {
@@ -274,7 +281,13 @@ async function networkFirst(request) {
 
 async function networkFirstWithOfflineFallback(request) {
     try {
-        const response = await fetch(request);
+        // Use a timeout so slow network doesn't immediately fall back to stale cache
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+        const response = await fetch(request, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (response.ok) {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, response.clone());

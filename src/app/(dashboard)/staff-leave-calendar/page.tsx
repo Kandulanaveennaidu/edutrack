@@ -14,6 +14,7 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
+import { useLocale } from "@/hooks/use-locale";
 
 interface LeaveEntry {
   date: string;
@@ -70,6 +71,7 @@ const LEAVE_TYPE_COLORS: Record<string, string> = {
 };
 
 export default function StaffLeaveCalendarPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("leaves");
   const [calendarData, setCalendarData] = useState<LeaveEntry[]>([]);
@@ -138,8 +140,7 @@ export default function StaffLeaveCalendarPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Calendar className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Staff Leave
-            Calendar
+            <Calendar className="h-7 w-7 text-orange-500 dark:text-orange-400" /> {t("nav.staffLeaveCalendar")}
           </h1>
           <p className="text-muted-foreground mt-1">
             Visual calendar view of staff leaves & substitute planning

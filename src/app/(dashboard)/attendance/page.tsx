@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import { useClasses } from "@/hooks/use-classes";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface AttendanceOverview {
   todayStats: {
@@ -104,6 +105,7 @@ const quickActions = [
 
 export default function AttendancePage() {
   const { canView: _canView } = usePermissions("attendance");
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [overview, setOverview] = useState<AttendanceOverview | null>(null);
   const { classLabel } = useClasses();
@@ -175,10 +177,10 @@ export default function AttendancePage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Attendance Management
+            {t("nav.attendance")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Track, manage, and analyze student &amp; teacher attendance
+            {t("attendance.description")}
           </p>
         </div>
         <Badge variant="outline" className="text-sm px-3 py-1">
@@ -209,7 +211,7 @@ export default function AttendancePage() {
                 <CheckCircle className="h-5 w-5 text-green-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Present</p>
+                <p className="text-sm text-muted-foreground">{t("attendance.present")}</p>
                 <p className="text-2xl font-bold text-green-600">
                   {stats.present}
                 </p>
@@ -224,7 +226,7 @@ export default function AttendancePage() {
                 <XCircle className="h-5 w-5 text-red-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Absent</p>
+                <p className="text-sm text-muted-foreground">{t("attendance.absent")}</p>
                 <p className="text-2xl font-bold text-red-600">
                   {stats.absent}
                 </p>
@@ -239,7 +241,7 @@ export default function AttendancePage() {
                 <Clock className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Late</p>
+                <p className="text-sm text-muted-foreground">{t("attendance.late")}</p>
                 <p className="text-2xl font-bold text-amber-600">
                   {stats.late}
                 </p>

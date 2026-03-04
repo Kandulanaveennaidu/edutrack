@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { showSuccess, showError } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 import {
   MessageSquare,
   Send,
@@ -64,6 +65,7 @@ interface UserSearchResult {
 
 export default function MessagesPage() {
   const { data: sessionData } = useSession();
+  const { t } = useLocale();
   const { canAdd } = usePermissions("messages");
   const currentUserId = sessionData?.user?.id || "";
 
@@ -284,9 +286,9 @@ export default function MessagesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Messages</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.messages")}</h1>
           <p className="text-muted-foreground dark:text-muted-foreground mt-1">
-            Chat with teachers, staff & parents
+            {t("messages.description")}
           </p>
         </div>
         {canAdd && (

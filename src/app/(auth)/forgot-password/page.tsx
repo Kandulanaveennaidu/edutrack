@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { showSuccess, showError } from "@/lib/alerts";
+import { useLocale } from "@/hooks/use-locale";
 
 // ── Animated Background ──────────────────────────────────────────────────────
 function AuthBackground() {
@@ -69,12 +70,13 @@ function ResendCountdown({
   return (
     <span className="flex items-center gap-1 text-xs text-muted-foreground">
       <Clock className="h-3 w-3" />
-      Resend available in {remaining}s
+      {remaining}s
     </span>
   );
 }
 
 export default function ForgotPasswordPage() {
+  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -90,11 +92,11 @@ export default function ForgotPasswordPage() {
 
   const validate = () => {
     if (!email.trim()) {
-      setEmailError("Email address is required");
+      setEmailError(t("auth.emailRequired"));
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("auth.validEmail"));
       return false;
     }
     setEmailError("");
@@ -177,7 +179,7 @@ export default function ForgotPasswordPage() {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
+            {t("auth.backToHome")}
           </Link>
         </div>
 
@@ -198,7 +200,9 @@ export default function ForgotPasswordPage() {
           </div>
           <h1 className="mt-4 text-3xl font-bold text-foreground">CampusIQ</h1>
           <p className="mt-1 text-muted-foreground">
-            {sent ? "Check your email" : "Reset your password"}
+            {sent
+              ? t("forgotPassword.checkEmail")
+              : t("forgotPassword.resetYourPassword")}
           </p>
         </div>
 
@@ -208,12 +212,9 @@ export default function ForgotPasswordPage() {
             <CardHeader className="space-y-1 pb-4">
               <CardTitle className="text-xl flex items-center gap-2">
                 <Mail className="h-5 w-5 text-primary" />
-                Forgot Password
+                {t("forgotPassword.title")}
               </CardTitle>
-              <CardDescription>
-                Enter your registered email address and we&apos;ll send you a
-                secure link to reset your password.
-              </CardDescription>
+              <CardDescription>{t("forgotPassword.desc")}</CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit} autoComplete="on">
               <CardContent className="space-y-4">
@@ -221,7 +222,7 @@ export default function ForgotPasswordPage() {
                 <div className="space-y-2">
                   <Label htmlFor="email" className="flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                    Email Address
+                    {t("auth.emailAddress")}
                   </Label>
                   <Input
                     ref={emailRef}
@@ -253,8 +254,7 @@ export default function ForgotPasswordPage() {
                 <div className="flex items-start gap-2.5 rounded-xl bg-primary/5 p-3 border border-primary/10 dark:bg-primary/10 dark:border-primary/20">
                   <Shield className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    For security, the reset link will expire in 1 hour. If you
-                    don&apos;t receive an email, check your spam folder.
+                    {t("forgotPassword.securityNotice")}
                   </p>
                 </div>
               </CardContent>
@@ -268,12 +268,12 @@ export default function ForgotPasswordPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending Reset Link...
+                      {t("forgotPassword.sending")}
                     </>
                   ) : (
                     <>
                       <Send className="mr-2 h-4 w-4" />
-                      Send Reset Link
+                      {t("forgotPassword.sendLink")}
                     </>
                   )}
                 </Button>
@@ -295,17 +295,16 @@ export default function ForgotPasswordPage() {
               </div>
 
               <h2 className="text-xl font-semibold text-foreground mb-2">
-                Reset Link Sent!
+                {t("forgotPassword.linkSent")}
               </h2>
               <p className="text-sm text-muted-foreground mb-2 max-w-xs leading-relaxed">
-                We&apos;ve sent a password reset link to:
+                {t("forgotPassword.sentTo")}
               </p>
               <p className="text-sm font-medium text-foreground mb-4 bg-muted/50 px-4 py-2 rounded-lg">
                 {email}
               </p>
               <p className="text-xs text-muted-foreground mb-6 max-w-xs leading-relaxed">
-                The link will expire in 1 hour. Check your inbox and spam
-                folder.
+                {t("forgotPassword.linkExpiry")}
               </p>
 
               {/* Resend */}
@@ -332,7 +331,7 @@ export default function ForgotPasswordPage() {
                     ) : (
                       <RefreshCw className="mr-2 h-4 w-4" />
                     )}
-                    Resend Reset Link
+                    {t("forgotPassword.resend")}
                   </Button>
                 )}
               </div>
@@ -347,16 +346,14 @@ export default function ForgotPasswordPage() {
             className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Sign In
+            {t("auth.backToSignIn")}
           </Link>
         </div>
 
         {/* Security Footer */}
         <div className="mt-6 flex items-center justify-center gap-1.5 text-xs text-muted-foreground/60">
           <Shield className="h-3 w-3" />
-          <span>
-            Protected by CampusIQ Security &middot; 256-bit SSL encryption
-          </span>
+          <span>{t("auth.protectedBy")}</span>
         </div>
       </div>
     </div>

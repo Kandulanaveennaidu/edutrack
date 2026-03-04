@@ -15,6 +15,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Swal from "sweetalert2";
+import { useLocale } from "@/hooks/use-locale";
 
 interface CalendarEntry {
   date: string;
@@ -77,6 +78,7 @@ const MONTHS = [
 ];
 
 export default function AcademicCalendarPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("academic_calendar");
   const [calendars, setCalendars] = useState<AcademicCalendarData[]>([]);
@@ -89,7 +91,7 @@ export default function AcademicCalendarPage() {
   const [showGenerator, setShowGenerator] = useState(false);
   const [genForm, setGenForm] = useState({
     academicYear: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
-    title: "Academic Calendar",
+    title: "",
   });
 
   const fetchCalendars = useCallback(async () => {

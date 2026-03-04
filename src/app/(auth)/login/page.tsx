@@ -36,6 +36,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { showSuccess, showError as showSwalError } from "@/lib/alerts";
+import { useLocale } from "@/hooks/use-locale";
 
 // ── Auth Error Messages ──────────────────────────────────────────────────────
 // Maps NextAuth error codes + custom codes → user-friendly messages
@@ -201,6 +202,7 @@ function AuthBackground() {
 
 // ── Security Badge ───────────────────────────────────────────────────────────
 function SecurityBadge() {
+  const { t } = useLocale();
   const [deviceInfo, setDeviceInfo] = useState({
     browser: "",
     os: "",
@@ -234,7 +236,7 @@ function SecurityBadge() {
       {/* Security footer */}
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground/60">
         <Shield className="h-3 w-3" />
-        <span>256-bit SSL · Brute-force protection · CSRF guard</span>
+        <span>{t("auth.sslProtection")}</span>
       </div>
     </div>
   );
@@ -298,7 +300,7 @@ function ErrorBanner({
             href="/verify-email"
             className="inline-flex items-center gap-1 text-xs mt-2 text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
-            Resend verification email <ArrowRight className="h-3 w-3" />
+            {t("auth.resendVerification")} <ArrowRight className="h-3 w-3" />
           </Link>
         )}
       </div>
@@ -349,6 +351,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status: sessionStatus } = useSession();
+  const { t } = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [loginStartTime, setLoginStartTime] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -401,14 +404,14 @@ function LoginForm() {
     const e: Record<string, string> = {};
     const email = formData.email.trim();
     if (!email) {
-      e.email = "Email address is required";
+      e.email = t("auth.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      e.email = "Please enter a valid email address";
+      e.email = t("auth.validEmail");
     }
     if (!formData.password) {
-      e.password = "Password is required";
+      e.password = t("auth.passwordRequired");
     } else if (formData.password.length < 6) {
-      e.password = "Password must be at least 6 characters";
+      e.password = t("auth.passwordMinLength");
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -436,7 +439,7 @@ function LoginForm() {
         showSwalError(info.title, info.message);
       } else if (result?.ok) {
         setLoginSuccess(true);
-        showSuccess("Welcome Back!", "Redirecting to your dashboard...");
+        showSuccess(t("auth.welcomeBack"), t("auth.redirecting"));
         // Small delay for the success animation
         await new Promise((r) => setTimeout(r, 600));
         const callbackUrl = searchParams.get("callbackUrl");
@@ -445,18 +448,12 @@ function LoginForm() {
       } else {
         // Unexpected: neither error nor ok
         setLoginError("Default");
-        showSwalError(
-          "Authentication Error",
-          "An unexpected error occurred. Please try again.",
-        );
+        showSwalError(t("auth.authError"), t("auth.unexpectedError"));
       }
     } catch (error) {
       console.error("[Login] Unexpected error:", error);
       setLoginError("Default");
-      showSwalError(
-        "Login Error",
-        "An unexpected error occurred. Please try again.",
-      );
+      showSwalError(t("auth.loginError"), t("auth.unexpectedError"));
     } finally {
       setIsLoading(false);
       setLoginStartTime(null);
@@ -470,7 +467,7 @@ function LoginForm() {
         <div className="text-center space-y-3">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
           <p className="text-sm text-muted-foreground">
-            Redirecting to dashboard...
+            {t("auth.redirecting")}
           </p>
         </div>
       </div>
@@ -488,7 +485,7 @@ function LoginForm() {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
+            {t("auth.backToHome")}
           </Link>
         </div>
 
@@ -508,9 +505,7 @@ function LoginForm() {
             )}
           </div>
           <h1 className="mt-4 text-3xl font-bold text-foreground">CampusIQ</h1>
-          <p className="mt-1 text-muted-foreground">
-            Sign in to your institution dashboard
-          </p>
+          <p className="mt-1 text-muted-foreground">{t("auth.signInDesc")}</p>
         </div>
 
         {/* URL Error Banner (from NextAuth redirects) */}
@@ -531,11 +526,9 @@ function LoginForm() {
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl flex items-center gap-2">
               <KeyRound className="h-5 w-5 text-primary" />
-              Sign In
+              {t("common.signIn")}
             </CardTitle>
-            <CardDescription>
-              Enter your credentials to access the dashboard
-            </CardDescription>
+            <CardDescription>{t("auth.enterCredentials")}</CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit} autoComplete="on">
             <CardContent className="space-y-4">
@@ -551,14 +544,14 @@ function LoginForm() {
               <div className="space-y-2">
                 <Label htmlFor="email" className="flex items-center gap-1.5">
                   <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-                  Email Address
+                  {t("auth.emailAddress")}
                 </Label>
                 <div className="relative">
                   <Input
                     ref={emailRef}
                     id="email"
                     type="email"
-                    placeholder="you@institution.com"
+                    placeholder={t("auth.emailPlaceholder")}
                     className={`h-11 pr-4 pl-4 transition-all duration-200 ${
                       errors.email
                         ? "border-red-500 focus:ring-red-500 focus:border-red-500"
@@ -586,20 +579,20 @@ function LoginForm() {
                     className="flex items-center gap-1.5"
                   >
                     <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                    Password
+                    {t("auth.password")}
                   </Label>
                   <Link
                     href="/forgot-password"
                     className="text-xs text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
                   >
-                    Forgot password?
+                    {t("auth.forgotPasswordLink")}
                   </Link>
                 </div>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder={t("auth.passwordPlaceholder")}
                     className={`h-11 pr-10 pl-4 transition-all duration-200 ${
                       errors.password
                         ? "border-red-500 focus:ring-red-500 focus:border-red-500"
@@ -638,9 +631,7 @@ function LoginForm() {
               <div className="flex items-start gap-2.5 rounded-xl bg-primary/5 p-3 border border-primary/10 dark:bg-primary/10 dark:border-primary/20">
                 <Shield className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Your account is secured with lockout protection. After 5
-                  failed attempts, access will be temporarily restricted for 15
-                  minutes.
+                  {t("auth.securityNotice")}
                 </p>
               </div>
             </CardContent>
@@ -658,17 +649,17 @@ function LoginForm() {
                 {loginSuccess ? (
                   <>
                     <CheckCircle2 className="mr-2 h-5 w-5 animate-in zoom-in duration-300" />
-                    Authenticated!
+                    {t("auth.authenticated")}
                   </>
                 ) : isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    {t("common.signingIn")}
                   </>
                 ) : (
                   <>
                     <ArrowRight className="mr-2 h-4 w-4" />
-                    Sign In
+                    {t("common.signIn")}
                   </>
                 )}
               </Button>
@@ -681,12 +672,12 @@ function LoginForm() {
         {/* Footer Links */}
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
+            {t("common.dontHaveAccount")}{" "}
             <Link
               href="/register"
               className="text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
             >
-              Register your institution
+              {t("common.registerInstitution")}
             </Link>
           </p>
         </div>

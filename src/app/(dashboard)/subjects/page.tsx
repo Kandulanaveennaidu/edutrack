@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Subject {
   _id: string;
@@ -44,6 +45,7 @@ interface Subject {
 }
 
 export default function SubjectsPage() {
+  const { t } = useLocale();
   const { canAdd, canEdit } = usePermissions("academics");
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -154,9 +156,9 @@ export default function SubjectsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Subjects</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.subjects")}</h1>
           <p className="text-muted-foreground">
-            Manage academic subjects and assignments
+            {t("subjects.description")}
           </p>
         </div>
         <div className="flex gap-2">

@@ -35,6 +35,7 @@ import { AttendanceStats } from "@/components/attendance/attendance-stats";
 import type { AttendanceStatus } from "@/types";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 
 interface StudentWithAttendance {
   student_id: string;
@@ -52,6 +53,7 @@ export default function MarkAttendancePage() {
 
   const { canAdd } = usePermissions("attendance");
   const { classes, classLabel } = useClasses();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -202,11 +204,9 @@ export default function MarkAttendancePage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Mark Attendance
+            {t("attendance.markTitle")}
           </h1>
-          <p className="text-muted-foreground">
-            Record daily attendance for your class
-          </p>
+          <p className="text-muted-foreground">{t("attendance.markDesc")}</p>
         </div>
       </div>
 
@@ -216,7 +216,9 @@ export default function MarkAttendancePage() {
           <div className="grid gap-4 md:grid-cols-4">
             {/* Date Picker */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Date</label>
+              <label className="text-sm font-medium">
+                {t("attendance.date")}
+              </label>
               <div className="relative">
                 <CalendarIcon className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -249,11 +251,13 @@ export default function MarkAttendancePage() {
 
             {/* Search */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Search</label>
+              <label className="text-sm font-medium">
+                {t("attendance.search")}
+              </label>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search students..."
+                  placeholder={t("attendance.searchStudents")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="pl-10"
@@ -264,7 +268,9 @@ export default function MarkAttendancePage() {
             {/* Quick Actions */}
             {canAdd && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">Quick Actions</label>
+                <label className="text-sm font-medium">
+                  {t("common.quickActions")}
+                </label>
                 <div className="flex gap-2">
                   <Button
                     variant="success"
@@ -273,7 +279,7 @@ export default function MarkAttendancePage() {
                     disabled={!className}
                   >
                     <CheckCheck className="mr-1 h-4 w-4" />
-                    All Present
+                    {t("attendance.allPresent")}
                   </Button>
                   <Button
                     variant="destructive"
@@ -282,7 +288,7 @@ export default function MarkAttendancePage() {
                     disabled={!className}
                   >
                     <XCircle className="mr-1 h-4 w-4" />
-                    All Absent
+                    {t("attendance.allAbsent")}
                   </Button>
                 </div>
               </div>
@@ -299,11 +305,11 @@ export default function MarkAttendancePage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Students</CardTitle>
+              <CardTitle>{t("attendance.students")}</CardTitle>
               <CardDescription>
                 {className
-                  ? `${className} - ${students.length} students`
-                  : "Select a class to view students"}
+                  ? `${className} - ${students.length} ${t("attendance.students").toLowerCase()}`
+                  : t("attendance.selectClassView")}
               </CardDescription>
             </div>
             <Button
@@ -313,12 +319,12 @@ export default function MarkAttendancePage() {
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
+                  {t("common.saving")}
                 </>
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Save Attendance
+                  {t("attendance.saveAttendance")}
                 </>
               )}
             </Button>
@@ -331,11 +337,11 @@ export default function MarkAttendancePage() {
             </div>
           ) : !className ? (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
-              Please select a class to view students
+              {t("attendance.selectClassView")}
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-muted-foreground">
-              No students found
+              {t("attendance.noStudentsFound")}
             </div>
           ) : (
             <AttendanceGrid

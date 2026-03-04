@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Workload {
   _id: string;
@@ -60,6 +61,7 @@ interface Summary {
 }
 
 export default function FacultyWorkloadPage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("workload");
   const [loading, setLoading] = useState(true);
   const [workloads, setWorkloads] = useState<Workload[]>([]);
@@ -194,7 +196,7 @@ export default function FacultyWorkloadPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Faculty Workload
+            {t("nav.facultyWorkload")}
           </h1>
           <p className="text-muted-foreground">
             Monitor and manage teaching workloads

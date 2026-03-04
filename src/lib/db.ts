@@ -4,7 +4,14 @@ import mongoose from "mongoose";
 function getMongoURI(): string {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    console.error("[DB] MONGODB_URI is not set! Available env keys:", Object.keys(process.env).filter(k => k.includes('MONGO') || k.includes('NEXT') || k === 'NODE_ENV').join(', '));
+    console.error(
+      "[DB] MONGODB_URI is not set! Available env keys:",
+      Object.keys(process.env)
+        .filter(
+          (k) => k.includes("MONGO") || k.includes("NEXT") || k === "NODE_ENV",
+        )
+        .join(", "),
+    );
     throw new Error("Please define the MONGODB_URI environment variable");
   }
   return uri;
@@ -35,7 +42,11 @@ export async function connectDB(): Promise<typeof mongoose> {
       return cached.conn;
     }
     // Connection dropped — clear cache and reconnect
-    console.warn("[DB] Cached connection lost (readyState:", cached.conn.connection.readyState, "). Reconnecting...");
+    console.warn(
+      "[DB] Cached connection lost (readyState:",
+      cached.conn.connection.readyState,
+      "). Reconnecting...",
+    );
     cached.conn = null;
     cached.promise = null;
   }

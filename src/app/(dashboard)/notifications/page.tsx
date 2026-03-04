@@ -34,6 +34,7 @@ import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
 import { PushNotificationToggle } from "@/components/push-notification-toggle";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Notification {
   notification_id: string;
@@ -57,6 +58,7 @@ const typeIcons: Record<string, React.ReactNode> = {
 
 export default function NotificationsPage() {
   useSession();
+  const { t } = useLocale();
   const { canAdd } = usePermissions("notifications");
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -168,7 +170,7 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.notifications")}</h1>
           <p className="text-muted-foreground">
             {unreadCount > 0
               ? `${unreadCount} unread notification(s)`

@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface AcademicYear {
   _id: string;
@@ -34,6 +35,7 @@ interface AcademicYear {
 }
 
 export default function AcademicYearsPage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("academic_management");
   const [loading, setLoading] = useState(true);
   const [years, setYears] = useState<AcademicYear[]>([]);
@@ -118,7 +120,7 @@ export default function AcademicYearsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Academic Years</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.academicYears")}</h1>
           <p className="text-muted-foreground">Manage academic years and terms</p>
         </div>
         {canAdd && (

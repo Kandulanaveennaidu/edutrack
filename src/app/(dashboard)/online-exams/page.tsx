@@ -48,6 +48,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { showSuccess, showError, showConfirm } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface OnlineExam {
   _id: string;
@@ -127,7 +128,8 @@ function getExamStatus(exam: OnlineExam) {
   if (now >= start && now <= end)
     return {
       label: "Live",
-      color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
+      color:
+        "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400",
       icon: Play,
     };
   return {
@@ -139,6 +141,7 @@ function getExamStatus(exam: OnlineExam) {
 }
 
 export default function OnlineExamsPage() {
+  const { t } = useLocale();
   const { data: sessionData } = useSession();
   const { canAdd, canEdit, canDelete } = usePermissions("exams");
   const isTeacherOrAdmin =
@@ -206,7 +209,7 @@ export default function OnlineExamsPage() {
         setExams(d.data || []);
       }
     } catch {
-      showError("Error", "Failed to fetch online exams");
+      showError(t("common.error"), t("onlineExams.fetchError"));
     } finally {
       setLoading(false);
     }
@@ -294,8 +297,8 @@ export default function OnlineExamsPage() {
       !form.endTime
     ) {
       showError(
-        "Validation",
-        "Title, Subject, Class, Start Time, and End Time are required",
+        t("onlineExams.validation"),
+        t("onlineExams.requiredFieldsError"),
       );
       return;
     }
@@ -310,17 +313,20 @@ export default function OnlineExamsPage() {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        showSuccess("Success", `Online exam ${editId ? "updated" : "created"}`);
+        showSuccess(
+          t("common.success"),
+          editId ? t("onlineExams.examUpdated") : t("onlineExams.examCreated"),
+        );
         setShowDialog(false);
         setEditId(null);
         resetForm();
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to save online exam");
+      showError(t("common.error"), t("onlineExams.saveError"));
     } finally {
       setSubmitting(false);
     }
@@ -328,21 +334,21 @@ export default function OnlineExamsPage() {
 
   const deleteExam = async (id: string) => {
     const confirmed = await showConfirm(
-      "Delete Online Exam",
-      "This will permanently delete this exam and all attempts. Continue?",
+      t("onlineExams.deleteTitle"),
+      t("onlineExams.deleteConfirm"),
     );
     if (!confirmed) return;
     try {
       const res = await fetch(`/api/online-exams/${id}`, { method: "DELETE" });
       if (res.ok) {
-        showSuccess("Deleted", "Online exam deleted successfully");
+        showSuccess(t("onlineExams.deleted"), t("onlineExams.deleteSuccess"));
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to delete online exam");
+      showError(t("common.error"), t("onlineExams.deleteError"));
     }
   };
 
@@ -355,11 +361,11 @@ export default function OnlineExamsPage() {
         const d = await res.json();
         setDetail(d.data);
       } else {
-        showError("Error", "Failed to load exam details");
+        showError(t("common.error"), t("onlineExams.loadError"));
         setShowDetailDialog(false);
       }
     } catch {
-      showError("Error", "Failed to load exam details");
+      showError(t("common.error"), t("onlineExams.loadError"));
       setShowDetailDialog(false);
     } finally {
       setDetailLoading(false);
@@ -387,7 +393,10 @@ export default function OnlineExamsPage() {
 
   const saveQuestion = () => {
     if (!questionForm.question || questionForm.options.some((o) => !o.trim())) {
-      showError("Validation", "Question and all options are required");
+      showError(
+        t("onlineExams.validation"),
+        t("onlineExams.questionValidationError"),
+      );
       return;
     }
     if (editingQuestionIdx !== null) {
@@ -438,10 +447,10 @@ export default function OnlineExamsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Online Exams (MCQ)
+            {t("nav.onlineExams")}
           </h1>
           <p className="text-muted-foreground dark:text-muted-foreground">
-            Create timed MCQ exams with auto-grading
+            {t("onlineExams.description")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -450,10 +459,10 @@ export default function OnlineExamsPage() {
             onValueChange={(v) => setFilterClass(v === "__all__" ? "" : v)}
           >
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="All Classes" />
+              <SelectValue placeholder={t("common.allClasses")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All Classes</SelectItem>
+              <SelectItem value="__all__">{t("common.allClasses")}</SelectItem>
               {Array.from(new Set(exams.map((e) => e.class_name)))
                 .filter(Boolean)
                 .map((c) => (
@@ -468,20 +477,22 @@ export default function OnlineExamsPage() {
             onValueChange={(v) => setFilterStatus(v === "__all__" ? "" : v)}
           >
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="All Status" />
+              <SelectValue placeholder={t("common.allStatus")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All Status</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
-              <SelectItem value="published">Published</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="__all__">{t("common.allStatus")}</SelectItem>
+              <SelectItem value="draft">{t("common.draft")}</SelectItem>
+              <SelectItem value="published">{t("common.published")}</SelectItem>
+              <SelectItem value="active">{t("common.active")}</SelectItem>
+              <SelectItem value="completed">
+                {t("onlineExams.completed")}
+              </SelectItem>
             </SelectContent>
           </Select>
           {canAdd && isTeacherOrAdmin && (
             <Button onClick={openCreate}>
               <Plus className="mr-2 h-4 w-4" />
-              New Exam
+              {t("onlineExams.newExam")}
             </Button>
           )}
         </div>
@@ -491,31 +502,31 @@ export default function OnlineExamsPage() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {[
           {
-            label: "Total",
+            label: t("common.total"),
             count: exams.length,
             icon: Monitor,
             color: "text-orange-500 dark:text-orange-400",
           },
           {
-            label: "Draft",
+            label: t("common.draft"),
             count: exams.filter((e) => e.status === "draft").length,
             icon: FileText,
             color: "text-muted-foreground",
           },
           {
-            label: "Published",
+            label: t("common.published"),
             count: exams.filter((e) => e.status === "published").length,
             icon: CheckCircle,
             color: "text-green-600",
           },
           {
-            label: "Active",
+            label: t("common.active"),
             count: exams.filter((e) => e.status === "active").length,
             icon: Play,
             color: "text-orange-500 dark:text-orange-400",
           },
           {
-            label: "Completed",
+            label: t("onlineExams.completed"),
             count: exams.filter((e) => e.status === "completed").length,
             icon: CheckCircle,
             color: "text-emerald-600",
@@ -541,15 +552,15 @@ export default function OnlineExamsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Class</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Questions</TableHead>
-                <TableHead>Marks</TableHead>
-                <TableHead>Schedule</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("onlineExams.title")}</TableHead>
+                <TableHead>{t("onlineExams.subject")}</TableHead>
+                <TableHead>{t("onlineExams.class")}</TableHead>
+                <TableHead>{t("onlineExams.duration")}</TableHead>
+                <TableHead>{t("onlineExams.questions")}</TableHead>
+                <TableHead>{t("common.marks")}</TableHead>
+                <TableHead>{t("onlineExams.schedule")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -560,7 +571,7 @@ export default function OnlineExamsPage() {
                     className="text-center text-muted-foreground py-10"
                   >
                     <Monitor className="mx-auto h-10 w-10 mb-2 text-slate-300 dark:text-muted-foreground" />
-                    No online exams found
+                    {t("onlineExams.noExamsFound")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -579,7 +590,9 @@ export default function OnlineExamsPage() {
                           {exam.section ? ` - ${exam.section}` : ""}
                         </Badge>
                       </TableCell>
-                      <TableCell>{exam.duration} min</TableCell>
+                      <TableCell>
+                        {exam.duration} {t("onlineExams.min")}
+                      </TableCell>
                       <TableCell>{exam.questionCount}</TableCell>
                       <TableCell>{exam.totalMarks}</TableCell>
                       <TableCell className="text-xs">
@@ -589,7 +602,7 @@ export default function OnlineExamsPage() {
                             : "—"}
                         </div>
                         <div className="text-muted-foreground">
-                          to{" "}
+                          {t("onlineExams.to")}{" "}
                           {exam.endTime
                             ? new Date(exam.endTime).toLocaleString()
                             : "—"}
@@ -600,7 +613,7 @@ export default function OnlineExamsPage() {
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${status.color}`}
                         >
                           <StatusIcon className="h-3 w-3" />
-                          {status.label}
+                          {t(`onlineExams.status${status.label}`)}
                         </span>
                       </TableCell>
                       <TableCell>
@@ -608,7 +621,7 @@ export default function OnlineExamsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            title="View"
+                            title={t("common.view")}
                             onClick={() => viewDetail(exam._id)}
                           >
                             <Eye className="h-4 w-4" />
@@ -621,11 +634,11 @@ export default function OnlineExamsPage() {
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  title="Take Exam"
+                                  title={t("onlineExams.takeExam")}
                                   className="bg-green-600 hover:bg-green-700"
                                 >
                                   <PlayCircle className="h-4 w-4 mr-1" />
-                                  Take Exam
+                                  {t("onlineExams.takeExam")}
                                 </Button>
                               </Link>
                             )}
@@ -633,7 +646,7 @@ export default function OnlineExamsPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              title="Edit"
+                              title={t("common.edit")}
                               onClick={() => openEdit(exam)}
                             >
                               <Pencil className="h-4 w-4" />
@@ -643,7 +656,7 @@ export default function OnlineExamsPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              title="Delete"
+                              title={t("common.delete")}
                               onClick={() => deleteExam(exam._id)}
                               className="text-red-500 hover:text-red-700"
                             >
@@ -665,63 +678,65 @@ export default function OnlineExamsPage() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editId ? "Edit" : "Create"} Online Exam</DialogTitle>
+            <DialogTitle>
+              {editId ? t("onlineExams.editExam") : t("onlineExams.createExam")}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Title *</Label>
+                <Label>{t("onlineExams.titleLabel")} *</Label>
                 <Input
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="Exam title"
+                  placeholder={t("onlineExams.examTitlePlaceholder")}
                 />
               </div>
               <div>
-                <Label>Subject *</Label>
+                <Label>{t("onlineExams.subject")} *</Label>
                 <Input
                   value={form.subject}
                   onChange={(e) =>
                     setForm({ ...form, subject: e.target.value })
                   }
-                  placeholder="Mathematics"
+                  placeholder={t("onlineExams.subjectPlaceholder")}
                 />
               </div>
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>{t("common.description")}</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                placeholder="Exam instructions"
+                placeholder={t("onlineExams.examInstructionsPlaceholder")}
                 rows={2}
               />
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <Label>Class *</Label>
+                <Label>{t("onlineExams.class")} *</Label>
                 <Input
                   value={form.class_name}
                   onChange={(e) =>
                     setForm({ ...form, class_name: e.target.value })
                   }
-                  placeholder="Class 10"
+                  placeholder={t("onlineExams.classPlaceholder")}
                 />
               </div>
               <div>
-                <Label>Section</Label>
+                <Label>{t("onlineExams.section")}</Label>
                 <Input
                   value={form.section}
                   onChange={(e) =>
                     setForm({ ...form, section: e.target.value })
                   }
-                  placeholder="A"
+                  placeholder={t("onlineExams.sectionPlaceholder")}
                 />
               </div>
               <div>
-                <Label>Duration (minutes) *</Label>
+                <Label>{t("onlineExams.durationMinutes")} *</Label>
                 <Input
                   type="number"
                   value={form.duration}
@@ -733,7 +748,7 @@ export default function OnlineExamsPage() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <Label>Total Marks</Label>
+                <Label>{t("onlineExams.totalMarks")}</Label>
                 <Input
                   type="number"
                   value={form.totalMarks}
@@ -743,7 +758,7 @@ export default function OnlineExamsPage() {
                 />
               </div>
               <div>
-                <Label>Passing Marks</Label>
+                <Label>{t("onlineExams.passingMarks")}</Label>
                 <Input
                   type="number"
                   value={form.passingMarks}
@@ -753,7 +768,7 @@ export default function OnlineExamsPage() {
                 />
               </div>
               <div>
-                <Label>Status</Label>
+                <Label>{t("common.status")}</Label>
                 <Select
                   value={form.status}
                   onValueChange={(v) => setForm({ ...form, status: v })}
@@ -762,18 +777,24 @@ export default function OnlineExamsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="published">Published</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="draft">{t("common.draft")}</SelectItem>
+                    <SelectItem value="published">
+                      {t("common.published")}
+                    </SelectItem>
+                    <SelectItem value="active">{t("common.active")}</SelectItem>
+                    <SelectItem value="completed">
+                      {t("onlineExams.completed")}
+                    </SelectItem>
+                    <SelectItem value="cancelled">
+                      {t("onlineExams.cancelled")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Start Time *</Label>
+                <Label>{t("onlineExams.startTime")} *</Label>
                 <Input
                   type="datetime-local"
                   value={form.startTime}
@@ -783,7 +804,7 @@ export default function OnlineExamsPage() {
                 />
               </div>
               <div>
-                <Label>End Time *</Label>
+                <Label>{t("onlineExams.endTime")} *</Label>
                 <Input
                   type="datetime-local"
                   value={form.endTime}
@@ -797,14 +818,20 @@ export default function OnlineExamsPage() {
             {/* Settings */}
             <div className="border rounded-lg p-4 space-y-3">
               <h4 className="font-semibold text-sm text-foreground">
-                Exam Settings
+                {t("onlineExams.examSettings")}
               </h4>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { key: "shuffleQuestions", label: "Shuffle Questions" },
-                  { key: "shuffleOptions", label: "Shuffle Options" },
-                  { key: "showResults", label: "Show Results to Students" },
-                  { key: "allowRetake", label: "Allow Retake" },
+                  {
+                    key: "shuffleQuestions",
+                    label: t("onlineExams.shuffleQuestions"),
+                  },
+                  {
+                    key: "shuffleOptions",
+                    label: t("onlineExams.shuffleOptions"),
+                  },
+                  { key: "showResults", label: t("onlineExams.showResults") },
+                  { key: "allowRetake", label: t("onlineExams.allowRetake") },
                 ].map((s) => (
                   <label
                     key={s.key}
@@ -834,7 +861,7 @@ export default function OnlineExamsPage() {
               </div>
               {form.settings.allowRetake && (
                 <div className="w-48">
-                  <Label>Max Attempts</Label>
+                  <Label>{t("onlineExams.maxAttempts")}</Label>
                   <Input
                     type="number"
                     min={1}
@@ -857,17 +884,16 @@ export default function OnlineExamsPage() {
             <div className="border rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm text-foreground">
-                  Questions ({questions.length})
+                  {t("onlineExams.questions")} ({questions.length})
                 </h4>
                 <Button size="sm" variant="outline" onClick={openAddQuestion}>
                   <Plus className="h-3 w-3 mr-1" />
-                  Add Question
+                  {t("onlineExams.addQuestion")}
                 </Button>
               </div>
               {questions.length === 0 ? (
                 <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-                  No questions added yet. Click &quot;Add Question&quot; to
-                  start.
+                  {t("onlineExams.noQuestionsYet")}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -882,8 +908,10 @@ export default function OnlineExamsPage() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{q.question}</p>
                         <p className="text-xs text-muted-foreground dark:text-muted-foreground">
-                          {q.options.length} options &middot; {q.marks} marks
-                          &middot; Correct: Option {q.correctOption + 1}
+                          {q.options.length} {t("onlineExams.optionsCount")}{" "}
+                          &middot; {q.marks} {t("common.marks")}
+                          &middot; {t("onlineExams.correctOption")}:{" "}
+                          {q.correctOption + 1}
                         </p>
                       </div>
                       <Button
@@ -909,10 +937,10 @@ export default function OnlineExamsPage() {
 
             <Button onClick={save} disabled={submitting} className="w-full">
               {submitting
-                ? "Saving..."
+                ? t("common.saving")
                 : editId
-                  ? "Update Exam"
-                  : "Create Exam"}
+                  ? t("onlineExams.updateExam")
+                  : t("onlineExams.createExam")}
             </Button>
           </div>
         </DialogContent>
@@ -923,23 +951,25 @@ export default function OnlineExamsPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editingQuestionIdx !== null ? "Edit" : "Add"} Question
+              {editingQuestionIdx !== null
+                ? t("onlineExams.editQuestion")
+                : t("onlineExams.addQuestionTitle")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label>Question *</Label>
+              <Label>{t("onlineExams.questionLabel")} *</Label>
               <Textarea
                 value={questionForm.question}
                 onChange={(e) =>
                   setQuestionForm({ ...questionForm, question: e.target.value })
                 }
-                placeholder="Enter the question"
+                placeholder={t("onlineExams.enterQuestion")}
                 rows={2}
               />
             </div>
             <div className="space-y-2">
-              <Label>Options *</Label>
+              <Label>{t("onlineExams.optionsLabel")} *</Label>
               {questionForm.options.map((opt, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <input
@@ -958,7 +988,7 @@ export default function OnlineExamsPage() {
                       opts[idx] = e.target.value;
                       setQuestionForm({ ...questionForm, options: opts });
                     }}
-                    placeholder={`Option ${idx + 1}`}
+                    placeholder={`${t("onlineExams.optionN")} ${idx + 1}`}
                     className="flex-1"
                   />
                   {questionForm.options.length > 2 && (
@@ -995,16 +1025,16 @@ export default function OnlineExamsPage() {
                   }
                 >
                   <Plus className="h-3 w-3 mr-1" />
-                  Add Option
+                  {t("onlineExams.addOption")}
                 </Button>
               )}
               <p className="text-xs text-muted-foreground dark:text-muted-foreground">
-                Select the radio button next to the correct answer
+                {t("onlineExams.selectCorrectAnswer")}
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Marks</Label>
+                <Label>{t("common.marks")}</Label>
                 <Input
                   type="number"
                   min={1}
@@ -1019,7 +1049,7 @@ export default function OnlineExamsPage() {
               </div>
             </div>
             <div>
-              <Label>Explanation (shown after submission)</Label>
+              <Label>{t("onlineExams.explanationLabel")}</Label>
               <Textarea
                 value={questionForm.explanation}
                 onChange={(e) =>
@@ -1028,12 +1058,14 @@ export default function OnlineExamsPage() {
                     explanation: e.target.value,
                   })
                 }
-                placeholder="Why this is the correct answer"
+                placeholder={t("onlineExams.explanationPlaceholder")}
                 rows={2}
               />
             </div>
             <Button onClick={saveQuestion} className="w-full">
-              {editingQuestionIdx !== null ? "Update" : "Add"} Question
+              {editingQuestionIdx !== null
+                ? t("onlineExams.updateQuestion")
+                : t("onlineExams.addQuestionTitle")}
             </Button>
           </div>
         </DialogContent>
@@ -1043,7 +1075,7 @@ export default function OnlineExamsPage() {
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Exam Details</DialogTitle>
+            <DialogTitle>{t("onlineExams.examDetails")}</DialogTitle>
           </DialogHeader>
           {detailLoading ? (
             <div className="flex h-40 items-center justify-center">
@@ -1074,13 +1106,15 @@ export default function OnlineExamsPage() {
                     {detail.status}
                   </Badge>
                   <span className="text-muted-foreground">
-                    Duration: {detail.duration} min
+                    {t("onlineExams.duration")}: {detail.duration}{" "}
+                    {t("onlineExams.min")}
                   </span>
                   <span className="text-muted-foreground">
-                    Total: {detail.totalMarks} marks
+                    {t("common.total")}: {detail.totalMarks} {t("common.marks")}
                   </span>
                   <span className="text-muted-foreground">
-                    Pass: {detail.passingMarks} marks
+                    {t("onlineExams.pass")}: {detail.passingMarks}{" "}
+                    {t("common.marks")}
                   </span>
                 </div>
                 <div className="text-sm text-muted-foreground dark:text-muted-foreground">
@@ -1101,7 +1135,7 @@ export default function OnlineExamsPage() {
                 detail.questions.length > 0 && (
                   <div>
                     <h4 className="text-md font-semibold mb-3 text-foreground">
-                      Questions ({detail.questions.length})
+                      {t("onlineExams.questions")} ({detail.questions.length})
                     </h4>
                     <div className="space-y-3">
                       {detail.questions.map((q, idx) => (
@@ -1123,7 +1157,10 @@ export default function OnlineExamsPage() {
                             ))}
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
-                            {q.marks} mark{q.marks > 1 ? "s" : ""}
+                            {q.marks}{" "}
+                            {q.marks > 1
+                              ? t("onlineExams.marksPlural")
+                              : t("onlineExams.markSingular")}
                           </p>
                         </div>
                       ))}
@@ -1138,16 +1175,17 @@ export default function OnlineExamsPage() {
                   <div>
                     <h4 className="text-md font-semibold mb-3 text-foreground flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      Student Attempts ({detail.attempts.length})
+                      {t("onlineExams.studentAttempts")} (
+                      {detail.attempts.length})
                     </h4>
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Student</TableHead>
-                          <TableHead>Score</TableHead>
-                          <TableHead>Result</TableHead>
-                          <TableHead>Started</TableHead>
-                          <TableHead>Submitted</TableHead>
+                          <TableHead>{t("common.student")}</TableHead>
+                          <TableHead>{t("onlineExams.score")}</TableHead>
+                          <TableHead>{t("onlineExams.result")}</TableHead>
+                          <TableHead>{t("onlineExams.started")}</TableHead>
+                          <TableHead>{t("onlineExams.submitted")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -1158,7 +1196,7 @@ export default function OnlineExamsPage() {
                                 ? typeof a.student === "object"
                                   ? a.student.name
                                   : a.student
-                                : "Unknown"}
+                                : t("onlineExams.unknown")}
                             </TableCell>
                             <TableCell>
                               <Badge variant="default">
@@ -1174,8 +1212,8 @@ export default function OnlineExamsPage() {
                                 }
                               >
                                 {a.score >= detail.passingMarks
-                                  ? "Pass"
-                                  : "Fail"}
+                                  ? t("onlineExams.pass")
+                                  : t("onlineExams.fail")}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-xs">

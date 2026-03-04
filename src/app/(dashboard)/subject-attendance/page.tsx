@@ -25,6 +25,7 @@ import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 
 interface AttendanceRecord {
   _id: string;
@@ -48,6 +49,7 @@ interface StudentSummary {
 }
 
 export default function SubjectAttendancePage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("subject_attendance");
   const { classes: availableClasses, classLabel } = useClasses();
   const [loading, setLoading] = useState(true);
@@ -164,7 +166,7 @@ export default function SubjectAttendancePage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Subject Attendance
+            {t("nav.subjectAttendance")}
           </h1>
           <p className="text-muted-foreground">
             Track subject-wise attendance with 75% eligibility

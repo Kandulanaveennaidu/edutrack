@@ -37,6 +37,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { showSuccess, showError, showConfirm } from "@/lib/alerts";
 import { useClasses } from "@/hooks/use-classes";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface DiaryEntry {
   diary_id: string;
@@ -53,6 +54,7 @@ interface DiaryEntry {
 }
 
 export default function DiaryPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { classes: CLASSES, classLabel } = useClasses();
   const { canAdd, canDelete } = usePermissions("diary");
@@ -177,7 +179,7 @@ export default function DiaryPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <BookOpen className="h-6 w-6" />
-            Student Diary
+            {t("nav.studentDiary")}
           </h1>
           <p className="text-muted-foreground">
             Daily notes, homework & class summaries

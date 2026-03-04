@@ -35,6 +35,7 @@ import {
   Megaphone,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface EmergencyAlert {
   alert_id: string;
@@ -83,6 +84,7 @@ const SEVERITY_CONFIG: Record<
 };
 
 export default function EmergencyPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canAdd, canEdit } = usePermissions("emergency");
   const [alerts, setAlerts] = useState<EmergencyAlert[]>([]);
@@ -205,7 +207,7 @@ export default function EmergencyPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Emergency Alerts
+            {t("nav.emergency")}
           </h1>
           <p className="text-muted-foreground mt-1">
             Broadcast & manage emergency alerts

@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError, confirmAlert } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface HostelInfo {
   _id: string;
@@ -69,6 +70,7 @@ interface Allocation {
 }
 
 export default function HostelPage() {
+  const { t } = useLocale();
   const { canAdd, canDelete } = usePermissions("hostel");
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"overview" | "allocations">("overview");
@@ -120,7 +122,7 @@ export default function HostelPage() {
         setAllocations(d.data || []);
       }
     } catch {
-      showError("Error", "Failed to fetch hostel data");
+      showError(t("common.error"), t("hostel.failedToFetch"));
     } finally {
       setLoading(false);
     }
@@ -152,15 +154,15 @@ export default function HostelPage() {
         body: JSON.stringify({ action: "create_hostel", ...hostelForm }),
       });
       if (res.ok) {
-        showSuccess("Success", "Hostel created");
+        showSuccess(t("common.success"), t("hostel.hostelCreated"));
         setShowHostelDialog(false);
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to create hostel");
+      showError(t("common.error"), t("hostel.failedToCreate"));
     } finally {
       setSubmitting(false);
     }
@@ -175,15 +177,15 @@ export default function HostelPage() {
         body: JSON.stringify({ action: "allocate", ...allocForm }),
       });
       if (res.ok) {
-        showSuccess("Success", "Student allocated");
+        showSuccess(t("common.success"), t("hostel.studentAllocated"));
         setShowAllocDialog(false);
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to allocate student");
+      showError(t("common.error"), t("hostel.failedToAllocate"));
     } finally {
       setSubmitting(false);
     }
@@ -191,9 +193,9 @@ export default function HostelPage() {
 
   const vacateStudent = async (allocationId: string) => {
     const confirmed = await confirmAlert(
-      "Vacate Student",
-      "Are you sure you want to vacate this student?",
-      "Yes, Vacate",
+      t("hostel.vacateStudent"),
+      t("hostel.vacateConfirm"),
+      t("hostel.yesVacate"),
       "warning",
     );
     if (!confirmed) return;
@@ -204,11 +206,11 @@ export default function HostelPage() {
         body: JSON.stringify({ action: "vacate", allocation_id: allocationId }),
       });
       if (res.ok) {
-        showSuccess("Success", "Student vacated");
+        showSuccess(t("common.success"), t("hostel.studentVacated"));
         fetchData();
       }
     } catch {
-      showError("Error", "Failed to vacate student");
+      showError(t("common.error"), t("hostel.failedToVacate"));
     }
   };
 
@@ -225,23 +227,21 @@ export default function HostelPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Hostel Management
+            {t("nav.hostel")}
           </h1>
-          <p className="text-muted-foreground">
-            Manage hostels and student allocations
-          </p>
+          <p className="text-muted-foreground">{t("hostel.description")}</p>
         </div>
         <div className="flex gap-2">
           {canAdd && (
             <Button onClick={() => setShowHostelDialog(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add Hostel
+              {t("hostel.addHostel")}
             </Button>
           )}
           {canAdd && (
             <Button variant="outline" onClick={() => setShowAllocDialog(true)}>
               <BedDouble className="mr-2 h-4 w-4" />
-              Allocate Student
+              {t("hostel.allocateStudent")}
             </Button>
           )}
         </div>
@@ -249,13 +249,15 @@ export default function HostelPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 border-b">
-        {(["overview", "allocations"] as const).map((t) => (
+        {(["overview", "allocations"] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground"}`}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === tabKey ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground"}`}
           >
-            {t}
+            {tabKey === "overview"
+              ? t("hostel.overview")
+              : t("hostel.allocations")}
           </button>
         ))}
       </div>
@@ -266,24 +268,35 @@ export default function HostelPage() {
             <Card key={h.hostel_id}>
               <CardHeader className="pb-2">
                 <CardTitle>{h.name}</CardTitle>
-                <CardDescription className="capitalize">
-                  {h.type} Hostel
+                <CardDescription>
+                  {h.type === "boys"
+                    ? t("hostel.typeBoys")
+                    : h.type === "girls"
+                      ? t("hostel.typeGirls")
+                      : t("hostel.typeCoed")}{" "}
+                  {t("hostel.hostelSuffix")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Total Beds:</span>
+                    <span className="text-muted-foreground">
+                      {t("hostel.totalBeds")}:
+                    </span>
                     <span className="font-medium">{h.total_beds}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Occupied:</span>
+                    <span className="text-muted-foreground">
+                      {t("hostel.occupied")}:
+                    </span>
                     <span className="font-medium text-amber-600">
                       {h.occupied_beds}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Available:</span>
+                    <span className="text-muted-foreground">
+                      {t("hostel.available")}:
+                    </span>
                     <span className="font-medium text-green-600">
                       {h.available_beds}
                     </span>
@@ -295,7 +308,7 @@ export default function HostelPage() {
                     />
                   </div>
                   <p className="text-center text-sm text-muted-foreground">
-                    {h.occupancy_rate}% Occupancy
+                    {h.occupancy_rate}% {t("hostel.occupancy")}
                   </p>
                 </div>
               </CardContent>
@@ -303,7 +316,7 @@ export default function HostelPage() {
           ))}
           {summaryData.length === 0 && (
             <p className="col-span-3 text-center text-muted-foreground py-8">
-              No hostels created yet
+              {t("hostel.noHostels")}
             </p>
           )}
         </div>
@@ -315,15 +328,15 @@ export default function HostelPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Hostel</TableHead>
-                  <TableHead>Room</TableHead>
-                  <TableHead>Bed</TableHead>
-                  <TableHead>Check-in</TableHead>
-                  <TableHead>Monthly Fee</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t("hostel.student")}</TableHead>
+                  <TableHead>{t("hostel.class")}</TableHead>
+                  <TableHead>{t("hostel.hostel")}</TableHead>
+                  <TableHead>{t("hostel.room")}</TableHead>
+                  <TableHead>{t("hostel.bed")}</TableHead>
+                  <TableHead>{t("hostel.checkIn")}</TableHead>
+                  <TableHead>{t("hostel.monthlyFee")}</TableHead>
+                  <TableHead>{t("hostel.status")}</TableHead>
+                  <TableHead>{t("hostel.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -333,7 +346,7 @@ export default function HostelPage() {
                       colSpan={9}
                       className="text-center text-muted-foreground"
                     >
-                      No allocations
+                      {t("hostel.noAllocations")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -388,21 +401,21 @@ export default function HostelPage() {
       <Dialog open={showHostelDialog} onOpenChange={setShowHostelDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Hostel</DialogTitle>
+            <DialogTitle>{t("hostel.addHostel")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
-              <Label>Name</Label>
+              <Label>{t("hostel.name")}</Label>
               <Input
                 value={hostelForm.name}
                 onChange={(e) =>
                   setHostelForm({ ...hostelForm, name: e.target.value })
                 }
-                placeholder="Boys Hostel A"
+                placeholder={t("hostel.namePlaceholder")}
               />
             </div>
             <div>
-              <Label>Type</Label>
+              <Label>{t("hostel.type")}</Label>
               <Select
                 value={hostelForm.type}
                 onValueChange={(v) => setHostelForm({ ...hostelForm, type: v })}
@@ -411,9 +424,13 @@ export default function HostelPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {["boys", "girls", "co-ed"].map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
+                  {["boys", "girls", "co-ed"].map((typeOpt) => (
+                    <SelectItem key={typeOpt} value={typeOpt}>
+                      {typeOpt === "boys"
+                        ? t("hostel.typeBoys")
+                        : typeOpt === "girls"
+                          ? t("hostel.typeGirls")
+                          : t("hostel.typeCoed")}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -421,7 +438,7 @@ export default function HostelPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Total Rooms</Label>
+                <Label>{t("hostel.totalRooms")}</Label>
                 <Input
                   type="number"
                   value={hostelForm.total_rooms}
@@ -434,7 +451,7 @@ export default function HostelPage() {
                 />
               </div>
               <div>
-                <Label>Total Beds</Label>
+                <Label>{t("hostel.totalBeds")}</Label>
                 <Input
                   type="number"
                   value={hostelForm.total_beds}
@@ -448,7 +465,7 @@ export default function HostelPage() {
               </div>
             </div>
             <div>
-              <Label>Warden Phone</Label>
+              <Label>{t("hostel.wardenPhone")}</Label>
               <Input
                 value={hostelForm.warden_phone}
                 onChange={(e) =>
@@ -461,7 +478,7 @@ export default function HostelPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Creating..." : "Create Hostel"}
+              {submitting ? t("hostel.creating") : t("hostel.createHostel")}
             </Button>
           </div>
         </DialogContent>
@@ -471,11 +488,11 @@ export default function HostelPage() {
       <Dialog open={showAllocDialog} onOpenChange={setShowAllocDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Allocate Student</DialogTitle>
+            <DialogTitle>{t("hostel.allocateStudent")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
-              <Label>Hostel</Label>
+              <Label>{t("hostel.hostel")}</Label>
               <Select
                 value={allocForm.hostel_id || undefined}
                 onValueChange={(v) =>
@@ -483,7 +500,7 @@ export default function HostelPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select hostel" />
+                  <SelectValue placeholder={t("hostel.selectHostel")} />
                 </SelectTrigger>
                 <SelectContent>
                   {hostels.map((h) => (
@@ -495,7 +512,7 @@ export default function HostelPage() {
               </Select>
             </div>
             <div>
-              <Label>Student</Label>
+              <Label>{t("hostel.student")}</Label>
               <Select
                 value={allocForm.student_id || undefined}
                 onValueChange={(v) =>
@@ -503,7 +520,7 @@ export default function HostelPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select student" />
+                  <SelectValue placeholder={t("hostel.selectStudent")} />
                 </SelectTrigger>
                 <SelectContent>
                   {students.map((s) => (
@@ -516,7 +533,7 @@ export default function HostelPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Room Number</Label>
+                <Label>{t("hostel.roomNumber")}</Label>
                 <Input
                   value={allocForm.room_number}
                   onChange={(e) =>
@@ -525,7 +542,7 @@ export default function HostelPage() {
                 />
               </div>
               <div>
-                <Label>Bed Number</Label>
+                <Label>{t("hostel.bedNumber")}</Label>
                 <Input
                   value={allocForm.bed_number}
                   onChange={(e) =>
@@ -535,7 +552,7 @@ export default function HostelPage() {
               </div>
             </div>
             <div>
-              <Label>Check-in Date</Label>
+              <Label>{t("hostel.checkInDate")}</Label>
               <Input
                 type="date"
                 value={allocForm.check_in_date}
@@ -545,7 +562,7 @@ export default function HostelPage() {
               />
             </div>
             <div>
-              <Label>Monthly Fee (₹)</Label>
+              <Label>{t("hostel.monthlyFeeLabel")}</Label>
               <Input
                 type="number"
                 value={allocForm.monthly_fee}
@@ -562,7 +579,7 @@ export default function HostelPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Allocating..." : "Allocate"}
+              {submitting ? t("hostel.allocating") : t("hostel.allocate")}
             </Button>
           </div>
         </DialogContent>

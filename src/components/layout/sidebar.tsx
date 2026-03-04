@@ -597,7 +597,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-white/50 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/80"
         >
           <Globe className="h-4 w-4" />
-          <span>Back to Home</span>
+          <span>{t("auth.backToHome")}</span>
         </Link>
         <Link
           href="/plans"
@@ -615,7 +615,9 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <Crown className="h-4 w-4" />
           <span>{planConfig.name}</span>
           {userPlan === "starter" && (
-            <span className="ml-auto text-xs text-orange-400">Upgrade</span>
+            <span className="ml-auto text-xs text-orange-400">
+              {t("common.upgrade")}
+            </span>
           )}
         </Link>
       </div>

@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 import { PhotoUpload } from "@/components/ui/photo-upload";
 
 interface Teacher {
@@ -205,6 +206,7 @@ export default function TeachersPage() {
   );
 
   const { canAdd, canEdit, canDelete } = usePermissions("teachers");
+  const { t } = useLocale();
 
   if (loading) {
     return (
@@ -218,9 +220,9 @@ export default function TeachersPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Teachers</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("teachers.title")}</h1>
           <p className="text-muted-foreground">
-            {teachers.length} teacher(s) registered
+            {teachers.length} {t("teachers.title").toLowerCase()}
           </p>
         </div>
         <div className="flex gap-2">
@@ -228,14 +230,14 @@ export default function TeachersPage() {
             <Link href="/teachers/import">
               <Button variant="outline">
                 <Upload className="mr-2 h-4 w-4" />
-                Import
+                {t("common.import")}
               </Button>
             </Link>
           )}
           {canAdd && (
             <Button onClick={openAddDialog}>
               <Plus className="mr-2 h-4 w-4" />
-              Add Teacher
+              {t("teachers.addTeacher")}
             </Button>
           )}
         </div>
@@ -296,7 +298,7 @@ export default function TeachersPage() {
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search teachers..."
+          placeholder={t("teachers.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="pl-10"
@@ -306,12 +308,12 @@ export default function TeachersPage() {
       {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Teacher List</CardTitle>
+          <CardTitle>{t("teachers.teacherList")}</CardTitle>
         </CardHeader>
         <CardContent>
           {filtered.length === 0 ? (
             <div className="flex h-40 items-center justify-center text-muted-foreground">
-              <p>No teachers found</p>
+              <p>{t("teachers.noTeachers")}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -319,12 +321,12 @@ export default function TeachersPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Classes</TableHead>
-                    <TableHead>Status</TableHead>
-                    {(canEdit || canDelete) && <TableHead>Actions</TableHead>}
+                    <TableHead>{t("table.name")}</TableHead>
+                    <TableHead>{t("common.email")}</TableHead>
+                    <TableHead>{t("table.subject")}</TableHead>
+                    <TableHead>{t("table.class")}</TableHead>
+                    <TableHead>{t("table.status")}</TableHead>
+                    {(canEdit || canDelete) && <TableHead>{t("table.actions")}</TableHead>}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -408,7 +410,7 @@ export default function TeachersPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editTeacher ? "Edit Teacher" : "Add New Teacher"}
+              {editTeacher ? t("teachers.editTeacher") : t("teachers.addTeacher")}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -520,9 +522,9 @@ export default function TeachersPage() {
                   {editTeacher ? "Updating..." : "Adding..."}
                 </>
               ) : editTeacher ? (
-                "Update Teacher"
+                t("common.update")
               ) : (
-                "Add Teacher"
+                t("teachers.addTeacher")
               )}
             </Button>
           </form>

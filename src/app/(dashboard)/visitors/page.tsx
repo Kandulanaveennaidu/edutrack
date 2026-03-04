@@ -40,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Visitor {
   visitor_id: string;
@@ -80,6 +81,7 @@ const emptyForm = {
 };
 
 export default function VisitorsPage() {
+  const { t } = useLocale();
   const { canAdd, canEdit } = usePermissions("visitors");
   const [loading, setLoading] = useState(true);
   const [visitors, setVisitors] = useState<Visitor[]>([]);
@@ -128,8 +130,10 @@ export default function VisitorsPage() {
       if (res.ok) {
         const result = await res.json();
         showSuccess(
-          formData.pre_register ? "Pre-Registered" : "Checked In",
-          `Badge: ${result.data.badge_number}`,
+          formData.pre_register
+            ? t("visitors.preRegistered")
+            : t("visitors.checkedIn"),
+          `${t("visitors.badge")}: ${result.data.badge_number}`,
         );
         setShowDialog(false);
         setFormData(emptyForm);
@@ -138,7 +142,7 @@ export default function VisitorsPage() {
         throw new Error("Failed");
       }
     } catch {
-      showError("Error", "Failed to register visitor");
+      showError(t("visitors.error"), t("visitors.failedToRegister"));
     } finally {
       setSubmitting(false);
     }
@@ -155,14 +159,11 @@ export default function VisitorsPage() {
         body: JSON.stringify({ visitor_id: visitorId, action }),
       });
       if (res.ok) {
-        showSuccess(
-          "Updated",
-          `Visitor ${action.replace("_", " ")} successfully`,
-        );
+        showSuccess(t("visitors.updated"), t("visitors.actionSuccess"));
         fetchVisitors();
       }
     } catch {
-      showError("Error", "Failed to update visitor");
+      showError(t("visitors.error"), t("visitors.failedToUpdate"));
     }
   };
 
@@ -177,7 +178,8 @@ export default function VisitorsPage() {
   const statusColors: Record<string, string> = {
     checked_in: "bg-green-100 text-green-800",
     checked_out: "bg-slate-100 text-slate-800",
-    pre_registered: "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200",
+    pre_registered:
+      "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200",
     cancelled: "bg-red-100 text-red-800",
   };
 
@@ -194,16 +196,14 @@ export default function VisitorsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Visitor Management
+            {t("nav.visitors")}
           </h1>
-          <p className="text-muted-foreground">
-            Track and manage all visitors to your institution
-          </p>
+          <p className="text-muted-foreground">{t("visitors.description")}</p>
         </div>
         {canAdd && (
           <Button onClick={() => setShowDialog(true)}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Register Visitor
+            {t("visitors.registerVisitor")}
           </Button>
         )}
       </div>
@@ -218,7 +218,9 @@ export default function VisitorsPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.total_today}</p>
-                <p className="text-xs text-muted-foreground">Today&apos;s Visitors</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("visitors.todaysVisitors")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -231,7 +233,9 @@ export default function VisitorsPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.checked_in}</p>
-                <p className="text-xs text-muted-foreground">Currently Inside</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("visitors.currentlyInside")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -244,7 +248,9 @@ export default function VisitorsPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.checked_out}</p>
-                <p className="text-xs text-muted-foreground">Checked Out</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("visitors.checkedOut")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -257,7 +263,9 @@ export default function VisitorsPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{stats.pre_registered}</p>
-                <p className="text-xs text-muted-foreground">Pre-Registered</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("visitors.preRegistered")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -269,7 +277,7 @@ export default function VisitorsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search visitors..."
+            placeholder={t("visitors.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -280,10 +288,16 @@ export default function VisitorsPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="checked_in">Checked In</SelectItem>
-            <SelectItem value="checked_out">Checked Out</SelectItem>
-            <SelectItem value="pre_registered">Pre-Registered</SelectItem>
+            <SelectItem value="all">{t("visitors.allStatus")}</SelectItem>
+            <SelectItem value="checked_in">
+              {t("visitors.checkedIn")}
+            </SelectItem>
+            <SelectItem value="checked_out">
+              {t("visitors.checkedOut")}
+            </SelectItem>
+            <SelectItem value="pre_registered">
+              {t("visitors.preRegistered")}
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -293,21 +307,21 @@ export default function VisitorsPage() {
         <CardContent className="p-0">
           {filtered.length === 0 ? (
             <div className="flex h-40 items-center justify-center text-muted-foreground">
-              <p>No visitors found</p>
+              <p>{t("visitors.noVisitorsFound")}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Badge</TableHead>
-                    <TableHead>Visitor</TableHead>
-                    <TableHead>Purpose</TableHead>
-                    <TableHead>Host</TableHead>
-                    <TableHead>Check In</TableHead>
-                    <TableHead>Check Out</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
+                    <TableHead>{t("visitors.badge")}</TableHead>
+                    <TableHead>{t("visitors.visitor")}</TableHead>
+                    <TableHead>{t("visitors.purpose")}</TableHead>
+                    <TableHead>{t("visitors.host")}</TableHead>
+                    <TableHead>{t("visitors.checkIn")}</TableHead>
+                    <TableHead>{t("visitors.checkOut")}</TableHead>
+                    <TableHead>{t("visitors.status")}</TableHead>
+                    <TableHead>{t("visitors.actions")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -363,7 +377,7 @@ export default function VisitorsPage() {
                               }
                             >
                               <LogIn className="mr-1 h-3 w-3" />
-                              In
+                              {t("visitors.in")}
                             </Button>
                           )}
                           {v.status === "checked_in" && canEdit && (
@@ -375,7 +389,7 @@ export default function VisitorsPage() {
                               }
                             >
                               <LogOut className="mr-1 h-3 w-3" />
-                              Out
+                              {t("visitors.out")}
                             </Button>
                           )}
                         </div>
@@ -393,12 +407,12 @@ export default function VisitorsPage() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Register Visitor</DialogTitle>
+            <DialogTitle>{t("visitors.registerVisitor")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Visitor Name *</Label>
+                <Label>{t("visitors.visitorName")}</Label>
                 <Input
                   value={formData.visitor_name}
                   onChange={(e) =>
@@ -408,7 +422,7 @@ export default function VisitorsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Phone</Label>
+                <Label>{t("visitors.phone")}</Label>
                 <Input
                   value={formData.visitor_phone}
                   onChange={(e) =>
@@ -420,7 +434,7 @@ export default function VisitorsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Email</Label>
+                <Label>{t("visitors.email")}</Label>
                 <Input
                   type="email"
                   value={formData.visitor_email}
@@ -430,9 +444,9 @@ export default function VisitorsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>ID Proof</Label>
+                <Label>{t("visitors.idProof")}</Label>
                 <Input
-                  placeholder="e.g. Aadhaar, PAN"
+                  placeholder={t("visitors.idProofPlaceholder")}
                   value={formData.id_proof}
                   onChange={(e) =>
                     setFormData({ ...formData, id_proof: e.target.value })
@@ -442,38 +456,46 @@ export default function VisitorsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Purpose of Visit *</Label>
+              <Label>{t("visitors.purposeOfVisit")}</Label>
               <Select
                 value={formData.purpose || ""}
                 onValueChange={(v) => setFormData({ ...formData, purpose: v })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select purpose..." />
+                  <SelectValue placeholder={t("visitors.selectPurpose")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Parent-Teacher Meeting">
-                    Parent-Teacher Meeting
+                    {t("visitors.parentTeacherMeeting")}
                   </SelectItem>
-                  <SelectItem value="Student Pickup">Student Pickup</SelectItem>
+                  <SelectItem value="Student Pickup">
+                    {t("visitors.studentPickup")}
+                  </SelectItem>
                   <SelectItem value="Admission Inquiry">
-                    Admission Inquiry
+                    {t("visitors.admissionInquiry")}
                   </SelectItem>
-                  <SelectItem value="Fee Payment">Fee Payment</SelectItem>
+                  <SelectItem value="Fee Payment">
+                    {t("visitors.feePayment")}
+                  </SelectItem>
                   <SelectItem value="Official Meeting">
-                    Official Meeting
+                    {t("visitors.officialMeeting")}
                   </SelectItem>
-                  <SelectItem value="Delivery">Delivery</SelectItem>
-                  <SelectItem value="Maintenance">Maintenance</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="Delivery">
+                    {t("visitors.delivery")}
+                  </SelectItem>
+                  <SelectItem value="Maintenance">
+                    {t("visitors.maintenance")}
+                  </SelectItem>
+                  <SelectItem value="Other">{t("visitors.other")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Meeting With (Host)</Label>
+                <Label>{t("visitors.meetingWith")}</Label>
                 <Input
-                  placeholder="Teacher/Staff name"
+                  placeholder={t("visitors.hostPlaceholder")}
                   value={formData.host_name}
                   onChange={(e) =>
                     setFormData({ ...formData, host_name: e.target.value })
@@ -481,9 +503,9 @@ export default function VisitorsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Related Student ID</Label>
+                <Label>{t("visitors.relatedStudentId")}</Label>
                 <Input
-                  placeholder="e.g. STU001"
+                  placeholder={t("visitors.studentIdPlaceholder")}
                   value={formData.student_id}
                   onChange={(e) =>
                     setFormData({ ...formData, student_id: e.target.value })
@@ -493,9 +515,9 @@ export default function VisitorsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Notes</Label>
+              <Label>{t("visitors.notes")}</Label>
               <Input
-                placeholder="Any additional notes..."
+                placeholder={t("visitors.notesPlaceholder")}
                 value={formData.notes}
                 onChange={(e) =>
                   setFormData({ ...formData, notes: e.target.value })
@@ -514,7 +536,7 @@ export default function VisitorsPage() {
                 className="h-4 w-4 rounded border-slate-300"
               />
               <Label htmlFor="pre_register" className="text-sm">
-                Pre-register (visitor will check in later)
+                {t("visitors.preRegisterLabel")}
               </Label>
             </div>
 
@@ -524,7 +546,9 @@ export default function VisitorsPage() {
               ) : (
                 <UserPlus className="mr-2 h-4 w-4" />
               )}
-              {formData.pre_register ? "Pre-Register" : "Check In Visitor"}
+              {formData.pre_register
+                ? t("visitors.preRegister")
+                : t("visitors.checkInVisitor")}
             </Button>
           </form>
         </DialogContent>

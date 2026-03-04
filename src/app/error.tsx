@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useLocale } from "@/hooks/use-locale";
 
 export default function Error({
   error,
@@ -13,6 +14,8 @@ export default function Error({
     // Log the error to monitoring service in production
     console.error("[CampusIQ Error]", error);
   }, [error]);
+
+  const { t } = useLocale();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-red-50 to-white dark:from-gray-900 dark:to-gray-950">
@@ -33,29 +36,29 @@ export default function Error({
           </svg>
         </div>
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">
-          Something went wrong
+          {t("error.somethingWrong")}
         </h2>
         <p className="text-muted-foreground dark:text-gray-400 max-w-md mx-auto">
-          An unexpected error occurred. Our team has been notified.
+          {t("error.unexpectedError")}
         </p>
         <div className="flex gap-4 justify-center pt-4">
           <button
             onClick={reset}
             className="inline-flex items-center px-6 py-3 rounded-lg bg-orange-50 dark:bg-orange-950/300 text-white font-medium hover:bg-orange-500 transition-colors"
           >
-            Try Again
+            {t("error.tryAgain")}
           </button>
           <a
             href="/dashboard"
             className="inline-flex items-center px-6 py-3 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
-            Go to Dashboard
+            {t("error.goToDashboard")}
           </a>
         </div>
         {process.env.NODE_ENV === "development" && (
           <details className="mt-6 text-left max-w-lg mx-auto">
             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-gray-700">
-              Error details (dev only)
+              {t("error.devDetails")}
             </summary>
             <pre className="mt-2 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs overflow-auto text-red-600 dark:text-red-400">
               {error.message}

@@ -31,6 +31,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { showSuccess, showError } from "@/lib/alerts";
+import { useLocale } from "@/hooks/use-locale";
 
 // ── Animated Background ──────────────────────────────────────────────────────
 function AuthBackground() {
@@ -53,28 +54,29 @@ function AuthBackground() {
 
 // ── Password Strength Meter ──────────────────────────────────────────────────
 function PasswordStrength({ password }: { password: string }) {
+  const { t } = useLocale();
   const checks = useMemo(
     () => [
-      { label: "At least 6 characters", met: password.length >= 6 },
-      { label: "Uppercase letter", met: /[A-Z]/.test(password) },
-      { label: "Lowercase letter", met: /[a-z]/.test(password) },
-      { label: "Contains number", met: /[0-9]/.test(password) },
-      { label: "Special character", met: /[^A-Za-z0-9]/.test(password) },
+      { label: t("password.atLeast6"), met: password.length >= 6 },
+      { label: t("password.uppercase"), met: /[A-Z]/.test(password) },
+      { label: t("password.lowercase"), met: /[a-z]/.test(password) },
+      { label: t("password.number"), met: /[0-9]/.test(password) },
+      { label: t("password.special"), met: /[^A-Za-z0-9]/.test(password) },
     ],
-    [password],
+    [password, t],
   );
 
   const score = checks.filter((c) => c.met).length;
   const strengthLabel =
     score <= 1
-      ? "Weak"
+      ? t("password.weak")
       : score <= 2
-        ? "Fair"
+        ? t("password.fair")
         : score <= 3
-          ? "Good"
+          ? t("password.good")
           : score <= 4
-            ? "Strong"
-            : "Excellent";
+            ? t("password.strong")
+            : t("password.excellent");
   const strengthColor =
     score <= 1
       ? "bg-red-500"
@@ -129,6 +131,7 @@ function PasswordStrength({ password }: { password: string }) {
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useLocale();
   const token = searchParams.get("token");
 
   const [isLoading, setIsLoading] = useState(false);
@@ -142,18 +145,18 @@ function ResetPasswordForm() {
   const validate = () => {
     const e: Record<string, string> = {};
     if (!password) {
-      e.password = "Password is required";
+      e.password = t("auth.passwordRequired");
     } else if (password.length < 6) {
-      e.password = "At least 6 characters required";
+      e.password = t("resetPassword.atLeast6");
     } else if (!/[A-Z]/.test(password)) {
-      e.password = "Must contain an uppercase letter";
+      e.password = t("resetPassword.needUppercase");
     } else if (!/[0-9]/.test(password)) {
-      e.password = "Must contain a number";
+      e.password = t("resetPassword.needNumber");
     }
     if (!confirmPassword) {
-      e.confirmPassword = "Please confirm your password";
+      e.confirmPassword = t("resetPassword.confirmRequired");
     } else if (password !== confirmPassword) {
-      e.confirmPassword = "Passwords do not match";
+      e.confirmPassword = t("resetPassword.passwordsNoMatch");
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -199,18 +202,19 @@ function ResetPasswordForm() {
             <XCircle className="h-7 w-7 text-red-600 dark:text-red-400" />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-2">
-            Invalid Reset Link
+            {t("resetPassword.invalidLink")}
           </h2>
           <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-            This password reset link is invalid or has expired. Please request a
-            new one.
+            {t("resetPassword.invalidLinkMsg")}
           </p>
           <div className="flex gap-3">
             <Button asChild variant="outline">
-              <Link href="/login">Back to Login</Link>
+              <Link href="/login">{t("resetPassword.backToLogin")}</Link>
             </Button>
             <Button asChild>
-              <Link href="/forgot-password">Request New Link</Link>
+              <Link href="/forgot-password">
+                {t("resetPassword.requestNewLink")}
+              </Link>
             </Button>
           </div>
         </CardContent>
@@ -227,15 +231,14 @@ function ResetPasswordForm() {
             <CheckCircle2 className="h-7 w-7 text-green-600 dark:text-green-400 animate-in zoom-in duration-300" />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-2">
-            Password Updated!
+            {t("resetPassword.updated")}
           </h2>
           <p className="text-sm text-muted-foreground mb-6 max-w-xs">
-            Your password has been reset successfully. Redirecting you to the
-            login page...
+            {t("resetPassword.updatedMsg")}
           </p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Loader2 className="h-3 w-3 animate-spin" />
-            Redirecting in 3 seconds...
+            {t("resetPassword.redirecting")}
           </div>
         </CardContent>
       </Card>
@@ -248,11 +251,9 @@ function ResetPasswordForm() {
       <CardHeader className="space-y-1 pb-4">
         <CardTitle className="text-xl flex items-center gap-2">
           <KeyRound className="h-5 w-5 text-primary" />
-          Reset Password
+          {t("resetPassword.title")}
         </CardTitle>
-        <CardDescription>
-          Create a new secure password for your account.
-        </CardDescription>
+        <CardDescription>{t("resetPassword.desc")}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
@@ -260,13 +261,13 @@ function ResetPasswordForm() {
           <div className="space-y-2">
             <Label htmlFor="password" className="flex items-center gap-1.5">
               <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-              New Password
+              {t("resetPassword.newPassword")}
             </Label>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Create a strong password"
+                placeholder={t("resetPassword.createStrong")}
                 className={`h-11 pr-10 transition-all duration-200 ${
                   errors.password
                     ? "border-red-500 focus:ring-red-500 focus:border-red-500"
@@ -311,13 +312,13 @@ function ResetPasswordForm() {
               className="flex items-center gap-1.5"
             >
               <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-              Confirm Password
+              {t("resetPassword.confirmPassword")}
             </Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirm ? "text" : "password"}
-                placeholder="Re-enter your password"
+                placeholder={t("resetPassword.reEnter")}
                 className={`h-11 pr-10 transition-all duration-200 ${
                   errors.confirmPassword
                     ? "border-red-500 focus:ring-red-500 focus:border-red-500"
@@ -355,7 +356,7 @@ function ResetPasswordForm() {
             {confirmPassword && password === confirmPassword && (
               <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1 animate-in slide-in-from-top-1 duration-200">
                 <Check className="h-3 w-3" />
-                Passwords match
+                {t("resetPassword.passwordsMatch")}
               </p>
             )}
           </div>
@@ -364,8 +365,7 @@ function ResetPasswordForm() {
           <div className="flex items-start gap-2.5 rounded-xl bg-primary/5 p-3 border border-primary/10 dark:bg-primary/10 dark:border-primary/20">
             <ShieldCheck className="h-4 w-4 text-primary mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Choose a strong password with uppercase, lowercase, numbers, and
-              special characters for maximum security.
+              {t("resetPassword.securityTip")}
             </p>
           </div>
         </CardContent>
@@ -379,12 +379,12 @@ function ResetPasswordForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Resetting Password...
+                {t("resetPassword.resetting")}
               </>
             ) : (
               <>
                 <ShieldCheck className="mr-2 h-4 w-4" />
-                Reset Password
+                {t("resetPassword.title")}
               </>
             )}
           </Button>
@@ -396,6 +396,7 @@ function ResetPasswordForm() {
 
 // ── Page Wrapper ─────────────────────────────────────────────────────────────
 export default function ResetPasswordPage() {
+  const { t } = useLocale();
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <AuthBackground />
@@ -407,7 +408,7 @@ export default function ResetPasswordPage() {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
+            {t("auth.backToHome")}
           </Link>
         </div>
 
@@ -417,7 +418,9 @@ export default function ResetPasswordPage() {
             <GraduationCap className="h-10 w-10 text-white" />
           </div>
           <h1 className="mt-4 text-3xl font-bold text-foreground">CampusIQ</h1>
-          <p className="mt-1 text-muted-foreground">Create a new password</p>
+          <p className="mt-1 text-muted-foreground">
+            {t("resetPassword.createNew")}
+          </p>
         </div>
 
         <Suspense
@@ -437,16 +440,14 @@ export default function ResetPasswordPage() {
             className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Sign In
+            {t("auth.backToSignIn")}
           </Link>
         </div>
 
         {/* Security Footer */}
         <div className="mt-6 flex items-center justify-center gap-1.5 text-xs text-muted-foreground/60">
           <Shield className="h-3 w-3" />
-          <span>
-            Protected by CampusIQ Security &middot; 256-bit SSL encryption
-          </span>
+          <span>{t("auth.protectedBy")}</span>
         </div>
       </div>
     </div>

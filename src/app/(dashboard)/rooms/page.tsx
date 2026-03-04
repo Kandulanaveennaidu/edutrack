@@ -41,6 +41,7 @@ import {
   Monitor,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Room {
   room_id: string;
@@ -69,6 +70,7 @@ interface Booking {
 
 export default function RoomBookingPage() {
   const { data: session } = useSession();
+  const { t } = useLocale();
 
   const { canAdd, canDelete } = usePermissions("rooms");
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -118,11 +120,11 @@ export default function RoomBookingPage() {
         setBookings(bd.data || []);
       }
     } catch {
-      showError("Error", "Failed to load room data");
+      showError(t("common.error"), t("rooms.failedToLoadData"));
     } finally {
       setLoading(false);
     }
-  }, [selectedDate]);
+  }, [selectedDate, t]);
 
   useEffect(() => {
     fetchData();
@@ -130,7 +132,7 @@ export default function RoomBookingPage() {
 
   const handleBookRoom = async () => {
     if (!bookingForm.room_name || !bookingForm.date) {
-      showError("Error", "Please fill required fields");
+      showError(t("common.error"), t("rooms.fillRequiredFields"));
       return;
     }
     setSubmitting(true);
@@ -142,7 +144,7 @@ export default function RoomBookingPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        showSuccess("Success", "Room booked successfully!");
+        showSuccess(t("common.success"), t("rooms.roomBookedSuccess"));
         setBookingDialogOpen(false);
         setBookingForm({
           room_name: "",
@@ -155,10 +157,10 @@ export default function RoomBookingPage() {
         });
         fetchData();
       } else {
-        showError("Error", data.error || "Booking failed");
+        showError(t("common.error"), data.error || t("rooms.bookingFailed"));
       }
     } catch {
-      showError("Error", "Failed to book room");
+      showError(t("common.error"), t("rooms.failedToBookRoom"));
     } finally {
       setSubmitting(false);
     }
@@ -166,7 +168,7 @@ export default function RoomBookingPage() {
 
   const handleAddRoom = async () => {
     if (!roomForm.room_name || !roomForm.room_type) {
-      showError("Error", "Room name and type are required");
+      showError(t("common.error"), t("rooms.roomNameTypeRequired"));
       return;
     }
     setSubmitting(true);
@@ -178,7 +180,7 @@ export default function RoomBookingPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        showSuccess("Success", "Room added!");
+        showSuccess(t("common.success"), t("rooms.roomAdded"));
         setAddRoomDialogOpen(false);
         setRoomForm({
           room_name: "",
@@ -189,10 +191,10 @@ export default function RoomBookingPage() {
         });
         fetchData();
       } else {
-        showError("Error", data.error || "Failed to add room");
+        showError(t("common.error"), data.error || t("rooms.failedToAddRoom"));
       }
     } catch {
-      showError("Error", "Failed to add room");
+      showError(t("common.error"), t("rooms.failedToAddRoom"));
     } finally {
       setSubmitting(false);
     }
@@ -206,11 +208,11 @@ export default function RoomBookingPage() {
         body: JSON.stringify({ booking_id: bookingId, action: "cancel" }),
       });
       if (res.ok) {
-        showSuccess("Success", "Booking cancelled");
+        showSuccess(t("common.success"), t("rooms.bookingCancelled"));
         fetchData();
       }
     } catch {
-      showError("Error", "Failed to cancel booking");
+      showError(t("common.error"), t("rooms.failedToCancelBooking"));
     }
   };
 
@@ -251,11 +253,9 @@ export default function RoomBookingPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Room & Facility Booking
+            {t("nav.rooms")}
           </h1>
-          <p className="text-muted-foreground mt-1">
-            Book labs, auditoriums & facilities
-          </p>
+          <p className="text-muted-foreground mt-1">{t("rooms.description")}</p>
         </div>
         <div className="flex gap-2">
           <Dialog open={bookingDialogOpen} onOpenChange={setBookingDialogOpen}>
@@ -263,17 +263,17 @@ export default function RoomBookingPage() {
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
-                  Book Room
+                  {t("rooms.bookRoom")}
                 </Button>
               </DialogTrigger>
             )}
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Book a Room</DialogTitle>
+                <DialogTitle>{t("rooms.bookARoom")}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label>Room *</Label>
+                  <Label>{t("rooms.roomRequired")}</Label>
                   <Select
                     value={bookingForm.room_name}
                     onValueChange={(v) =>
@@ -281,15 +281,15 @@ export default function RoomBookingPage() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select room" />
+                      <SelectValue placeholder={t("rooms.selectRoom")} />
                     </SelectTrigger>
                     <SelectContent>
                       {rooms
                         .filter((r) => r.status === "available")
                         .map((r) => (
                           <SelectItem key={r.room_id} value={r.room_name}>
-                            {roomTypeIcons[r.room_type] || "🏢"} {r.room_name}{" "}
-                            (Cap: {r.capacity})
+                            {roomTypeIcons[r.room_type] || "🏢"} {r.room_name} (
+                            {t("rooms.cap")}: {r.capacity})
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -297,7 +297,7 @@ export default function RoomBookingPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Date *</Label>
+                    <Label>{t("rooms.dateRequired")}</Label>
                     <Input
                       type="date"
                       value={bookingForm.date}
@@ -307,7 +307,7 @@ export default function RoomBookingPage() {
                     />
                   </div>
                   <div>
-                    <Label>Purpose</Label>
+                    <Label>{t("rooms.purpose")}</Label>
                     <Select
                       value={bookingForm.purpose}
                       onValueChange={(v) =>
@@ -315,24 +315,40 @@ export default function RoomBookingPage() {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select" />
+                        <SelectValue placeholder={t("common.select")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Class">Class</SelectItem>
-                        <SelectItem value="Lab Session">Lab Session</SelectItem>
-                        <SelectItem value="Meeting">Meeting</SelectItem>
-                        <SelectItem value="Event">Event</SelectItem>
-                        <SelectItem value="Exam">Exam</SelectItem>
-                        <SelectItem value="Workshop">Workshop</SelectItem>
-                        <SelectItem value="Practice">Practice</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
+                        <SelectItem value="Class">
+                          {t("rooms.purposeClass")}
+                        </SelectItem>
+                        <SelectItem value="Lab Session">
+                          {t("rooms.purposeLabSession")}
+                        </SelectItem>
+                        <SelectItem value="Meeting">
+                          {t("rooms.purposeMeeting")}
+                        </SelectItem>
+                        <SelectItem value="Event">
+                          {t("rooms.purposeEvent")}
+                        </SelectItem>
+                        <SelectItem value="Exam">
+                          {t("rooms.purposeExam")}
+                        </SelectItem>
+                        <SelectItem value="Workshop">
+                          {t("rooms.purposeWorkshop")}
+                        </SelectItem>
+                        <SelectItem value="Practice">
+                          {t("rooms.purposePractice")}
+                        </SelectItem>
+                        <SelectItem value="Other">
+                          {t("rooms.purposeOther")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Start Time *</Label>
+                    <Label>{t("rooms.startTimeRequired")}</Label>
                     <Input
                       type="time"
                       value={bookingForm.start_time}
@@ -345,7 +361,7 @@ export default function RoomBookingPage() {
                     />
                   </div>
                   <div>
-                    <Label>End Time *</Label>
+                    <Label>{t("rooms.endTimeRequired")}</Label>
                     <Input
                       type="time"
                       value={bookingForm.end_time}
@@ -359,7 +375,7 @@ export default function RoomBookingPage() {
                   </div>
                 </div>
                 <div>
-                  <Label>Expected Attendees</Label>
+                  <Label>{t("rooms.expectedAttendees")}</Label>
                   <Input
                     type="number"
                     value={bookingForm.attendees}
@@ -369,11 +385,11 @@ export default function RoomBookingPage() {
                         attendees: e.target.value,
                       })
                     }
-                    placeholder="Number of attendees"
+                    placeholder={t("rooms.attendeesPlaceholder")}
                   />
                 </div>
                 <div>
-                  <Label>Equipment Needed</Label>
+                  <Label>{t("rooms.equipmentNeeded")}</Label>
                   <Input
                     value={bookingForm.equipment_needed}
                     onChange={(e) =>
@@ -382,7 +398,7 @@ export default function RoomBookingPage() {
                         equipment_needed: e.target.value,
                       })
                     }
-                    placeholder="Projector, Whiteboard, etc."
+                    placeholder={t("rooms.equipmentPlaceholder")}
                   />
                 </div>
                 <Button
@@ -390,7 +406,7 @@ export default function RoomBookingPage() {
                   className="w-full"
                   disabled={submitting}
                 >
-                  {submitting ? "Booking..." : "Book Room"}
+                  {submitting ? t("rooms.booking") : t("rooms.bookRoom")}
                 </Button>
               </div>
             </DialogContent>
@@ -404,26 +420,26 @@ export default function RoomBookingPage() {
               <DialogTrigger asChild>
                 <Button variant="outline">
                   <Building2 className="h-4 w-4 mr-2" />
-                  Add Room
+                  {t("rooms.addRoom")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Add New Room</DialogTitle>
+                  <DialogTitle>{t("rooms.addNewRoom")}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label>Room Name *</Label>
+                    <Label>{t("rooms.roomNameRequired")}</Label>
                     <Input
                       value={roomForm.room_name}
                       onChange={(e) =>
                         setRoomForm({ ...roomForm, room_name: e.target.value })
                       }
-                      placeholder="e.g. Computer Lab 2"
+                      placeholder={t("rooms.roomNamePlaceholder")}
                     />
                   </div>
                   <div>
-                    <Label>Room Type *</Label>
+                    <Label>{t("rooms.roomTypeRequired")}</Label>
                     <Select
                       value={roomForm.room_type}
                       onValueChange={(v) =>
@@ -434,22 +450,30 @@ export default function RoomBookingPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="lab">🔬 Lab</SelectItem>
+                        <SelectItem value="lab">
+                          🔬 {t("rooms.typeLab")}
+                        </SelectItem>
                         <SelectItem value="auditorium">
-                          🎭 Auditorium
+                          🎭 {t("rooms.typeAuditorium")}
                         </SelectItem>
-                        <SelectItem value="sports">🏀 Sports Hall</SelectItem>
-                        <SelectItem value="library">📚 Library</SelectItem>
+                        <SelectItem value="sports">
+                          🏀 {t("rooms.typeSportsHall")}
+                        </SelectItem>
+                        <SelectItem value="library">
+                          📚 {t("rooms.typeLibrary")}
+                        </SelectItem>
                         <SelectItem value="conference">
-                          🤝 Conference Room
+                          🤝 {t("rooms.typeConferenceRoom")}
                         </SelectItem>
-                        <SelectItem value="classroom">📝 Classroom</SelectItem>
+                        <SelectItem value="classroom">
+                          📝 {t("rooms.typeClassroom")}
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Capacity</Label>
+                      <Label>{t("rooms.capacity")}</Label>
                       <Input
                         type="number"
                         value={roomForm.capacity}
@@ -460,13 +484,13 @@ export default function RoomBookingPage() {
                       />
                     </div>
                     <div>
-                      <Label>Floor</Label>
+                      <Label>{t("rooms.floor")}</Label>
                       <Input
                         value={roomForm.floor}
                         onChange={(e) =>
                           setRoomForm({ ...roomForm, floor: e.target.value })
                         }
-                        placeholder="Ground Floor"
+                        placeholder={t("rooms.floorPlaceholder")}
                       />
                     </div>
                   </div>
@@ -485,7 +509,7 @@ export default function RoomBookingPage() {
                     className="w-full"
                     disabled={submitting}
                   >
-                    {submitting ? "Adding..." : "Add Room"}
+                    {submitting ? t("rooms.adding") : t("rooms.addRoom")}
                   </Button>
                 </div>
               </DialogContent>
@@ -504,7 +528,9 @@ export default function RoomBookingPage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{rooms.length}</p>
-                <p className="text-sm text-muted-foreground">Total Rooms</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("rooms.totalRooms")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -519,7 +545,9 @@ export default function RoomBookingPage() {
                 <p className="text-2xl font-bold">
                   {bookings.filter((b) => b.status === "confirmed").length}
                 </p>
-                <p className="text-sm text-muted-foreground">Today&apos;s Bookings</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("rooms.todaysBookings")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -534,7 +562,9 @@ export default function RoomBookingPage() {
                 <p className="text-2xl font-bold">
                   {rooms.filter((r) => r.status === "available").length}
                 </p>
-                <p className="text-sm text-muted-foreground">Available</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("rooms.available")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -549,7 +579,9 @@ export default function RoomBookingPage() {
                 <p className="text-2xl font-bold">
                   {rooms.filter((r) => r.status === "maintenance").length}
                 </p>
-                <p className="text-sm text-muted-foreground">Maintenance</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("rooms.maintenance")}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -565,7 +597,7 @@ export default function RoomBookingPage() {
             size="sm"
           >
             <Building2 className="h-4 w-4 mr-1" />
-            Rooms
+            {t("rooms.rooms")}
           </Button>
           <Button
             variant={viewMode === "bookings" ? "default" : "outline"}
@@ -573,7 +605,7 @@ export default function RoomBookingPage() {
             size="sm"
           >
             <Calendar className="h-4 w-4 mr-1" />
-            Bookings
+            {t("rooms.bookings")}
           </Button>
         </div>
         {viewMode === "bookings" && (
@@ -640,7 +672,7 @@ export default function RoomBookingPage() {
                   {roomBookings.length > 0 && (
                     <div className="border-t pt-3 mt-3">
                       <p className="text-xs font-semibold text-muted-foreground mb-2">
-                        TODAY&apos;S BOOKINGS
+                        {t("rooms.todaysBookingsLabel")}
                       </p>
                       {roomBookings.slice(0, 3).map((b) => (
                         <div
@@ -672,7 +704,7 @@ export default function RoomBookingPage() {
                     disabled={room.status !== "available"}
                   >
                     <Calendar className="h-4 w-4 mr-1" />
-                    Book This Room
+                    {t("rooms.bookThisRoom")}
                   </Button>
                 </CardContent>
               </Card>
@@ -681,9 +713,9 @@ export default function RoomBookingPage() {
           {rooms.length === 0 && (
             <div className="col-span-full text-center py-12 text-muted-foreground">
               <Building2 className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p>No rooms available</p>
+              <p>{t("rooms.noRoomsAvailable")}</p>
               {isAdmin && (
-                <p className="text-sm mt-1">Add rooms using the button above</p>
+                <p className="text-sm mt-1">{t("rooms.addRoomsHint")}</p>
               )}
             </div>
           )}
@@ -697,13 +729,13 @@ export default function RoomBookingPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Room</TableHead>
-                  <TableHead>Booked By</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Purpose</TableHead>
-                  <TableHead>Attendees</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t("rooms.room")}</TableHead>
+                  <TableHead>{t("rooms.bookedBy")}</TableHead>
+                  <TableHead>{t("rooms.time")}</TableHead>
+                  <TableHead>{t("rooms.purpose")}</TableHead>
+                  <TableHead>{t("rooms.attendees")}</TableHead>
+                  <TableHead>{t("common.status")}</TableHead>
+                  <TableHead>{t("common.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -753,7 +785,7 @@ export default function RoomBookingPage() {
                     <TableCell colSpan={7} className="text-center py-8">
                       <Calendar className="h-8 w-8 mx-auto mb-2 opacity-30" />
                       <p className="text-muted-foreground">
-                        No bookings for {selectedDate}
+                        {t("rooms.noBookingsFor")} {selectedDate}
                       </p>
                     </TableCell>
                   </TableRow>

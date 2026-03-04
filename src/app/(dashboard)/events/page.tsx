@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 import {
   CalendarDays,
   Plus,
@@ -65,7 +66,8 @@ const EVENT_TYPES = [
     value: "academic",
     label: "Academic",
     icon: GraduationCap,
-    color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+    color:
+      "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
   },
   {
     value: "sports",
@@ -77,8 +79,7 @@ const EVENT_TYPES = [
     value: "cultural",
     label: "Cultural",
     icon: Music,
-    color:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+    color: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
   },
   {
     value: "meeting",
@@ -152,6 +153,19 @@ const defaultForm = {
 
 export default function EventCalendarPage() {
   useSession();
+  const { t } = useLocale();
+  const getTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      academic: t("events.typeAcademic"),
+      sports: t("events.typeSports"),
+      cultural: t("events.typeCultural"),
+      meeting: t("events.typeMeeting"),
+      holiday: t("events.typeHoliday"),
+      exam: t("events.typeExam"),
+      other: t("events.typeOther"),
+    };
+    return labels[type] || type;
+  };
   const { canAdd, canEdit, canDelete } = usePermissions("events");
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -176,7 +190,7 @@ export default function EventCalendarPage() {
         setEvents(data.data || []);
       }
     } catch {
-      showError("Error", "Failed to load events");
+      showError(t("events.error"), t("events.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -188,11 +202,11 @@ export default function EventCalendarPage() {
 
   const handleSave = async () => {
     if (!form.title || !form.startDate || !form.endDate) {
-      showError("Error", "Title, start date, and end date are required");
+      showError(t("events.error"), t("events.titleRequired"));
       return;
     }
     if (new Date(form.endDate) < new Date(form.startDate)) {
-      showError("Error", "End date must be after start date");
+      showError(t("events.error"), t("events.endDateError"));
       return;
     }
     setSubmitting(true);
@@ -209,18 +223,18 @@ export default function EventCalendarPage() {
       const data = await res.json();
       if (res.ok) {
         showSuccess(
-          "Success",
-          editingEvent ? "Event updated" : "Event created",
+          t("events.success"),
+          editingEvent ? t("events.eventUpdated") : t("events.eventCreated"),
         );
         setDialogOpen(false);
         setEditingEvent(null);
         setForm(defaultForm);
         fetchEvents();
       } else {
-        showError("Error", data.error);
+        showError(t("events.error"), data.error);
       }
     } catch {
-      showError("Error", "Failed to save event");
+      showError(t("events.error"), t("events.saveFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -232,16 +246,19 @@ export default function EventCalendarPage() {
     try {
       const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
       if (res.ok) {
-        showSuccess("Success", "Event deleted");
+        showSuccess(t("events.success"), t("events.eventDeleted"));
         setDetailOpen(false);
         setSelectedEvent(null);
         fetchEvents();
       } else {
         const data = await res.json();
-        showError("Error", data.error || "Failed to delete");
+        showError(
+          t("events.error"),
+          data.error || t("events.deleteFailedGeneric"),
+        );
       }
     } catch {
-      showError("Error", "Failed to delete event");
+      showError(t("events.error"), t("events.deleteFailed"));
     }
   };
 
@@ -322,7 +339,7 @@ export default function EventCalendarPage() {
 
   const getTypeInfo = (type: string) => {
     return (
-      EVENT_TYPES.find((t) => t.value === type) ||
+      EVENT_TYPES.find((et) => et.value === type) ||
       EVENT_TYPES[EVENT_TYPES.length - 1]
     );
   };
@@ -349,9 +366,11 @@ export default function EventCalendarPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Event Calendar</h1>
+          <h1 className="text-2xl font-bold text-foreground">
+            {t("nav.events")}
+          </h1>
           <p className="text-muted-foreground dark:text-muted-foreground mt-1">
-            Manage institution events, activities & schedules
+            {t("events.description")}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -361,10 +380,10 @@ export default function EventCalendarPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {EVENT_TYPES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
+              <SelectItem value="all">{t("events.allTypes")}</SelectItem>
+              {EVENT_TYPES.map((et) => (
+                <SelectItem key={et.value} value={et.value}>
+                  {getTypeLabel(et.value)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -372,7 +391,7 @@ export default function EventCalendarPage() {
           {canAdd && (
             <Button onClick={() => openCreate()}>
               <Plus className="h-4 w-4 mr-2" />
-              Add Event
+              {t("events.addEvent")}
             </Button>
           )}
         </div>
@@ -394,7 +413,7 @@ export default function EventCalendarPage() {
                 <et.icon className="h-5 w-5 mx-auto mb-1 text-muted-foreground dark:text-muted-foreground" />
                 <p className="text-xl font-bold">{count}</p>
                 <p className="text-xs text-muted-foreground dark:text-muted-foreground">
-                  {et.label}
+                  {getTypeLabel(et.value)}
                 </p>
               </CardContent>
             </Card>
@@ -471,7 +490,7 @@ export default function EventCalendarPage() {
                   ))}
                   {dayEvents.length > 3 && (
                     <div className="text-[10px] text-muted-foreground dark:text-muted-foreground">
-                      +{dayEvents.length - 3} more
+                      +{dayEvents.length - 3} {t("events.more")}
                     </div>
                   )}
                 </div>
@@ -485,14 +504,14 @@ export default function EventCalendarPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            Events in {MONTH_NAMES[currentMonth.getMonth()]}
+            {t("events.eventsIn")} {MONTH_NAMES[currentMonth.getMonth()]}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {events.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground dark:text-muted-foreground">
               <CalendarDays className="h-10 w-10 mx-auto mb-2 opacity-30" />
-              <p>No events this month</p>
+              <p>{t("events.noEvents")}</p>
             </div>
           ) : (
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -516,7 +535,7 @@ export default function EventCalendarPage() {
                         <Badge
                           className={`${typeInfo.color} text-[10px] shrink-0`}
                         >
-                          {typeInfo.label}
+                          {getTypeLabel(typeInfo.value)}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground dark:text-muted-foreground">
@@ -556,13 +575,13 @@ export default function EventCalendarPage() {
         <CardContent className="p-4">
           <div className="flex flex-wrap items-center gap-4">
             <span className="text-sm font-semibold text-muted-foreground dark:text-muted-foreground">
-              Legend:
+              {t("events.legend")}
             </span>
             {EVENT_TYPES.map((et) => (
               <div key={et.value} className="flex items-center gap-1.5">
                 <et.icon className="h-3.5 w-3.5 text-muted-foreground dark:text-muted-foreground" />
                 <span className="text-xs text-muted-foreground dark:text-muted-foreground">
-                  {et.label}
+                  {getTypeLabel(et.value)}
                 </span>
               </div>
             ))}
@@ -586,7 +605,7 @@ export default function EventCalendarPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Badge className={getTypeInfo(selectedEvent.type).color}>
-                  {getTypeInfo(selectedEvent.type).label}
+                  {getTypeLabel(selectedEvent.type)}
                 </Badge>
                 <Badge
                   variant={
@@ -648,7 +667,7 @@ export default function EventCalendarPage() {
                       size="sm"
                       onClick={() => openEdit(selectedEvent)}
                     >
-                      <Edit className="h-3.5 w-3.5 mr-1" /> Edit
+                      <Edit className="h-3.5 w-3.5 mr-1" /> {t("events.edit")}
                     </Button>
                   )}
                   {canDelete && (
@@ -657,7 +676,8 @@ export default function EventCalendarPage() {
                       size="sm"
                       onClick={() => handleDelete(selectedEvent._id)}
                     >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />{" "}
+                      {t("events.delete")}
                     </Button>
                   )}
                 </div>
@@ -681,32 +701,32 @@ export default function EventCalendarPage() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingEvent ? "Edit Event" : "Add Event"}
+              {editingEvent ? t("events.editEvent") : t("events.addEventTitle")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Title *</Label>
+              <Label>{t("events.titleLabel")} *</Label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Event title"
+                placeholder={t("events.titlePlaceholder")}
               />
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>{t("events.descriptionLabel")}</Label>
               <textarea
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[80px]"
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                placeholder="Event description"
+                placeholder={t("events.descriptionPlaceholder")}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Type</Label>
+                <Label>{t("events.typeLabel")}</Label>
                 <Select
                   value={form.type}
                   onValueChange={(v) => setForm({ ...form, type: v })}
@@ -715,16 +735,16 @@ export default function EventCalendarPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {EVENT_TYPES.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
+                    {EVENT_TYPES.map((et) => (
+                      <SelectItem key={et.value} value={et.value}>
+                        {getTypeLabel(et.value)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Status</Label>
+                <Label>{t("events.statusLabel")}</Label>
                 <Select
                   value={form.status}
                   onValueChange={(v) => setForm({ ...form, status: v })}
@@ -733,17 +753,25 @@ export default function EventCalendarPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="scheduled">Scheduled</SelectItem>
-                    <SelectItem value="ongoing">Ongoing</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="scheduled">
+                      {t("events.scheduled")}
+                    </SelectItem>
+                    <SelectItem value="ongoing">
+                      {t("events.ongoing")}
+                    </SelectItem>
+                    <SelectItem value="completed">
+                      {t("events.completed")}
+                    </SelectItem>
+                    <SelectItem value="cancelled">
+                      {t("events.cancelled")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Start Date *</Label>
+                <Label>{t("events.startDate")} *</Label>
                 <Input
                   type="date"
                   value={form.startDate}
@@ -753,7 +781,7 @@ export default function EventCalendarPage() {
                 />
               </div>
               <div>
-                <Label>End Date *</Label>
+                <Label>{t("events.endDate")} *</Label>
                 <Input
                   type="date"
                   value={form.endDate}
@@ -764,15 +792,15 @@ export default function EventCalendarPage() {
               </div>
             </div>
             <div>
-              <Label>Location</Label>
+              <Label>{t("events.location")}</Label>
               <Input
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
-                placeholder="e.g. Main Auditorium"
+                placeholder={t("events.locationPlaceholder")}
               />
             </div>
             <div className="flex items-center gap-3">
-              <Label>All Day</Label>
+              <Label>{t("events.allDay")}</Label>
               <button
                 type="button"
                 onClick={() => setForm({ ...form, allDay: !form.allDay })}
@@ -784,7 +812,7 @@ export default function EventCalendarPage() {
               </button>
             </div>
             <div>
-              <Label>Color</Label>
+              <Label>{t("events.color")}</Label>
               <div className="flex gap-2 mt-1">
                 {EVENT_COLORS.map((c) => (
                   <button
@@ -803,10 +831,10 @@ export default function EventCalendarPage() {
               disabled={submitting}
             >
               {submitting
-                ? "Saving..."
+                ? t("events.saving")
                 : editingEvent
-                  ? "Update Event"
-                  : "Create Event"}
+                  ? t("events.updateEvent")
+                  : t("events.createEvent")}
             </Button>
           </div>
         </DialogContent>

@@ -21,6 +21,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import Swal from "sweetalert2";
+import { useLocale } from "@/hooks/use-locale";
 
 interface InventoryItem {
   _id: string;
@@ -44,14 +45,14 @@ interface InventoryItem {
 }
 
 const CATEGORIES = [
-  { value: "", label: "All Categories" },
-  { value: "lab_equipment", label: "Lab Equipment" },
-  { value: "sports", label: "Sports" },
-  { value: "furniture", label: "Furniture" },
-  { value: "electronics", label: "Electronics" },
-  { value: "stationery", label: "Stationery" },
-  { value: "library", label: "Library" },
-  { value: "other", label: "Other" },
+  { value: "", label: "inventory.allCategories" },
+  { value: "lab_equipment", label: "inventory.labEquipment" },
+  { value: "sports", label: "inventory.sports" },
+  { value: "furniture", label: "inventory.furniture" },
+  { value: "electronics", label: "inventory.electronics" },
+  { value: "stationery", label: "inventory.stationery" },
+  { value: "library", label: "inventory.library" },
+  { value: "other", label: "inventory.other" },
 ];
 
 const STATUS_COLORS: Record<string, string> = {
@@ -70,6 +71,7 @@ const CONDITION_COLORS: Record<string, string> = {
 };
 
 export default function InventoryPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canAdd, canEdit, canDelete } = usePermissions("inventory");
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -139,7 +141,7 @@ export default function InventoryPage() {
         fetchItems();
         Swal.fire({
           icon: "success",
-          title: "Item Added",
+          title: t("inventory.itemAdded"),
           timer: 1500,
           showConfirmButton: false,
         });
@@ -155,14 +157,14 @@ export default function InventoryPage() {
         ? (
             await Swal.fire({
               input: "text",
-              title: "Checkout Notes",
-              inputPlaceholder: "Purpose...",
+              title: t("inventory.checkoutNotes"),
+              inputPlaceholder: t("inventory.purposePlaceholder"),
             })
           ).value
         : "";
     const description =
       action === "maintenance"
-        ? (await Swal.fire({ input: "text", title: "Maintenance Description" }))
+        ? (await Swal.fire({ input: "text", title: t("inventory.maintenanceDescription") }))
             .value
         : "";
 
@@ -180,7 +182,7 @@ export default function InventoryPage() {
 
   const handleRetire = async (id: string) => {
     const result = await Swal.fire({
-      title: "Retire this item?",
+      title: t("inventory.retireConfirm"),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#ef4444",
@@ -205,11 +207,10 @@ export default function InventoryPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Package className="h-7 w-7 text-orange-500 dark:text-orange-400" /> Inventory & Asset
-            Management
+            <Package className="h-7 w-7 text-orange-500 dark:text-orange-400" /> {t("nav.inventory")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Track equipment, checkout/return, maintenance logs
+            {t("inventory.description")}
           </p>
         </div>
         {canAdd && (
@@ -217,7 +218,7 @@ export default function InventoryPage() {
             onClick={() => setShowForm(!showForm)}
             className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-orange-600 flex items-center gap-2"
           >
-            <Plus className="h-4 w-4" /> Add Item
+            <Plus className="h-4 w-4" /> {t("inventory.addItem")}
           </button>
         )}
       </div>
@@ -225,13 +226,13 @@ export default function InventoryPage() {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-card rounded-xl p-4 shadow-sm border">
-          <p className="text-sm text-muted-foreground">Total Items</p>
+          <p className="text-sm text-muted-foreground">{t("inventory.totalItems")}</p>
           <p className="text-2xl font-bold">
             {((summary as Record<string, unknown>).totalItems as number) || 0}
           </p>
         </div>
         <div className="bg-card rounded-xl p-4 shadow-sm border">
-          <p className="text-sm text-muted-foreground">Total Value</p>
+          <p className="text-sm text-muted-foreground">{t("inventory.totalValue")}</p>
           <p className="text-2xl font-bold text-green-600">
             ₹
             {(
@@ -240,14 +241,14 @@ export default function InventoryPage() {
           </p>
         </div>
         <div className="bg-card rounded-xl p-4 shadow-sm border">
-          <p className="text-sm text-muted-foreground">Available</p>
+          <p className="text-sm text-muted-foreground">{t("inventory.available")}</p>
           <p className="text-2xl font-bold text-orange-500 dark:text-orange-400">
             {(summary as Record<string, Record<string, number>>).statuses
               ?.available || 0}
           </p>
         </div>
         <div className="bg-card rounded-xl p-4 shadow-sm border">
-          <p className="text-sm text-muted-foreground">In Maintenance</p>
+          <p className="text-sm text-muted-foreground">{t("inventory.inMaintenance")}</p>
           <p className="text-2xl font-bold text-yellow-600">
             {(summary as Record<string, Record<string, number>>).statuses
               ?.maintenance || 0}
@@ -258,11 +259,11 @@ export default function InventoryPage() {
       {/* Add Form */}
       {showForm && (
         <div className="bg-card rounded-xl p-6 shadow-sm border">
-          <h3 className="font-semibold mb-4">Add New Item</h3>
+          <h3 className="font-semibold mb-4">{t("inventory.addNewItem")}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
-              placeholder="Item Name *"
+              placeholder={t("inventory.itemNamePlaceholder")}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="border rounded-lg px-3 py-2 text-sm dark:bg-card dark:border-border"
@@ -274,13 +275,13 @@ export default function InventoryPage() {
             >
               {CATEGORIES.slice(1).map((c) => (
                 <option key={c.value} value={c.value}>
-                  {c.label}
+                  {t(c.label)}
                 </option>
               ))}
             </select>
             <input
               type="text"
-              placeholder="Serial Number"
+              placeholder={t("inventory.serialNumber")}
               value={form.serialNumber}
               onChange={(e) =>
                 setForm({ ...form, serialNumber: e.target.value })
@@ -289,7 +290,7 @@ export default function InventoryPage() {
             />
             <input
               type="number"
-              placeholder="Quantity"
+              placeholder={t("inventory.quantity")}
               value={form.quantity}
               onChange={(e) =>
                 setForm({ ...form, quantity: Number(e.target.value) })
@@ -299,7 +300,7 @@ export default function InventoryPage() {
             />
             <input
               type="text"
-              placeholder="Location *"
+              placeholder={t("inventory.locationPlaceholder")}
               value={form.location}
               onChange={(e) => setForm({ ...form, location: e.target.value })}
               className="border rounded-lg px-3 py-2 text-sm dark:bg-card dark:border-border"
@@ -309,14 +310,14 @@ export default function InventoryPage() {
               onChange={(e) => setForm({ ...form, condition: e.target.value })}
               className="border rounded-lg px-3 py-2 text-sm dark:bg-card dark:border-border"
             >
-              <option value="new">New</option>
-              <option value="good">Good</option>
-              <option value="fair">Fair</option>
-              <option value="poor">Poor</option>
+              <option value="new">{t("inventory.conditionNew")}</option>
+              <option value="good">{t("inventory.conditionGood")}</option>
+              <option value="fair">{t("inventory.conditionFair")}</option>
+              <option value="poor">{t("inventory.conditionPoor")}</option>
             </select>
             <input
               type="number"
-              placeholder="Purchase Price (₹)"
+              placeholder={t("inventory.purchasePrice")}
               value={form.purchasePrice || ""}
               onChange={(e) =>
                 setForm({ ...form, purchasePrice: Number(e.target.value) })
@@ -325,14 +326,14 @@ export default function InventoryPage() {
             />
             <input
               type="text"
-              placeholder="Vendor"
+              placeholder={t("inventory.vendor")}
               value={form.vendor}
               onChange={(e) => setForm({ ...form, vendor: e.target.value })}
               className="border rounded-lg px-3 py-2 text-sm dark:bg-card dark:border-border"
             />
             <input
               type="date"
-              placeholder="Warranty Expiry"
+              placeholder={t("inventory.warrantyExpiry")}
               value={form.warrantyExpiry}
               onChange={(e) =>
                 setForm({ ...form, warrantyExpiry: e.target.value })
@@ -346,13 +347,13 @@ export default function InventoryPage() {
               disabled={!form.name || !form.location}
               className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
             >
-              Save Item
+              {t("inventory.saveItem")}
             </button>
             <button
               onClick={() => setShowForm(false)}
               className="border px-4 py-2 rounded-lg text-sm hover:bg-muted/50 dark:hover:bg-gray-700"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </div>
@@ -364,7 +365,7 @@ export default function InventoryPage() {
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search items..."
+            placeholder={t("inventory.searchItems")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 border rounded-lg px-3 py-2 text-sm dark:bg-card dark:border-border"
@@ -377,7 +378,7 @@ export default function InventoryPage() {
         >
           {CATEGORIES.map((c) => (
             <option key={c.value} value={c.value}>
-              {c.label}
+              {t(c.label)}
             </option>
           ))}
         </select>
@@ -386,11 +387,11 @@ export default function InventoryPage() {
           onChange={(e) => setStatus(e.target.value)}
           className="border rounded-lg px-3 py-2 text-sm dark:bg-card dark:border-border"
         >
-          <option value="">All Status</option>
-          <option value="available">Available</option>
-          <option value="checked_out">Checked Out</option>
-          <option value="maintenance">Maintenance</option>
-          <option value="retired">Retired</option>
+          <option value="">{t("inventory.allStatus")}</option>
+          <option value="available">{t("inventory.statusAvailable")}</option>
+          <option value="checked_out">{t("inventory.statusCheckedOut")}</option>
+          <option value="maintenance">{t("inventory.statusMaintenance")}</option>
+          <option value="retired">{t("inventory.statusRetired")}</option>
         </select>
       </div>
 
@@ -400,14 +401,14 @@ export default function InventoryPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted/50 dark:bg-card">
               <tr>
-                <th className="p-3 text-left font-medium">Item</th>
-                <th className="p-3 text-left font-medium">Category</th>
-                <th className="p-3 text-center font-medium">Qty</th>
-                <th className="p-3 text-center font-medium">Available</th>
-                <th className="p-3 text-left font-medium">Location</th>
-                <th className="p-3 text-center font-medium">Condition</th>
-                <th className="p-3 text-center font-medium">Status</th>
-                <th className="p-3 text-center font-medium">Actions</th>
+                <th className="p-3 text-left font-medium">{t("inventory.item")}</th>
+                <th className="p-3 text-left font-medium">{t("inventory.category")}</th>
+                <th className="p-3 text-center font-medium">{t("inventory.qty")}</th>
+                <th className="p-3 text-center font-medium">{t("inventory.available")}</th>
+                <th className="p-3 text-left font-medium">{t("inventory.location")}</th>
+                <th className="p-3 text-center font-medium">{t("inventory.condition")}</th>
+                <th className="p-3 text-center font-medium">{t("inventory.status")}</th>
+                <th className="p-3 text-center font-medium">{t("inventory.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -420,7 +421,7 @@ export default function InventoryPage() {
                     <div className="font-medium">{item.name}</div>
                     {item.serialNumber && (
                       <div className="text-xs text-muted-foreground">
-                        SN: {item.serialNumber}
+                        {t("inventory.snPrefix")} {item.serialNumber}
                       </div>
                     )}
                     {item.purchasePrice ? (
@@ -457,7 +458,7 @@ export default function InventoryPage() {
                         <button
                           onClick={() => handleAction(item._id, "checkout")}
                           className="p-1.5 hover:bg-orange-50 rounded text-orange-500 dark:text-orange-400"
-                          title="Checkout"
+                          title={t("inventory.checkout")}
                         >
                           <LogOut className="h-4 w-4" />
                         </button>
@@ -466,7 +467,7 @@ export default function InventoryPage() {
                         <button
                           onClick={() => handleAction(item._id, "return")}
                           className="p-1.5 hover:bg-green-50 rounded text-green-600"
-                          title="Return"
+                          title={t("inventory.return")}
                         >
                           <LogIn className="h-4 w-4" />
                         </button>
@@ -475,7 +476,7 @@ export default function InventoryPage() {
                         <button
                           onClick={() => handleAction(item._id, "maintenance")}
                           className="p-1.5 hover:bg-yellow-50 rounded text-yellow-600"
-                          title="Maintenance"
+                          title={t("inventory.maintenance")}
                         >
                           <Wrench className="h-4 w-4" />
                         </button>
@@ -484,7 +485,7 @@ export default function InventoryPage() {
                         <button
                           onClick={() => handleRetire(item._id)}
                           className="p-1.5 hover:bg-red-50 rounded text-red-600"
-                          title="Retire"
+                          title={t("inventory.retire")}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -497,8 +498,7 @@ export default function InventoryPage() {
           </table>
           {!loading && items.length === 0 && (
             <div className="text-center p-8 text-muted-foreground">
-              No inventory items found. Click &quot;Add Item&quot; to get
-              started.
+              {t("inventory.noItems")}
             </div>
           )}
         </div>

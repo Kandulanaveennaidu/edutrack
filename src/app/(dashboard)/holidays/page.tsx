@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 import {
   CalendarDays,
   Plus,
@@ -97,6 +98,7 @@ const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function HolidayCalendarPage() {
   useSession();
+  const { t } = useLocale();
   const { canAdd, canEdit, canDelete } = usePermissions("holidays");
   const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [loading, setLoading] = useState(true);
@@ -263,10 +265,10 @@ export default function HolidayCalendarPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Holiday Calendar
+            {t("nav.holidays")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            View & manage institution holidays and events
+            {t("holidays.description")}
           </p>
         </div>
         {canAdd && (

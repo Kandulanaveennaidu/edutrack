@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Backup {
   _id: string;
@@ -38,6 +39,7 @@ interface Backup {
 }
 
 export default function BackupPage() {
+  const { t } = useLocale();
   const { canAdd } = usePermissions("backup");
   const [loading, setLoading] = useState(true);
   const [backups, setBackups] = useState<Backup[]>([]);
@@ -112,7 +114,7 @@ export default function BackupPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Data Backup</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.backup")}</h1>
           <p className="text-muted-foreground">Create and manage data backups</p>
         </div>
         {canAdd && (

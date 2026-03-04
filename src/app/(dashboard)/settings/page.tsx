@@ -23,6 +23,7 @@ import {
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface SchoolInfo {
   school_id: string;
@@ -37,6 +38,7 @@ interface SchoolInfo {
 export default function SettingsPage() {
   const { data: session } = useSession();
   const { canEdit } = usePermissions("settings");
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [school, setSchool] = useState<SchoolInfo | null>(null);
@@ -83,8 +85,8 @@ export default function SettingsPage() {
 
       if (response.ok) {
         showSuccess(
-          "Settings Saved",
-          "Your settings have been updated successfully.",
+          t("settings.settingsSaved"),
+          t("settings.settingsSavedDesc"),
         );
       } else {
         throw new Error("Failed to save");
@@ -110,9 +112,9 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.settings")}</h1>
           <p className="text-muted-foreground">
-            Manage your institution settings and preferences
+            {t("settings.description")}
           </p>
         </div>
         {isAdmin && (
@@ -120,12 +122,12 @@ export default function SettingsPage() {
             {saving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {t("common.saving")}
               </>
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Save Settings
+                {t("settings.saveSettings")}
               </>
             )}
           </Button>
@@ -137,37 +139,37 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <School className="h-5 w-5 text-orange-500 dark:text-orange-400" />
-            <CardTitle>Institution Information</CardTitle>
+            <CardTitle>{t("settings.institutionInfo")}</CardTitle>
           </div>
           <CardDescription>
-            Your institution&apos;s basic information
+            {t("settings.contactSupport")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Institution ID</Label>
+              <Label>{t("settings.institutionId")}</Label>
               <Input value={school?.school_id || ""} disabled />
             </div>
             <div className="space-y-2">
-              <Label>Institution Name</Label>
+              <Label>{t("settings.institutionName")}</Label>
               <Input value={school?.school_name || ""} disabled />
             </div>
             <div className="space-y-2">
-              <Label>Admin Email</Label>
+              <Label>{t("settings.adminEmail")}</Label>
               <Input value={school?.admin_email || ""} disabled />
             </div>
             <div className="space-y-2">
-              <Label>Phone</Label>
+              <Label>{t("settings.phone")}</Label>
               <Input value={school?.phone || ""} disabled />
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label>Address</Label>
+              <Label>{t("settings.address")}</Label>
               <Input value={school?.address || ""} disabled />
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            Contact support to update institution information
+            {t("settings.contactSupport")}
           </p>
         </CardContent>
       </Card>
@@ -177,16 +179,16 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Clock className="h-5 w-5 text-orange-500 dark:text-orange-400" />
-            <CardTitle>Attendance Settings</CardTitle>
+            <CardTitle>{t("settings.attendanceSettings")}</CardTitle>
           </div>
           <CardDescription>
-            Configure attendance timing and rules
+            {t("settings.configureAttendance")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Attendance Start Time</Label>
+              <Label>{t("settings.attendanceStartTime")}</Label>
               <Input
                 type="time"
                 value={settings.attendance_time_start}
@@ -200,7 +202,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Attendance End Time</Label>
+              <Label>{t("settings.attendanceEndTime")}</Label>
               <Input
                 type="time"
                 value={settings.attendance_time_end}
@@ -214,7 +216,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Late Threshold (minutes)</Label>
+              <Label>{t("settings.lateThreshold")}</Label>
               <Input
                 type="number"
                 value={settings.late_threshold_minutes}
@@ -228,7 +230,7 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Low Attendance Alert (%)</Label>
+              <Label>{t("settings.lowAttendanceAlert")}</Label>
               <Input
                 type="number"
                 value={settings.low_attendance_threshold}
@@ -250,16 +252,16 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-orange-500 dark:text-orange-400" />
-            <CardTitle>Academic Settings</CardTitle>
+            <CardTitle>{t("settings.academicSettings")}</CardTitle>
           </div>
           <CardDescription>
-            Configure academic year and working days
+            {t("settings.configureAcademic")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Academic Year</Label>
+              <Label>{t("settings.academicYear")}</Label>
               <Select
                 value={settings.academic_year}
                 onValueChange={(v) =>
@@ -278,7 +280,7 @@ export default function SettingsPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Working Days</Label>
+              <Label>{t("settings.workingDays")}</Label>
               <Input
                 value={settings.working_days}
                 onChange={(e) =>
@@ -300,16 +302,16 @@ export default function SettingsPage() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Bell className="h-5 w-5 text-orange-500 dark:text-orange-400" />
-            <CardTitle>Notification Settings</CardTitle>
+            <CardTitle>{t("settings.notificationSettings")}</CardTitle>
           </div>
           <CardDescription>
-            Configure how you receive notifications
+            {t("settings.configureNotifications")}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>In-App Notifications</Label>
+              <Label>{t("settings.inAppNotifications")}</Label>
               <Select
                 value={settings.notification_enabled}
                 onValueChange={(v) =>
@@ -321,13 +323,13 @@ export default function SettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="true">Enabled</SelectItem>
-                  <SelectItem value="false">Disabled</SelectItem>
+                  <SelectItem value="true">{t("settings.enabled")}</SelectItem>
+                  <SelectItem value="false">{t("settings.disabled")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Email Notifications</Label>
+              <Label>{t("settings.emailNotifications")}</Label>
               <Select
                 value={settings.email_notifications}
                 onValueChange={(v) =>
@@ -339,8 +341,8 @@ export default function SettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="true">Enabled</SelectItem>
-                  <SelectItem value="false">Disabled</SelectItem>
+                  <SelectItem value="true">{t("settings.enabled")}</SelectItem>
+                  <SelectItem value="false">{t("settings.disabled")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -45,6 +45,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { showSuccess, showError, showConfirm } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Assignment {
   _id: string;
@@ -88,19 +89,19 @@ function getDueDateStatus(dueDate: string) {
 
   if (diff < 0)
     return {
-      label: "Overdue",
+      label: "overdue" as const,
       color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
       icon: AlertCircle,
     };
   if (days <= 2)
     return {
-      label: "Due Soon",
+      label: "dueSoon" as const,
       color:
         "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
       icon: Clock,
     };
   return {
-    label: "Upcoming",
+    label: "upcoming" as const,
     color:
       "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
     icon: CheckCircle,
@@ -108,6 +109,7 @@ function getDueDateStatus(dueDate: string) {
 }
 
 export default function AssignmentsPage() {
+  const { t } = useLocale();
   const { data: sessionData } = useSession();
   const { canAdd, canEdit, canDelete } = usePermissions("exams");
   const isStudent = sessionData?.user?.role === "student";
@@ -167,7 +169,7 @@ export default function AssignmentsPage() {
         setAssignments(d.data || []);
       }
     } catch {
-      showError("Error", "Failed to fetch assignments");
+      showError(t("common.error"), t("assignments.fetchError"));
     } finally {
       setLoading(false);
     }
@@ -207,10 +209,7 @@ export default function AssignmentsPage() {
 
   const save = async () => {
     if (!form.title || !form.subject || !form.class_name || !form.dueDate) {
-      showError(
-        "Validation",
-        "Title, Subject, Class, and Due Date are required",
-      );
+      showError(t("assignments.validation"), t("assignments.validationError"));
       return;
     }
     try {
@@ -225,16 +224,21 @@ export default function AssignmentsPage() {
       });
 
       if (res.ok) {
-        showSuccess("Success", `Assignment ${editId ? "updated" : "created"}`);
+        showSuccess(
+          t("common.success"),
+          editId
+            ? t("assignments.assignmentUpdated")
+            : t("assignments.assignmentCreated"),
+        );
         setShowDialog(false);
         setEditId(null);
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to save assignment");
+      showError(t("common.error"), t("assignments.saveError"));
     } finally {
       setSubmitting(false);
     }
@@ -242,22 +246,22 @@ export default function AssignmentsPage() {
 
   const deleteAssignment = async (id: string) => {
     const confirmed = await showConfirm(
-      "Delete Assignment",
-      "This will permanently delete this assignment and all its submissions. Continue?",
+      t("assignments.deleteConfirmTitle"),
+      t("assignments.deleteConfirmMessage"),
     );
     if (!confirmed) return;
 
     try {
       const res = await fetch(`/api/assignments/${id}`, { method: "DELETE" });
       if (res.ok) {
-        showSuccess("Deleted", "Assignment deleted successfully");
+        showSuccess(t("assignments.deleted"), t("assignments.deletedSuccess"));
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to delete assignment");
+      showError(t("common.error"), t("assignments.deleteError"));
     }
   };
 
@@ -270,11 +274,11 @@ export default function AssignmentsPage() {
         const d = await res.json();
         setDetail(d.data);
       } else {
-        showError("Error", "Failed to load assignment details");
+        showError(t("common.error"), t("assignments.loadError"));
         setShowDetailDialog(false);
       }
     } catch {
-      showError("Error", "Failed to load assignment details");
+      showError(t("common.error"), t("assignments.loadError"));
       setShowDetailDialog(false);
     } finally {
       setDetailLoading(false);
@@ -284,7 +288,7 @@ export default function AssignmentsPage() {
   const openGradeDialog = (sub: Submission) => {
     setGradeForm({
       student_id: sub.student?._id || "",
-      studentName: sub.student?.name || "Unknown",
+      studentName: sub.student?.name || t("assignments.unknown"),
       grade: sub.grade || 0,
       feedback: sub.feedback || "",
     });
@@ -301,16 +305,16 @@ export default function AssignmentsPage() {
         body: JSON.stringify(gradeForm),
       });
       if (res.ok) {
-        showSuccess("Graded", "Submission graded successfully");
+        showSuccess(t("assignments.graded"), t("assignments.gradedSuccess"));
         setShowGradeDialog(false);
         // Refresh detail
         viewDetail(detail._id);
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to grade submission");
+      showError(t("common.error"), t("assignments.gradeError"));
     } finally {
       setSubmitting(false);
     }
@@ -341,13 +345,16 @@ export default function AssignmentsPage() {
             ...prev,
             attachments: [...prev.attachments, url],
           }));
-          showSuccess("Uploaded", "File uploaded successfully");
+          showSuccess(
+            t("assignments.uploaded"),
+            t("assignments.uploadedSuccess"),
+          );
         }
       } else {
-        showError("Upload Failed", "Could not upload file");
+        showError(t("assignments.uploadFailed"), t("assignments.uploadError"));
       }
     } catch {
-      showError("Upload Failed", "Could not upload file");
+      showError(t("assignments.uploadFailed"), t("assignments.uploadError"));
     } finally {
       setUploading(false);
     }
@@ -356,7 +363,7 @@ export default function AssignmentsPage() {
   const submitAssignment = async () => {
     if (!submitAssignmentId || !sessionData?.user?.id) return;
     if (!submitForm.content && submitForm.attachments.length === 0) {
-      showError("Validation", "Please enter your answer or upload a file");
+      showError(t("assignments.validation"), t("assignments.answerRequired"));
       return;
     }
     try {
@@ -373,16 +380,19 @@ export default function AssignmentsPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         showSuccess(
-          "Submitted!",
-          data.message || "Homework submitted successfully",
+          t("assignments.submitted"),
+          data.message || t("assignments.homeworkSubmitted"),
         );
         setShowSubmitDialog(false);
         fetchData();
       } else {
-        showError("Error", data.error || "Failed to submit homework");
+        showError(
+          t("common.error"),
+          data.error || t("assignments.submitError"),
+        );
       }
     } catch {
-      showError("Error", "Failed to submit homework");
+      showError(t("common.error"), t("assignments.submitError"));
     } finally {
       setSubmitting(false);
     }
@@ -402,10 +412,10 @@ export default function AssignmentsPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Assignments / Homework
+            {t("nav.assignments")}
           </h1>
           <p className="text-muted-foreground dark:text-muted-foreground">
-            Create assignments, track submissions, and grade student work
+            {t("assignments.description")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -414,10 +424,12 @@ export default function AssignmentsPage() {
             onValueChange={(v) => setFilterClass(v === "__all__" ? "" : v)}
           >
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="All Classes" />
+              <SelectValue placeholder={t("assignments.allClasses")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All Classes</SelectItem>
+              <SelectItem value="__all__">
+                {t("assignments.allClasses")}
+              </SelectItem>
               {Array.from(new Set(assignments.map((a) => a.class_name)))
                 .filter(Boolean)
                 .map((c) => (
@@ -433,19 +445,21 @@ export default function AssignmentsPage() {
             onValueChange={(v) => setFilterStatus(v === "__all__" ? "" : v)}
           >
             <SelectTrigger className="w-32">
-              <SelectValue placeholder="All Status" />
+              <SelectValue placeholder={t("assignments.allStatus")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="closed">Closed</SelectItem>
+              <SelectItem value="__all__">
+                {t("assignments.allStatus")}
+              </SelectItem>
+              <SelectItem value="active">{t("common.active")}</SelectItem>
+              <SelectItem value="closed">{t("assignments.closed")}</SelectItem>
             </SelectContent>
           </Select>
 
           {canAdd && (
             <Button onClick={openCreate}>
               <Plus className="mr-2 h-4 w-4" />
-              New Assignment
+              {t("assignments.newAssignment")}
             </Button>
           )}
         </div>
@@ -457,14 +471,14 @@ export default function AssignmentsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Class</TableHead>
-                <TableHead>Due Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submissions</TableHead>
-                <TableHead>Max Marks</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t("assignments.title")}</TableHead>
+                <TableHead>{t("assignments.subject")}</TableHead>
+                <TableHead>{t("assignments.class")}</TableHead>
+                <TableHead>{t("assignments.dueDate")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead>{t("assignments.submissions")}</TableHead>
+                <TableHead>{t("assignments.maxMarks")}</TableHead>
+                <TableHead>{t("common.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -475,7 +489,7 @@ export default function AssignmentsPage() {
                     className="text-center text-muted-foreground py-10"
                   >
                     <FileText className="mx-auto h-10 w-10 mb-2 text-slate-300 dark:text-muted-foreground" />
-                    No assignments found
+                    {t("assignments.noAssignmentsFound")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -497,6 +511,7 @@ export default function AssignmentsPage() {
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${dueStat.color}`}
                         >
                           <DueIcon className="h-3 w-3" />
+                          {t(`assignments.${dueStat.label}`)}{" "}
                           {new Date(a.dueDate).toLocaleDateString()}
                         </span>
                       </TableCell>
@@ -520,7 +535,7 @@ export default function AssignmentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            title="View"
+                            title={t("common.view")}
                             onClick={() => viewDetail(a._id)}
                           >
                             <Eye className="h-4 w-4" />
@@ -529,19 +544,19 @@ export default function AssignmentsPage() {
                             <Button
                               size="sm"
                               variant="default"
-                              title="Submit Homework"
+                              title={t("assignments.submitHomework")}
                               className="bg-green-600 hover:bg-green-700"
                               onClick={() => openSubmitDialog(a._id)}
                             >
                               <Send className="h-4 w-4 mr-1" />
-                              Submit
+                              {t("common.submit")}
                             </Button>
                           )}
                           {canEdit && (
                             <Button
                               size="sm"
                               variant="ghost"
-                              title="Edit"
+                              title={t("common.edit")}
                               onClick={() => openEdit(a)}
                             >
                               <Pencil className="h-4 w-4" />
@@ -551,7 +566,7 @@ export default function AssignmentsPage() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              title="Delete"
+                              title={t("common.delete")}
                               onClick={() => deleteAssignment(a._id)}
                               className="text-red-500 hover:text-red-700"
                             >
@@ -573,63 +588,67 @@ export default function AssignmentsPage() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editId ? "Edit" : "Create"} Assignment</DialogTitle>
+            <DialogTitle>
+              {editId
+                ? t("assignments.editAssignment")
+                : t("assignments.createAssignment")}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label>Title *</Label>
+              <Label>{t("assignments.titleRequired")}</Label>
               <Input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                placeholder="Assignment title"
+                placeholder={t("assignments.titlePlaceholder")}
               />
             </div>
             <div>
-              <Label>Description</Label>
+              <Label>{t("common.description")}</Label>
               <Textarea
                 value={form.description}
                 onChange={(e) =>
                   setForm({ ...form, description: e.target.value })
                 }
-                placeholder="Assignment description / instructions"
+                placeholder={t("assignments.descriptionPlaceholder")}
                 rows={3}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Subject *</Label>
+                <Label>{t("assignments.subjectRequired")}</Label>
                 <Input
                   value={form.subject}
                   onChange={(e) =>
                     setForm({ ...form, subject: e.target.value })
                   }
-                  placeholder="Mathematics"
+                  placeholder={t("assignments.subjectPlaceholder")}
                 />
               </div>
               <div>
-                <Label>Class *</Label>
+                <Label>{t("assignments.classRequired")}</Label>
                 <Input
                   value={form.class_name}
                   onChange={(e) =>
                     setForm({ ...form, class_name: e.target.value })
                   }
-                  placeholder="Class 10"
+                  placeholder={t("assignments.classPlaceholder")}
                 />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Section</Label>
+                <Label>{t("assignments.section")}</Label>
                 <Input
                   value={form.section}
                   onChange={(e) =>
                     setForm({ ...form, section: e.target.value })
                   }
-                  placeholder="A"
+                  placeholder={t("assignments.sectionPlaceholder")}
                 />
               </div>
               <div>
-                <Label>Max Marks</Label>
+                <Label>{t("assignments.maxMarks")}</Label>
                 <Input
                   type="number"
                   value={form.maxMarks}
@@ -640,7 +659,7 @@ export default function AssignmentsPage() {
               </div>
             </div>
             <div>
-              <Label>Due Date *</Label>
+              <Label>{t("assignments.dueDateRequired")}</Label>
               <Input
                 type="datetime-local"
                 value={form.dueDate}
@@ -649,10 +668,10 @@ export default function AssignmentsPage() {
             </div>
             <Button onClick={save} disabled={submitting} className="w-full">
               {submitting
-                ? "Saving..."
+                ? t("common.saving")
                 : editId
-                  ? "Update Assignment"
-                  : "Create Assignment"}
+                  ? t("assignments.updateAssignment")
+                  : t("assignments.createAssignment")}
             </Button>
           </div>
         </DialogContent>
@@ -662,7 +681,7 @@ export default function AssignmentsPage() {
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Assignment Details</DialogTitle>
+            <DialogTitle>{t("assignments.assignmentDetails")}</DialogTitle>
           </DialogHeader>
           {detailLoading ? (
             <div className="flex h-40 items-center justify-center">
@@ -694,10 +713,12 @@ export default function AssignmentsPage() {
                     {detail.status}
                   </Badge>
                   <span className="text-muted-foreground">
-                    Due: {new Date(detail.dueDate).toLocaleString()}
+                    {t("assignments.dueLabel")}:{" "}
+                    {new Date(detail.dueDate).toLocaleString()}
                   </span>
                   <span className="text-muted-foreground">
-                    Max: {detail.maxMarks} marks
+                    {t("assignments.maxLabel")}: {detail.maxMarks}{" "}
+                    {t("assignments.marks")}
                   </span>
                 </div>
               </div>
@@ -705,22 +726,23 @@ export default function AssignmentsPage() {
               {/* Submissions */}
               <div>
                 <h4 className="text-md font-semibold mb-3 text-foreground">
-                  Submissions ({detail.submissions?.length || 0})
+                  {t("assignments.submissions")} (
+                  {detail.submissions?.length || 0})
                 </h4>
                 {detail.submissions?.length === 0 ? (
                   <p className="text-muted-foreground dark:text-muted-foreground text-sm">
-                    No submissions yet
+                    {t("assignments.noSubmissionsYet")}
                   </p>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Student</TableHead>
-                        <TableHead>Submitted At</TableHead>
-                        <TableHead>Content</TableHead>
-                        <TableHead>Grade</TableHead>
-                        <TableHead>Feedback</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead>{t("common.student")}</TableHead>
+                        <TableHead>{t("assignments.submittedAt")}</TableHead>
+                        <TableHead>{t("assignments.content")}</TableHead>
+                        <TableHead>{t("common.grade")}</TableHead>
+                        <TableHead>{t("assignments.feedback")}</TableHead>
+                        <TableHead>{t("common.actions")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -731,7 +753,7 @@ export default function AssignmentsPage() {
                               ? typeof sub.student === "object"
                                 ? sub.student.name
                                 : sub.student
-                              : "Unknown"}
+                              : t("assignments.unknown")}
                           </TableCell>
                           <TableCell className="text-sm">
                             {new Date(sub.submittedAt).toLocaleString()}
@@ -745,7 +767,9 @@ export default function AssignmentsPage() {
                                 {sub.grade}/{detail.maxMarks}
                               </Badge>
                             ) : (
-                              <Badge variant="secondary">Ungraded</Badge>
+                              <Badge variant="secondary">
+                                {t("assignments.ungraded")}
+                              </Badge>
                             )}
                           </TableCell>
                           <TableCell className="text-sm max-w-[150px] truncate">
@@ -758,7 +782,7 @@ export default function AssignmentsPage() {
                                 variant="outline"
                                 onClick={() => openGradeDialog(sub)}
                               >
-                                Grade
+                                {t("common.grade")}
                               </Button>
                             )}
                           </TableCell>
@@ -777,17 +801,19 @@ export default function AssignmentsPage() {
       <Dialog open={showGradeDialog} onOpenChange={setShowGradeDialog}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Grade Submission</DialogTitle>
+            <DialogTitle>{t("assignments.gradeSubmission")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground dark:text-muted-foreground">
-              Student:{" "}
+              {t("common.student")}:{" "}
               <strong className="text-foreground">
                 {gradeForm.studentName}
               </strong>
             </p>
             <div>
-              <Label>Grade (out of {detail?.maxMarks || 100})</Label>
+              <Label>
+                {t("assignments.gradeOutOf")} {detail?.maxMarks || 100})
+              </Label>
               <Input
                 type="number"
                 min={0}
@@ -799,13 +825,13 @@ export default function AssignmentsPage() {
               />
             </div>
             <div>
-              <Label>Feedback</Label>
+              <Label>{t("assignments.feedback")}</Label>
               <Textarea
                 value={gradeForm.feedback}
                 onChange={(e) =>
                   setGradeForm({ ...gradeForm, feedback: e.target.value })
                 }
-                placeholder="Good work! Keep it up."
+                placeholder={t("assignments.feedbackPlaceholder")}
                 rows={3}
               />
             </div>
@@ -814,7 +840,7 @@ export default function AssignmentsPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Saving..." : "Submit Grade"}
+              {submitting ? t("common.saving") : t("assignments.submitGrade")}
             </Button>
           </div>
         </DialogContent>
@@ -824,26 +850,28 @@ export default function AssignmentsPage() {
       <Dialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Submit Homework</DialogTitle>
+            <DialogTitle>{t("assignments.submitHomework")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label>Your Answer</Label>
+              <Label>{t("assignments.yourAnswer")}</Label>
               <Textarea
                 value={submitForm.content}
                 onChange={(e) =>
                   setSubmitForm({ ...submitForm, content: e.target.value })
                 }
-                placeholder="Write your answer here..."
+                placeholder={t("assignments.answerPlaceholder")}
                 rows={5}
               />
             </div>
             <div>
-              <Label>Attachments</Label>
+              <Label>{t("assignments.attachments")}</Label>
               <div className="mt-1 flex items-center gap-2">
                 <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-md border border-dashed border-border hover:border-gray-400 transition-colors text-sm">
                   <Upload className="h-4 w-4" />
-                  {uploading ? "Uploading..." : "Upload File"}
+                  {uploading
+                    ? t("assignments.uploading")
+                    : t("assignments.uploadFile")}
                   <input
                     type="file"
                     className="hidden"
@@ -861,7 +889,7 @@ export default function AssignmentsPage() {
                       className="flex items-center justify-between text-sm bg-muted/50 rounded px-3 py-1.5"
                     >
                       <span className="truncate max-w-[250px]">
-                        Attachment {idx + 1}
+                        {t("assignments.attachment")} {idx + 1}
                       </span>
                       <Button
                         size="sm"
@@ -889,7 +917,9 @@ export default function AssignmentsPage() {
               className="w-full bg-green-600 hover:bg-green-700"
             >
               <Send className="mr-2 h-4 w-4" />
-              {submitting ? "Submitting..." : "Submit Homework"}
+              {submitting
+                ? t("assignments.submitting")
+                : t("assignments.submitHomework")}
             </Button>
           </div>
         </DialogContent>

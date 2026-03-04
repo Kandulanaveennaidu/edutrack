@@ -40,6 +40,7 @@ import { showSuccess, showError } from "@/lib/alerts";
 import Swal from "sweetalert2";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 // ─── Plan Prices (USD — Authorize.net) ───────────────────────────────────────
 const PLAN_PRICES: Record<string, number> = {
@@ -94,6 +95,7 @@ interface BillingSummary {
 }
 
 export default function BillingPage() {
+  const { t } = useLocale();
   const { data: session, update: updateSession } = useSession();
   const { canEdit } = usePermissions("billing");
   const router = useRouter();
@@ -524,7 +526,7 @@ export default function BillingPage() {
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground dark:text-gray-100">
-            Billing & Invoices
+            {t("nav.billing")}
           </h1>
           <p className="text-sm text-muted-foreground">
             Manage your subscription, view payment history, and download

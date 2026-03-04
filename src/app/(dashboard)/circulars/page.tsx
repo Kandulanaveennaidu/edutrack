@@ -23,6 +23,7 @@ import {
 import { showSuccess, showError, confirmDelete } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
 import { useClasses } from "@/hooks/use-classes";
+import { useLocale } from "@/hooks/use-locale";
 import {
   Megaphone,
   Plus,
@@ -81,6 +82,7 @@ const defaultForm = {
 
 export default function CircularsPage() {
   useSession();
+  const { t } = useLocale();
   const { canAdd, canEdit, canDelete } = usePermissions("circulars");
   const { classes } = useClasses(); // classLabel available if needed
   const AUDIENCE_OPTIONS = [...STATIC_AUDIENCES, ...classes];
@@ -105,10 +107,10 @@ export default function CircularsPage() {
       if (res.ok) {
         setCirculars(json.data || []);
       } else {
-        showError("Error", json.error || "Failed to load circulars");
+        showError(t("common.error"), json.error || t("circulars.loadFailed"));
       }
     } catch {
-      showError("Error", "Failed to load circulars");
+      showError(t("common.error"), t("circulars.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -145,7 +147,7 @@ export default function CircularsPage() {
 
   const handleSave = async () => {
     if (!form.title.trim() || !form.content.trim()) {
-      showError("Validation", "Title and content are required");
+      showError(t("circulars.validation"), t("circulars.titleContentRequired"));
       return;
     }
 
@@ -165,23 +167,25 @@ export default function CircularsPage() {
 
       if (res.ok) {
         showSuccess(
-          editingId ? "Updated!" : "Created!",
-          json.message || "Circular saved successfully",
+          editingId
+            ? t("circulars.updatedSuccess")
+            : t("circulars.createdSuccess"),
+          json.message || t("circulars.savedSuccess"),
         );
         setDialogOpen(false);
         fetchCirculars();
       } else {
-        showError("Error", json.error || "Failed to save circular");
+        showError(t("common.error"), json.error || t("circulars.saveFailed"));
       }
     } catch {
-      showError("Error", "Failed to save circular");
+      showError(t("common.error"), t("circulars.saveFailed"));
     }
   };
 
   const handleDelete = async (id: string) => {
     const confirmed = await confirmDelete(
-      "Delete Circular",
-      "This action cannot be undone.",
+      t("circulars.deleteCircular"),
+      t("circulars.deleteConfirm"),
     );
     if (!confirmed) return;
 
@@ -189,13 +193,16 @@ export default function CircularsPage() {
       const res = await fetch(`/api/circulars/${id}`, { method: "DELETE" });
       const json = await res.json();
       if (res.ok) {
-        showSuccess("Deleted!", json.message || "Circular deleted");
+        showSuccess(
+          t("circulars.deletedSuccess"),
+          json.message || t("circulars.circularDeleted"),
+        );
         fetchCirculars();
       } else {
-        showError("Error", json.error || "Failed to delete circular");
+        showError(t("common.error"), json.error || t("circulars.deleteFailed"));
       }
     } catch {
-      showError("Error", "Failed to delete circular");
+      showError(t("common.error"), t("circulars.deleteFailed"));
     }
   };
 
@@ -219,15 +226,15 @@ export default function CircularsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
             <Megaphone className="h-7 w-7" />
-            Circulars & Announcements
+            {t("nav.circulars")}
           </h1>
           <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
-            Manage circulars, announcements, and notices
+            {t("circulars.description")}
           </p>
         </div>
         {canAdd && (
           <Button onClick={openCreate} className="gap-2">
-            <Plus className="h-4 w-4" /> New Circular
+            <Plus className="h-4 w-4" /> {t("circulars.newCircular")}
           </Button>
         )}
       </div>
@@ -239,30 +246,36 @@ export default function CircularsPage() {
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium text-foreground dark:text-foreground">
-                Filters:
+                {t("circulars.filters")}
               </span>
             </div>
             <Select value={filterType} onValueChange={setFilterType}>
               <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Type" />
+                <SelectValue placeholder={t("circulars.typeLabel")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="circular">Circular</SelectItem>
-                <SelectItem value="announcement">Announcement</SelectItem>
-                <SelectItem value="notice">Notice</SelectItem>
+                <SelectItem value="all">{t("circulars.allTypes")}</SelectItem>
+                <SelectItem value="circular">
+                  {t("circulars.circular")}
+                </SelectItem>
+                <SelectItem value="announcement">
+                  {t("circulars.announcement")}
+                </SelectItem>
+                <SelectItem value="notice">{t("circulars.notice")}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterPriority} onValueChange={setFilterPriority}>
               <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Priority" />
+                <SelectValue placeholder={t("circulars.priorityLabel")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Priorities</SelectItem>
-                <SelectItem value="urgent">Urgent</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="all">
+                  {t("circulars.allPriorities")}
+                </SelectItem>
+                <SelectItem value="urgent">{t("circulars.urgent")}</SelectItem>
+                <SelectItem value="high">{t("circulars.high")}</SelectItem>
+                <SelectItem value="medium">{t("circulars.medium")}</SelectItem>
+                <SelectItem value="low">{t("circulars.low")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -287,12 +300,10 @@ export default function CircularsPage() {
           <CardContent className="py-16 text-center">
             <Megaphone className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <h3 className="text-lg font-medium text-foreground dark:text-foreground">
-              No circulars found
+              {t("circulars.noCirculars")}
             </h3>
             <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-1">
-              {canAdd
-                ? "Create your first circular to get started."
-                : "No circulars available at the moment."}
+              {canAdd ? t("circulars.createFirst") : t("circulars.noAvailable")}
             </p>
           </CardContent>
         </Card>
@@ -320,7 +331,7 @@ export default function CircularsPage() {
                       {c.priority === "urgent" && (
                         <AlertTriangle className="h-3 w-3 mr-1" />
                       )}
-                      {c.priority}
+                      {t(`circulars.${c.priority}`)}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -342,7 +353,7 @@ export default function CircularsPage() {
                       <Calendar className="h-3 w-3" />
                       {new Date(c.publishDate).toLocaleDateString()}
                     </span>
-                    <span>{c.createdBy?.name || "System"}</span>
+                    <span>{c.createdBy?.name || t("circulars.system")}</span>
                   </div>
 
                   <div className="flex items-center gap-2 pt-1 border-t dark:border-border">
@@ -404,9 +415,11 @@ export default function CircularsPage() {
                   variant="outline"
                   className={PRIORITY_STYLES[viewItem.priority]}
                 >
-                  {viewItem.priority}
+                  {t(`circulars.${viewItem.priority}`)}
                 </Badge>
-                <Badge variant="secondary">{viewItem.type}</Badge>
+                <Badge variant="secondary">
+                  {t(`circulars.${viewItem.type}`)}
+                </Badge>
                 {viewItem.targetAudience.map((a) => (
                   <Badge key={a} variant="outline">
                     {a}
@@ -418,14 +431,19 @@ export default function CircularsPage() {
               </div>
               <div className="text-sm text-muted-foreground dark:text-muted-foreground border-t dark:border-border pt-3 space-y-1">
                 <p>
-                  Published: {new Date(viewItem.publishDate).toLocaleString()}
+                  {t("circulars.published")}{" "}
+                  {new Date(viewItem.publishDate).toLocaleString()}
                 </p>
                 {viewItem.expiryDate && (
                   <p>
-                    Expires: {new Date(viewItem.expiryDate).toLocaleString()}
+                    {t("circulars.expires")}{" "}
+                    {new Date(viewItem.expiryDate).toLocaleString()}
                   </p>
                 )}
-                <p>By: {viewItem.createdBy?.name || "System"}</p>
+                <p>
+                  {t("circulars.by")}{" "}
+                  {viewItem.createdBy?.name || t("circulars.system")}
+                </p>
               </div>
             </div>
           )}
@@ -437,36 +455,38 @@ export default function CircularsPage() {
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingId ? "Edit Circular" : "New Circular"}
+              {editingId
+                ? t("circulars.editCircular")
+                : t("circulars.newCircular")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Title *</Label>
+              <Label>{t("circulars.titleLabel")}</Label>
               <Input
                 value={form.title}
                 onChange={(e) =>
                   setForm((p) => ({ ...p, title: e.target.value }))
                 }
-                placeholder="Enter circular title"
+                placeholder={t("circulars.titlePlaceholder")}
               />
             </div>
 
             <div>
-              <Label>Content *</Label>
+              <Label>{t("circulars.contentLabel")}</Label>
               <textarea
                 className="w-full min-h-[120px] rounded-md border border-border bg-card px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                 value={form.content}
                 onChange={(e) =>
                   setForm((p) => ({ ...p, content: e.target.value }))
                 }
-                placeholder="Enter circular content"
+                placeholder={t("circulars.contentPlaceholder")}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Type</Label>
+                <Label>{t("circulars.typeLabel")}</Label>
                 <Select
                   value={form.type}
                   onValueChange={(v) =>
@@ -480,14 +500,20 @@ export default function CircularsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="circular">Circular</SelectItem>
-                    <SelectItem value="announcement">Announcement</SelectItem>
-                    <SelectItem value="notice">Notice</SelectItem>
+                    <SelectItem value="circular">
+                      {t("circulars.circular")}
+                    </SelectItem>
+                    <SelectItem value="announcement">
+                      {t("circulars.announcement")}
+                    </SelectItem>
+                    <SelectItem value="notice">
+                      {t("circulars.notice")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label>Priority</Label>
+                <Label>{t("circulars.priorityLabel")}</Label>
                 <Select
                   value={form.priority}
                   onValueChange={(v) =>
@@ -501,10 +527,14 @@ export default function CircularsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="low">{t("circulars.low")}</SelectItem>
+                    <SelectItem value="medium">
+                      {t("circulars.medium")}
+                    </SelectItem>
+                    <SelectItem value="high">{t("circulars.high")}</SelectItem>
+                    <SelectItem value="urgent">
+                      {t("circulars.urgent")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -512,7 +542,7 @@ export default function CircularsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Publish Date</Label>
+                <Label>{t("circulars.publishDate")}</Label>
                 <Input
                   type="date"
                   value={form.publishDate}
@@ -522,7 +552,7 @@ export default function CircularsPage() {
                 />
               </div>
               <div>
-                <Label>Expiry Date (optional)</Label>
+                <Label>{t("circulars.expiryDate")}</Label>
                 <Input
                   type="date"
                   value={form.expiryDate}
@@ -534,7 +564,7 @@ export default function CircularsPage() {
             </div>
 
             <div>
-              <Label>Target Audience</Label>
+              <Label>{t("circulars.targetAudience")}</Label>
               <div className="flex flex-wrap gap-2 mt-1">
                 {AUDIENCE_OPTIONS.map((a) => (
                   <Badge
@@ -553,10 +583,10 @@ export default function CircularsPage() {
 
             <div className="flex justify-end gap-3 pt-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button onClick={handleSave}>
-                {editingId ? "Update" : "Publish"}
+                {editingId ? t("circulars.update") : t("circulars.publish")}
               </Button>
             </div>
           </div>

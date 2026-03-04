@@ -39,6 +39,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface LeaveRequest {
   leave_id: string;
@@ -56,6 +57,7 @@ interface LeaveRequest {
 
 export default function LeavesPage() {
   const { data: session } = useSession();
+  const { t } = useLocale();
   const { canAdd, canEdit } = usePermissions("leaves");
   const [loading, setLoading] = useState(true);
   const [leaves, setLeaves] = useState<LeaveRequest[]>([]);
@@ -98,7 +100,7 @@ export default function LeavesPage() {
       });
 
       if (response.ok) {
-        showSuccess("Success", "Leave request submitted successfully");
+        showSuccess(t("leaves.success"), t("leaves.submitSuccess"));
         setShowDialog(false);
         setFormData({
           student_id: "",
@@ -112,7 +114,7 @@ export default function LeavesPage() {
         throw new Error(result.error);
       }
     } catch {
-      showError("Error", "Failed to submit leave request");
+      showError(t("leaves.error"), t("leaves.submitFailed"));
     }
   };
 
@@ -129,13 +131,23 @@ export default function LeavesPage() {
       });
 
       if (response.ok) {
-        showSuccess("Success", `Leave request ${status}`);
+        showSuccess(
+          t("leaves.success"),
+          status === "approved"
+            ? t("leaves.requestApproved")
+            : t("leaves.requestRejected"),
+        );
         fetchLeaves();
       } else {
         throw new Error("Failed");
       }
     } catch {
-      showError("Error", `Failed to ${status} leave request`);
+      showError(
+        t("leaves.error"),
+        status === "approved"
+          ? t("leaves.approveFailed")
+          : t("leaves.rejectFailed"),
+      );
     } finally {
       setProcessing(null);
     }
@@ -144,11 +156,11 @@ export default function LeavesPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Badge variant="secondary">{t("leaves.pending")}</Badge>;
       case "approved":
-        return <Badge variant="present">Approved</Badge>;
+        return <Badge variant="present">{t("leaves.approved")}</Badge>;
       case "rejected":
-        return <Badge variant="absent">Rejected</Badge>;
+        return <Badge variant="absent">{t("leaves.rejected")}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -169,9 +181,9 @@ export default function LeavesPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Leave Management
+            {t("nav.leaves")}
           </h1>
-          <p className="text-muted-foreground">Manage student leave requests</p>
+          <p className="text-muted-foreground">{t("leaves.description")}</p>
         </div>
         <div className="flex gap-2">
           <Select value={filter} onValueChange={setFilter}>
@@ -180,16 +192,16 @@ export default function LeavesPage() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="approved">Approved</SelectItem>
-              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="all">{t("leaves.all")}</SelectItem>
+              <SelectItem value="pending">{t("leaves.pending")}</SelectItem>
+              <SelectItem value="approved">{t("leaves.approved")}</SelectItem>
+              <SelectItem value="rejected">{t("leaves.rejected")}</SelectItem>
             </SelectContent>
           </Select>
           {canAdd && (
             <Button onClick={() => setShowDialog(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              New Request
+              {t("leaves.newRequest")}
             </Button>
           )}
         </div>
@@ -201,7 +213,9 @@ export default function LeavesPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Pending</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("leaves.pending")}
+                </p>
                 <p className="text-2xl font-bold text-amber-600">
                   {leaves.filter((l) => l.status === "pending").length}
                 </p>
@@ -214,7 +228,9 @@ export default function LeavesPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Approved</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("leaves.approved")}
+                </p>
                 <p className="text-2xl font-bold text-green-600">
                   {leaves.filter((l) => l.status === "approved").length}
                 </p>
@@ -227,7 +243,9 @@ export default function LeavesPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Rejected</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("leaves.rejected")}
+                </p>
                 <p className="text-2xl font-bold text-red-600">
                   {leaves.filter((l) => l.status === "rejected").length}
                 </p>
@@ -241,25 +259,27 @@ export default function LeavesPage() {
       {/* Leave Requests Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Leave Requests</CardTitle>
-          <CardDescription>{leaves.length} request(s) found</CardDescription>
+          <CardTitle>{t("leaves.leaveRequests")}</CardTitle>
+          <CardDescription>
+            {leaves.length} {t("leaves.requestsFound")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {leaves.length === 0 ? (
             <div className="flex h-40 items-center justify-center text-muted-foreground">
-              No leave requests found
+              {t("leaves.noRequests")}
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>From</TableHead>
-                  <TableHead>To</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead>Status</TableHead>
-                  {isAdmin && <TableHead>Actions</TableHead>}
+                  <TableHead>{t("leaves.student")}</TableHead>
+                  <TableHead>{t("leaves.class")}</TableHead>
+                  <TableHead>{t("leaves.from")}</TableHead>
+                  <TableHead>{t("leaves.to")}</TableHead>
+                  <TableHead>{t("leaves.reason")}</TableHead>
+                  <TableHead>{t("leaves.status")}</TableHead>
+                  {isAdmin && <TableHead>{t("leaves.actions")}</TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -328,13 +348,13 @@ export default function LeavesPage() {
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New Leave Request</DialogTitle>
+            <DialogTitle>{t("leaves.newLeaveRequest")}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Student ID</Label>
+              <Label>{t("leaves.studentId")}</Label>
               <Input
-                placeholder="e.g., STU001"
+                placeholder={t("leaves.studentIdPlaceholder")}
                 value={formData.student_id}
                 onChange={(e) =>
                   setFormData({ ...formData, student_id: e.target.value })
@@ -344,7 +364,7 @@ export default function LeavesPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>From Date</Label>
+                <Label>{t("leaves.fromDate")}</Label>
                 <Input
                   type="date"
                   value={formData.from_date}
@@ -355,7 +375,7 @@ export default function LeavesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>To Date</Label>
+                <Label>{t("leaves.toDate")}</Label>
                 <Input
                   type="date"
                   value={formData.to_date}
@@ -367,9 +387,9 @@ export default function LeavesPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Reason</Label>
+              <Label>{t("leaves.reason")}</Label>
               <Input
-                placeholder="Reason for leave"
+                placeholder={t("leaves.reasonPlaceholder")}
                 value={formData.reason}
                 onChange={(e) =>
                   setFormData({ ...formData, reason: e.target.value })
@@ -378,7 +398,7 @@ export default function LeavesPage() {
               />
             </div>
             <Button type="submit" className="w-full">
-              Submit Request
+              {t("leaves.submitRequest")}
             </Button>
           </form>
         </DialogContent>

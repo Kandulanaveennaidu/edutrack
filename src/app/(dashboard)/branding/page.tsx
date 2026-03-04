@@ -18,6 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import Swal from "sweetalert2";
+import { useLocale } from "@/hooks/use-locale";
 
 interface BrandingData {
   primaryColor: string;
@@ -101,6 +102,7 @@ const PRESET_THEMES = [
 ];
 
 export default function BrandingPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("settings");
   const [branding, setBranding] = useState<BrandingData>({
@@ -181,7 +183,7 @@ export default function BrandingPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
-            <Palette className="h-7 w-7 text-orange-500 dark:text-orange-400" /> White-Label Branding
+            <Palette className="h-7 w-7 text-orange-500 dark:text-orange-400" /> {t("nav.branding")}
           </h1>
           <p className="text-muted-foreground mt-1">
             Customize your institution&apos;s brand: colors, logo, domain & more

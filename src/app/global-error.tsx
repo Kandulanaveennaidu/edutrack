@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/hooks/use-locale";
+
 /**
  * Global error boundary — catches errors in the root layout itself.
  * Must include its own <html>/<body> tags since the root layout may be broken.
@@ -11,6 +13,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useLocale();
   return (
     <html lang="en">
       <body
@@ -54,7 +57,7 @@ export default function GlobalError({
                 marginBottom: "0.75rem",
               }}
             >
-              Critical Error
+              {t("error.criticalError")}
             </h1>
             <p
               style={{
@@ -63,8 +66,7 @@ export default function GlobalError({
                 lineHeight: 1.6,
               }}
             >
-              CampusIQ encountered a critical error. Please try refreshing the
-              page. If this persists, contact support.
+              {t("error.criticalErrorMsg")}
             </p>
             <button
               onClick={reset}
@@ -80,7 +82,7 @@ export default function GlobalError({
                 marginRight: "0.5rem",
               }}
             >
-              Try Again
+              {t("error.tryAgain")}
             </button>
             <a
               href="/"
@@ -95,7 +97,7 @@ export default function GlobalError({
                 display: "inline-block",
               }}
             >
-              Go Home
+              {t("error.goHome")}
             </a>
           </div>
         </div>

@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError, showConfirm } from "@/lib/alerts";
 import { usePermissions } from "@/hooks/use-permissions";
 import { Spinner } from "@/components/ui/spinner";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Permission {
   id: string;
@@ -113,6 +114,7 @@ const PERMISSION_MODULES: Record<string, Permission[]> = {
 };
 
 export default function RolesPage() {
+  const { t } = useLocale();
   const { canAdd, canEdit, canDelete } = usePermissions("user_management");
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<Role[]>([]);
@@ -255,7 +257,7 @@ export default function RolesPage() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Role Management
+            {t("nav.roles")}
           </h1>
           <p className="text-muted-foreground dark:text-muted-foreground">
             Create custom roles with specific permissions

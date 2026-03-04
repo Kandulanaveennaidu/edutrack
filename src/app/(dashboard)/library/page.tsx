@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Book {
   _id: string;
@@ -57,6 +58,7 @@ interface Issue {
 }
 
 export default function LibraryPage() {
+  const { t } = useLocale();
   const { canAdd, canEdit } = usePermissions("library");
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"books" | "issues">("books");
@@ -115,7 +117,7 @@ export default function LibraryPage() {
         setSummary(d.data || {});
       }
     } catch {
-      showError("Error", "Failed to fetch library data");
+      showError(t("common.error"), t("library.failedToFetch"));
     } finally {
       setLoading(false);
     }
@@ -152,7 +154,7 @@ export default function LibraryPage() {
         body: JSON.stringify({ action: "add_book", ...bookForm }),
       });
       if (res.ok) {
-        showSuccess("Success", "Book added");
+        showSuccess(t("common.success"), t("library.bookAdded"));
         setShowAddBook(false);
         setBookForm({
           title: "",
@@ -166,10 +168,10 @@ export default function LibraryPage() {
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to add book");
+      showError(t("common.error"), t("library.failedToAddBook"));
     } finally {
       setSubmitting(false);
     }
@@ -184,15 +186,15 @@ export default function LibraryPage() {
         body: JSON.stringify({ action: "issue_book", ...issueForm }),
       });
       if (res.ok) {
-        showSuccess("Success", "Book issued");
+        showSuccess(t("common.success"), t("library.bookIssued"));
         setShowIssueDialog(false);
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to issue book");
+      showError(t("common.error"), t("library.failedToIssueBook"));
     } finally {
       setSubmitting(false);
     }
@@ -210,14 +212,14 @@ export default function LibraryPage() {
         }),
       });
       if (res.ok) {
-        showSuccess("Success", "Book returned");
+        showSuccess(t("common.success"), t("library.bookReturned"));
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to return book");
+      showError(t("common.error"), t("library.failedToReturnBook"));
     }
   };
 
@@ -233,14 +235,16 @@ export default function LibraryPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Library</h1>
-          <p className="text-muted-foreground">Manage books, issues and returns</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            {t("nav.library")}
+          </h1>
+          <p className="text-muted-foreground">{t("library.description")}</p>
         </div>
         <div className="flex gap-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search books..."
+              placeholder={t("library.searchBooks")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 w-48"
@@ -249,13 +253,13 @@ export default function LibraryPage() {
           {canAdd && (
             <Button onClick={() => setShowAddBook(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Add Book
+              {t("library.addBook")}
             </Button>
           )}
           {canAdd && (
             <Button variant="outline" onClick={() => setShowIssueDialog(true)}>
               <BookOpen className="mr-2 h-4 w-4" />
-              Issue Book
+              {t("library.issueBook")}
             </Button>
           )}
         </div>
@@ -265,26 +269,30 @@ export default function LibraryPage() {
       <div className="grid gap-4 md:grid-cols-5">
         {[
           {
-            label: "Total Books",
+            label: t("library.totalBooks"),
             value: summary.total_books,
             color: "text-orange-500 dark:text-orange-400",
           },
           {
-            label: "Total Copies",
+            label: t("library.totalCopies"),
             value: summary.total_copies,
             color: "text-amber-600",
           },
           {
-            label: "Available",
+            label: t("library.available"),
             value: summary.available_copies,
             color: "text-green-600",
           },
           {
-            label: "Issued",
+            label: t("library.issued"),
             value: summary.active_issues,
             color: "text-amber-600",
           },
-          { label: "Overdue", value: summary.overdue, color: "text-red-600" },
+          {
+            label: t("library.overdue"),
+            value: summary.overdue,
+            color: "text-red-600",
+          },
         ].map((s) => (
           <Card key={s.label}>
             <CardContent className="p-4">
@@ -297,13 +305,13 @@ export default function LibraryPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 border-b">
-        {(["books", "issues"] as const).map((t) => (
+        {(["books", "issues"] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground"}`}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === tabKey ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground"}`}
           >
-            {t}
+            {tabKey === "books" ? t("library.books") : t("library.issues")}
           </button>
         ))}
       </div>
@@ -314,13 +322,13 @@ export default function LibraryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Author</TableHead>
-                  <TableHead>ISBN</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Copies</TableHead>
-                  <TableHead>Available</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("library.bookTitle")}</TableHead>
+                  <TableHead>{t("library.author")}</TableHead>
+                  <TableHead>{t("library.isbn")}</TableHead>
+                  <TableHead>{t("library.category")}</TableHead>
+                  <TableHead>{t("library.copies")}</TableHead>
+                  <TableHead>{t("library.available")}</TableHead>
+                  <TableHead>{t("library.status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -330,7 +338,7 @@ export default function LibraryPage() {
                       colSpan={7}
                       className="text-center text-muted-foreground"
                     >
-                      No books found
+                      {t("library.noBooksFound")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -350,7 +358,9 @@ export default function LibraryPage() {
                         <Badge
                           variant={b.availableCopies > 0 ? "present" : "absent"}
                         >
-                          {b.availableCopies > 0 ? "Available" : "All Issued"}
+                          {b.availableCopies > 0
+                            ? t("library.available")
+                            : t("library.allIssued")}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -368,14 +378,14 @@ export default function LibraryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Book</TableHead>
-                  <TableHead>Borrower</TableHead>
-                  <TableHead>Issue Date</TableHead>
-                  <TableHead>Due Date</TableHead>
-                  <TableHead>Return Date</TableHead>
-                  <TableHead>Fine</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t("library.book")}</TableHead>
+                  <TableHead>{t("library.borrower")}</TableHead>
+                  <TableHead>{t("library.issueDate")}</TableHead>
+                  <TableHead>{t("library.dueDate")}</TableHead>
+                  <TableHead>{t("library.returnDate")}</TableHead>
+                  <TableHead>{t("library.fine")}</TableHead>
+                  <TableHead>{t("library.status")}</TableHead>
+                  <TableHead>{t("library.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -385,7 +395,7 @@ export default function LibraryPage() {
                       colSpan={8}
                       className="text-center text-muted-foreground"
                     >
-                      No issue records
+                      {t("library.noIssueRecords")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -434,7 +444,7 @@ export default function LibraryPage() {
                             onClick={() => returnBook(i._id)}
                           >
                             <RotateCcw className="mr-1 h-3 w-3" />
-                            Return
+                            {t("library.return")}
                           </Button>
                         )}
                       </TableCell>
@@ -451,11 +461,11 @@ export default function LibraryPage() {
       <Dialog open={showAddBook} onOpenChange={setShowAddBook}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add Book</DialogTitle>
+            <DialogTitle>{t("library.addBook")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
-              <Label>Title</Label>
+              <Label>{t("library.bookTitle")}</Label>
               <Input
                 value={bookForm.title}
                 onChange={(e) =>
@@ -464,7 +474,7 @@ export default function LibraryPage() {
               />
             </div>
             <div>
-              <Label>Author</Label>
+              <Label>{t("library.author")}</Label>
               <Input
                 value={bookForm.author}
                 onChange={(e) =>
@@ -474,7 +484,7 @@ export default function LibraryPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>ISBN</Label>
+                <Label>{t("library.isbn")}</Label>
                 <Input
                   value={bookForm.isbn}
                   onChange={(e) =>
@@ -483,7 +493,7 @@ export default function LibraryPage() {
                 />
               </div>
               <div>
-                <Label>Copies</Label>
+                <Label>{t("library.copies")}</Label>
                 <Input
                   type="number"
                   value={bookForm.copies}
@@ -494,7 +504,7 @@ export default function LibraryPage() {
               </div>
             </div>
             <div>
-              <Label>Category</Label>
+              <Label>{t("library.category")}</Label>
               <Select
                 value={bookForm.category}
                 onValueChange={(v) => setBookForm({ ...bookForm, category: v })}
@@ -520,17 +530,17 @@ export default function LibraryPage() {
               </Select>
             </div>
             <div>
-              <Label>Location</Label>
+              <Label>{t("library.location")}</Label>
               <Input
                 value={bookForm.location}
                 onChange={(e) =>
                   setBookForm({ ...bookForm, location: e.target.value })
                 }
-                placeholder="Shelf A-3"
+                placeholder={t("library.locationPlaceholder")}
               />
             </div>
             <Button onClick={addBook} disabled={submitting} className="w-full">
-              {submitting ? "Adding..." : "Add Book"}
+              {submitting ? t("library.adding") : t("library.addBook")}
             </Button>
           </div>
         </DialogContent>
@@ -540,11 +550,11 @@ export default function LibraryPage() {
       <Dialog open={showIssueDialog} onOpenChange={setShowIssueDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Issue Book</DialogTitle>
+            <DialogTitle>{t("library.issueBook")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
-              <Label>Book</Label>
+              <Label>{t("library.book")}</Label>
               <Select
                 value={issueForm.book_id || undefined}
                 onValueChange={(v) =>
@@ -552,7 +562,7 @@ export default function LibraryPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select book" />
+                  <SelectValue placeholder={t("library.selectBook")} />
                 </SelectTrigger>
                 <SelectContent>
                   {books
@@ -566,7 +576,7 @@ export default function LibraryPage() {
               </Select>
             </div>
             <div>
-              <Label>Borrower</Label>
+              <Label>{t("library.borrower")}</Label>
               <Select
                 value={issueForm.borrower_id || undefined}
                 onValueChange={(v) =>
@@ -574,7 +584,7 @@ export default function LibraryPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select borrower" />
+                  <SelectValue placeholder={t("library.selectBorrower")} />
                 </SelectTrigger>
                 <SelectContent>
                   {users.map((u) => (
@@ -586,7 +596,7 @@ export default function LibraryPage() {
               </Select>
             </div>
             <div>
-              <Label>Due Date</Label>
+              <Label>{t("library.dueDate")}</Label>
               <Input
                 type="date"
                 value={issueForm.due_date}
@@ -600,7 +610,7 @@ export default function LibraryPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Issuing..." : "Issue Book"}
+              {submitting ? t("library.issuing") : t("library.issueBook")}
             </Button>
           </div>
         </DialogContent>

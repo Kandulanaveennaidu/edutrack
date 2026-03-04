@@ -36,6 +36,7 @@ import {
   Shield,
   Filter,
 } from "lucide-react";
+import { useLocale } from "@/hooks/use-locale";
 
 interface AuditLogEntry {
   id: string;
@@ -83,6 +84,7 @@ const ACTION_COLORS: Record<string, string> = {
 };
 
 export default function AuditLogsPage() {
+  const { t } = useLocale();
   const permissions = usePermissions("settings");
 
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
@@ -200,7 +202,7 @@ export default function AuditLogsPage() {
         <div className="flex items-center gap-3">
           <Shield className="h-8 w-8 text-orange-500 dark:text-orange-400" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Audit Logs</h1>
+            <h1 className="text-2xl font-bold text-foreground">{t("nav.auditLogs")}</h1>
             <p className="text-muted-foreground">
               Track all system activities and changes
             </p>

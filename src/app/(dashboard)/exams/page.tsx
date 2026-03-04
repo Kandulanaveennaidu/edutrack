@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { showSuccess, showError } from "@/lib/alerts";
 import { Spinner } from "@/components/ui/spinner";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 
 interface Exam {
   _id: string;
@@ -59,6 +60,7 @@ interface Grade {
 
 export default function ExamsPage() {
   useSession();
+  const { t } = useLocale();
   const { canAdd, canEdit } = usePermissions("exams");
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"exams" | "grades">("exams");
@@ -108,7 +110,7 @@ export default function ExamsPage() {
         setGrades(d.data || []);
       }
     } catch {
-      showError("Error", "Failed to fetch exam data");
+      showError(t("common.error"), t("exams.fetchError"));
     } finally {
       setLoading(false);
     }
@@ -154,7 +156,7 @@ export default function ExamsPage() {
       });
 
       if (res.ok) {
-        showSuccess("Success", "Exam created");
+        showSuccess(t("common.success"), t("exams.examCreated"));
         setShowExamDialog(false);
         setExamForm({
           name: "",
@@ -168,10 +170,10 @@ export default function ExamsPage() {
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to create exam");
+      showError(t("common.error"), t("exams.createError"));
     } finally {
       setSubmitting(false);
     }
@@ -187,7 +189,7 @@ export default function ExamsPage() {
       });
 
       if (res.ok) {
-        showSuccess("Success", "Grades entered");
+        showSuccess(t("common.success"), t("exams.gradesEntered"));
         setShowGradeDialog(false);
         setGradeForm({
           exam_id: "",
@@ -196,10 +198,10 @@ export default function ExamsPage() {
         fetchData();
       } else {
         const err = await res.json();
-        showError("Error", err.error);
+        showError(t("common.error"), err.error);
       }
     } catch {
-      showError("Error", "Failed to enter grades");
+      showError(t("common.error"), t("exams.gradeError"));
     } finally {
       setSubmitting(false);
     }
@@ -224,14 +226,14 @@ export default function ExamsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Exams & Grades</h1>
-          <p className="text-muted-foreground">
-            Manage examinations and student grades
-          </p>
+          <h1 className="text-2xl font-bold text-foreground">
+            {t("nav.exams")}
+          </h1>
+          <p className="text-muted-foreground">{t("exams.description")}</p>
         </div>
         <div className="flex gap-2">
           <Input
-            placeholder="Filter by class"
+            placeholder={t("exams.filterByClass")}
             value={filterClass}
             onChange={(e) => setFilterClass(e.target.value)}
             className="w-36"
@@ -239,13 +241,13 @@ export default function ExamsPage() {
           {canAdd && (
             <Button onClick={() => setShowExamDialog(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Create Exam
+              {t("exams.createExam")}
             </Button>
           )}
           {canEdit && (
             <Button variant="outline" onClick={() => setShowGradeDialog(true)}>
               <PenTool className="mr-2 h-4 w-4" />
-              Enter Grades
+              {t("exams.enterGrades")}
             </Button>
           )}
         </div>
@@ -253,13 +255,13 @@ export default function ExamsPage() {
 
       {/* Tabs */}
       <div className="flex gap-2 border-b">
-        {(["exams", "grades"] as const).map((t) => (
+        {(["exams", "grades"] as const).map((tabKey) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 capitalize ${tab === t ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground hover:text-slate-700"}`}
+            key={tabKey}
+            onClick={() => setTab(tabKey)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === tabKey ? "border-orange-500 text-orange-500 dark:text-orange-400" : "border-transparent text-muted-foreground hover:text-slate-700"}`}
           >
-            {t}
+            {tabKey === "exams" ? t("exams.tabExams") : t("exams.tabGrades")}
           </button>
         ))}
       </div>
@@ -270,14 +272,14 @@ export default function ExamsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Total Marks</TableHead>
-                  <TableHead>Passing</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("exams.name")}</TableHead>
+                  <TableHead>{t("exams.type")}</TableHead>
+                  <TableHead>{t("exams.class")}</TableHead>
+                  <TableHead>{t("exams.subject")}</TableHead>
+                  <TableHead>{t("exams.totalMarks")}</TableHead>
+                  <TableHead>{t("exams.passing")}</TableHead>
+                  <TableHead>{t("exams.date")}</TableHead>
+                  <TableHead>{t("exams.status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -287,7 +289,7 @@ export default function ExamsPage() {
                       colSpan={8}
                       className="text-center text-muted-foreground"
                     >
-                      No exams found
+                      {t("exams.noExamsFound")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -332,13 +334,13 @@ export default function ExamsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Exam</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Marks</TableHead>
-                  <TableHead>Percentage</TableHead>
-                  <TableHead>Grade</TableHead>
-                  <TableHead>Result</TableHead>
+                  <TableHead>{t("exams.student")}</TableHead>
+                  <TableHead>{t("exams.exam")}</TableHead>
+                  <TableHead>{t("exams.subject")}</TableHead>
+                  <TableHead>{t("exams.marks")}</TableHead>
+                  <TableHead>{t("exams.percentage")}</TableHead>
+                  <TableHead>{t("exams.grade")}</TableHead>
+                  <TableHead>{t("exams.result")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -348,7 +350,7 @@ export default function ExamsPage() {
                       colSpan={7}
                       className="text-center text-muted-foreground"
                     >
-                      No grades found
+                      {t("exams.noGradesFound")}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -368,7 +370,7 @@ export default function ExamsPage() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={g.isPassed ? "present" : "absent"}>
-                          {g.isPassed ? "Pass" : "Fail"}
+                          {g.isPassed ? t("exams.pass") : t("exams.fail")}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -384,21 +386,21 @@ export default function ExamsPage() {
       <Dialog open={showExamDialog} onOpenChange={setShowExamDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create Exam</DialogTitle>
+            <DialogTitle>{t("exams.createExam")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
-              <Label>Exam Name</Label>
+              <Label>{t("exams.examName")}</Label>
               <Input
                 value={examForm.name}
                 onChange={(e) =>
                   setExamForm({ ...examForm, name: e.target.value })
                 }
-                placeholder="Unit Test 1"
+                placeholder={t("exams.examNamePlaceholder")}
               />
             </div>
             <div>
-              <Label>Type</Label>
+              <Label>{t("exams.type")}</Label>
               <Select
                 value={examForm.type}
                 onValueChange={(v) => setExamForm({ ...examForm, type: v })}
@@ -423,17 +425,17 @@ export default function ExamsPage() {
               </Select>
             </div>
             <div>
-              <Label>Class</Label>
+              <Label>{t("exams.class")}</Label>
               <Input
                 value={examForm.class_name}
                 onChange={(e) =>
                   setExamForm({ ...examForm, class_name: e.target.value })
                 }
-                placeholder="Class 10"
+                placeholder={t("exams.classPlaceholder")}
               />
             </div>
             <div>
-              <Label>Subject</Label>
+              <Label>{t("exams.subject")}</Label>
               <Select
                 value={examForm.subject_id || undefined}
                 onValueChange={(v) =>
@@ -441,7 +443,7 @@ export default function ExamsPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select subject" />
+                  <SelectValue placeholder={t("exams.selectSubject")} />
                 </SelectTrigger>
                 <SelectContent>
                   {subjects.map((s) => (
@@ -454,7 +456,7 @@ export default function ExamsPage() {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Total Marks</Label>
+                <Label>{t("exams.totalMarks")}</Label>
                 <Input
                   type="number"
                   value={examForm.total_marks}
@@ -467,7 +469,7 @@ export default function ExamsPage() {
                 />
               </div>
               <div>
-                <Label>Passing Marks</Label>
+                <Label>{t("exams.passingMarks")}</Label>
                 <Input
                   type="number"
                   value={examForm.passing_marks}
@@ -481,7 +483,7 @@ export default function ExamsPage() {
               </div>
             </div>
             <div>
-              <Label>Date</Label>
+              <Label>{t("exams.date")}</Label>
               <Input
                 type="date"
                 value={examForm.date}
@@ -495,7 +497,7 @@ export default function ExamsPage() {
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Creating..." : "Create Exam"}
+              {submitting ? t("exams.creating") : t("exams.createExam")}
             </Button>
           </div>
         </DialogContent>
@@ -505,11 +507,11 @@ export default function ExamsPage() {
       <Dialog open={showGradeDialog} onOpenChange={setShowGradeDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Enter Grades</DialogTitle>
+            <DialogTitle>{t("exams.enterGrades")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-4">
             <div>
-              <Label>Exam</Label>
+              <Label>{t("exams.exam")}</Label>
               <Select
                 value={gradeForm.exam_id || undefined}
                 onValueChange={(v) =>
@@ -517,7 +519,7 @@ export default function ExamsPage() {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select exam" />
+                  <SelectValue placeholder={t("exams.selectExam")} />
                 </SelectTrigger>
                 <SelectContent>
                   {exams.map((e) => (
@@ -541,7 +543,7 @@ export default function ExamsPage() {
                     }}
                   >
                     <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Student" />
+                      <SelectValue placeholder={t("exams.student")} />
                     </SelectTrigger>
                     <SelectContent>
                       {students.map((s) => (
@@ -554,7 +556,7 @@ export default function ExamsPage() {
                   <Input
                     type="number"
                     className="w-24"
-                    placeholder="Marks"
+                    placeholder={t("exams.marks")}
                     value={entry.marks_obtained}
                     onChange={(e) => {
                       const newEntries = [...gradeForm.entries];
@@ -567,14 +569,14 @@ export default function ExamsPage() {
             </div>
 
             <Button variant="outline" onClick={addGradeEntry}>
-              + Add Student
+              {t("exams.addStudent")}
             </Button>
             <Button
               onClick={enterGrades}
               disabled={submitting}
               className="w-full"
             >
-              {submitting ? "Saving..." : "Save Grades"}
+              {submitting ? t("exams.saving") : t("exams.saveGrades")}
             </Button>
           </div>
         </DialogContent>

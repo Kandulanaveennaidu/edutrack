@@ -43,6 +43,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { showError, showSuccess } from "@/lib/alerts";
 import { useClasses } from "@/hooks/use-classes";
 import { usePermissions } from "@/hooks/use-permissions";
+import { useLocale } from "@/hooks/use-locale";
 import {
   PieChart,
   Pie,
@@ -99,6 +100,7 @@ const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
 export default function ReportsPage() {
+  const { t } = useLocale();
   const { canView } = usePermissions("reports");
   const [activeTab, setActiveTab] = useState<"attendance" | "documents">(
     "attendance",
@@ -279,8 +281,8 @@ export default function ReportsPage() {
       {/* Page Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
-          <p className="text-muted-foreground">Generate and download reports</p>
+          <h1 className="text-2xl font-bold text-foreground">{t("nav.reports")}</h1>
+          <p className="text-muted-foreground">{t("reports.description")}</p>
         </div>
         {activeTab === "attendance" && reportData && (
           <div className="flex gap-2">

@@ -31,6 +31,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { useLocale } from "@/hooks/use-locale";
 
 interface RiskStudent {
   student_id: string;
@@ -75,6 +76,7 @@ const RISK_COLORS = {
 };
 
 export default function AIInsightsPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("ai_insights");
   const [data, setData] = useState<InsightsData | null>(null);
@@ -144,7 +146,7 @@ export default function AIInsightsPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
             <Brain className="h-7 w-7 text-orange-500 dark:text-orange-400" />
-            AI Attendance Insights
+            {t("nav.aiInsights")}
           </h1>
           <p className="text-muted-foreground mt-1">
             ML-powered dropout risk prediction & attendance anomaly detection

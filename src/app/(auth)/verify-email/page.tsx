@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { showSuccess, showError } from "@/lib/alerts";
+import { useLocale } from "@/hooks/use-locale";
 
 // ── Animated Background ──────────────────────────────────────────────────────
 function AuthBackground() {
@@ -51,6 +52,7 @@ function ResendCountdown({
   onComplete: () => void;
 }) {
   const [remaining, setRemaining] = useState(seconds);
+  const { t } = useLocale();
 
   useEffect(() => {
     if (remaining <= 0) {
@@ -64,7 +66,7 @@ function ResendCountdown({
   return (
     <span className="flex items-center gap-1 text-xs text-muted-foreground">
       <Clock className="h-3 w-3" />
-      Resend available in {remaining}s
+      {t("verify.resendAvailableIn")} {remaining}s
     </span>
   );
 }
@@ -77,6 +79,7 @@ function ResendForm({ autoFocus = false }: { autoFocus?: boolean }) {
   const [canResend, setCanResend] = useState(true);
   const [showCountdown, setShowCountdown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useLocale();
 
   useEffect(() => {
     if (autoFocus) {
@@ -128,13 +131,13 @@ function ResendForm({ autoFocus = false }: { autoFocus?: boolean }) {
           className="flex items-center gap-1.5 text-sm"
         >
           <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-          Email Address
+          {t("verify.emailAddress")}
         </Label>
         <Input
           ref={inputRef}
           id="resend-email"
           type="email"
-          placeholder="you@institution.com"
+          placeholder={t("verify.emailPlaceholder")}
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
@@ -164,17 +167,17 @@ function ResendForm({ autoFocus = false }: { autoFocus?: boolean }) {
           {sending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending...
+              {t("verify.sending")}
             </>
           ) : sent ? (
             <>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Resend Verification Email
+              {t("verify.resendVerification")}
             </>
           ) : (
             <>
               <Send className="mr-2 h-4 w-4" />
-              Send Verification Email
+              {t("verify.sendVerification")}
             </>
           )}
         </Button>
@@ -187,6 +190,7 @@ function ResendForm({ autoFocus = false }: { autoFocus?: boolean }) {
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const status = searchParams.get("status");
+  const { t } = useLocale();
 
   // ── Success ────────────────────────────────────────────────────────────────
   if (status === "success") {
@@ -202,11 +206,10 @@ function VerifyEmailContent() {
             </div>
           </div>
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Email Verified!
+            {t("verify.emailVerified")}
           </h2>
           <p className="text-sm text-muted-foreground mb-8 max-w-xs leading-relaxed">
-            Your email has been verified successfully. You can now sign in to
-            your account.
+            {t("verify.emailVerifiedMsg")}
           </p>
           <Button
             asChild
@@ -215,7 +218,7 @@ function VerifyEmailContent() {
           >
             <Link href="/login">
               <ArrowRight className="mr-2 h-4 w-4" />
-              Go to Sign In
+              {t("verify.goToSignIn")}
             </Link>
           </Button>
         </CardContent>
@@ -232,11 +235,10 @@ function VerifyEmailContent() {
             <AlertTriangle className="h-8 w-8 text-amber-600 dark:text-amber-400" />
           </div>
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Link Expired
+            {t("verify.linkExpired")}
           </h2>
           <p className="text-sm text-muted-foreground mb-6 max-w-xs leading-relaxed">
-            This verification link has expired. Enter your email below to
-            receive a new verification link.
+            {t("verify.linkExpiredMsg")}
           </p>
           <ResendForm autoFocus />
         </CardContent>
@@ -253,12 +255,12 @@ function VerifyEmailContent() {
             <XCircle className="h-8 w-8 text-red-600 dark:text-red-400" />
           </div>
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Verification Failed
+            {t("verify.verificationFailed")}
           </h2>
           <p className="text-sm text-muted-foreground mb-6 max-w-xs leading-relaxed">
             {status === "invalid"
-              ? "The verification link is invalid. Please check the link and try again, or request a new one."
-              : "Something went wrong during verification. Please try again or request a new verification email."}
+              ? t("verify.invalidLinkMsg")
+              : t("verify.errorMsg")}
           </p>
           <ResendForm autoFocus />
         </CardContent>
@@ -281,15 +283,13 @@ function VerifyEmailContent() {
         </div>
 
         <h2 className="text-xl font-semibold text-foreground mb-2">
-          Check Your Email
+          {t("verify.checkYourEmail")}
         </h2>
         <p className="text-sm text-muted-foreground mb-2 max-w-xs leading-relaxed">
-          We&apos;ve sent a verification link to your email address. Click the
-          link to verify your account.
+          {t("verify.checkEmailMsg")}
         </p>
         <p className="text-xs text-muted-foreground/70 mb-6 max-w-xs">
-          Didn&apos;t receive the email? Check your spam folder or request a new
-          one below.
+          {t("verify.didntReceive")}
         </p>
 
         <ResendForm />
@@ -299,8 +299,7 @@ function VerifyEmailContent() {
           <div className="flex items-start gap-2.5 rounded-xl bg-primary/5 p-3 border border-primary/10 dark:bg-primary/10 dark:border-primary/20">
             <Shield className="h-4 w-4 text-primary mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed text-left">
-              Verification links expire in 24 hours. Make sure to check your
-              spam/junk folder if you don&apos;t see the email.
+              {t("verify.expiryTip")}
             </p>
           </div>
         </div>
@@ -311,6 +310,7 @@ function VerifyEmailContent() {
 
 // ── Page Wrapper ─────────────────────────────────────────────────────────────
 export default function VerifyEmailPage() {
+  const { t } = useLocale();
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <AuthBackground />
@@ -322,7 +322,7 @@ export default function VerifyEmailPage() {
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            Back to Home
+            {t("auth.backToHome")}
           </Link>
         </div>
 
@@ -332,7 +332,9 @@ export default function VerifyEmailPage() {
             <Mail className="h-10 w-10 text-white" />
           </div>
           <h1 className="mt-4 text-3xl font-bold text-foreground">CampusIQ</h1>
-          <p className="mt-1 text-muted-foreground">Email Verification</p>
+          <p className="mt-1 text-muted-foreground">
+            {t("verify.emailVerification")}
+          </p>
         </div>
 
         <Suspense
@@ -352,16 +354,14 @@ export default function VerifyEmailPage() {
             className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Sign In
+            {t("auth.backToSignIn")}
           </Link>
         </div>
 
         {/* Security Footer */}
         <div className="mt-6 flex items-center justify-center gap-1.5 text-xs text-muted-foreground/60">
           <Shield className="h-3 w-3" />
-          <span>
-            Protected by CampusIQ Security &middot; 256-bit SSL encryption
-          </span>
+          <span>{t("auth.protectedBy")}</span>
         </div>
       </div>
     </div>

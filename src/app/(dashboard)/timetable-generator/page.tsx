@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import { useLocale } from "@/hooks/use-locale";
 
 interface SlotData {
   period: number;
@@ -60,6 +61,7 @@ const SUBJECT_COLORS = [
 ];
 
 export default function TimetableGeneratorPage() {
+  const { t } = useLocale();
   const { data: session } = useSession();
   const { canView: _canView } = usePermissions("timetable");
   const [result, setResult] = useState<TimetableResult | null>(null);
@@ -144,7 +146,7 @@ export default function TimetableGeneratorPage() {
         <div>
           <h1 className="text-2xl font-bold text-foreground dark:text-foreground flex items-center gap-2">
             <Shuffle className="h-7 w-7 text-orange-500 dark:text-orange-400" />
-            Smart Timetable Generator
+            {t("nav.timetableGenerator")}
           </h1>
           <p className="text-muted-foreground mt-1">
             AI-powered constraint-based auto-scheduling
